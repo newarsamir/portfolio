@@ -1,0 +1,321 @@
+/**
+ * Every editable word, number and showcase item on the site lives here.
+ * Search this file for "TODO" to find what still needs real content.
+ * The full checklist is in TODO.md.
+ */
+
+export type Counter = {
+  id: string;
+  label: string;
+  value: number;
+  suffix?: string;
+  /** The joke counter gets the lime treatment. */
+  joke?: boolean;
+};
+
+export type ShowcaseItem = {
+  src: string;
+  width: number;
+  height: number;
+  brand: string;
+  type: string;
+  note: string;
+};
+
+export type Testimonial = { quote: string; name: string; role: string };
+
+export const site = {
+  name: "Samir Shrestha",
+  title: "Email Designer (Figma)",
+  // TODO: your real inbox. It is shown on the site and used by the copy button.
+  email: "your@email.com",
+  // TODO: confirm your location.
+  location: "Kathmandu, Nepal",
+
+  seo: {
+    title: "Samir Shrestha, email designer for ecommerce and DTC brands",
+    description:
+      "I design email flows and campaigns in Figma for ecommerce and DTC brands. Welcome flows, abandoned cart, post-purchase and templates, handed off ready to build.",
+  },
+
+  // TODO: replace each "#" with your real profile link. Empty or "#" links are hidden.
+  socials: [
+    { label: "LinkedIn", href: "#" },
+    { label: "Dribbble", href: "#" },
+    { label: "Behance", href: "#" },
+    { label: "Instagram", href: "#" },
+  ],
+
+  nav: [
+    { id: "home", label: "Home" },
+    { id: "work", label: "Work" },
+    { id: "about", label: "About" },
+    { id: "process", label: "Process" },
+    { id: "contact", label: "Contact" },
+  ],
+
+  /**
+   * Defaults. The "available for work" switch, the hero video URL and the
+   * counter values can all be changed from /admin without a redeploy.
+   */
+  defaults: {
+    availableForWork: true,
+    // TODO: your showreel. A direct .mp4, a YouTube link or a Vimeo link all work.
+    heroVideoUrl: "/hero/reel-placeholder.mp4",
+    heroPoster: "/hero/poster-placeholder.webp",
+  },
+
+  hero: {
+    eyebrow: "From: Samir Shrestha, email designer",
+    headline: "I design the emails your customers don't archive.",
+    sub: "Flows and campaigns for ecommerce and DTC brands, designed in Figma and handed off ready to build in Klaviyo or Mailchimp.",
+    primary: "See my work",
+    secondary: "Hire me",
+  },
+
+  // Only real tools and clients go here. TODO: add client names you may show.
+  brandStrip: {
+    label: "Tools I design in and for",
+    items: ["Figma", "Klaviyo", "Mailchimp", "Shopify"],
+  },
+
+  counters: {
+    heading: "A few numbers, since founders like numbers.",
+    /**
+     * TODO: these are sample values. Replace them here or in /admin, then set
+     * `placeholder` to false to remove the "sample numbers" note on the site.
+     */
+    placeholder: true,
+    items: [
+      { id: "emails", label: "Emails designed", value: 100, suffix: "+" },
+      { id: "brands", label: "Brands worked with", value: 10, suffix: "+" },
+      { id: "years", label: "Years designing email", value: 3 },
+      { id: "outlook", label: "Outlook rendering bugs survived", value: 404, joke: true },
+    ] as Counter[],
+  },
+
+  showcase: {
+    heading: "The work. Scroll to spin it.",
+    sub: "Click any email to read it top to bottom. Unlike most subscribers, you'll make it to the footer.",
+    /**
+     * TODO: export each email from Figma as a tall WebP (600 to 1200px wide)
+     * into /public/emails, then update brand, type, note, width and height.
+     * Until then these are clearly labelled placeholders.
+     */
+    items: [
+      {
+        src: "/emails/email-01.webp",
+        width: 900,
+        height: 2991,
+        brand: "Placeholder 01",
+        type: "Welcome flow, email 1",
+        note: "One promise, one button. The discount code sits above the fold so nobody has to hunt for it.",
+      },
+      {
+        src: "/emails/email-02.webp",
+        width: 900,
+        height: 3108,
+        brand: "Placeholder 02",
+        type: "Product launch campaign",
+        note: "The product photo does the talking. Copy stays under 40 words until the second scroll.",
+      },
+      {
+        src: "/emails/email-03.webp",
+        width: 900,
+        height: 2463,
+        brand: "Placeholder 03",
+        type: "Abandoned cart, email 1",
+        note: "Shows the exact item left behind, with the checkout button repeated after the reviews.",
+      },
+      {
+        src: "/emails/email-04.webp",
+        width: 900,
+        height: 2687,
+        brand: "Placeholder 04",
+        type: "Post-purchase, how to use",
+        note: "Three steps, numbered, each with a photo. Fewer support tickets is the whole point.",
+      },
+      {
+        src: "/emails/email-05.webp",
+        width: 900,
+        height: 2561,
+        brand: "Placeholder 05",
+        type: "Seasonal sale campaign",
+        note: "Big type instead of a hero image, so the offer survives with images turned off.",
+      },
+      {
+        src: "/emails/email-06.webp",
+        width: 900,
+        height: 2250,
+        brand: "Placeholder 06",
+        type: "Winback flow, email 2",
+        note: "Plain and personal on purpose. It reads like a note, then earns the offer at the end.",
+      },
+      {
+        src: "/emails/email-07.webp",
+        width: 900,
+        height: 2724,
+        brand: "Placeholder 07",
+        type: "Review request",
+        note: "The star rating is the call to action. One tap and the review is already half written.",
+      },
+      {
+        src: "/emails/email-08.webp",
+        width: 900,
+        height: 2471,
+        brand: "Placeholder 08",
+        type: "Master template system",
+        note: "Twelve modules the team can stack in any order without breaking the layout.",
+      },
+    ] as ShowcaseItem[],
+  },
+
+  about: {
+    heading: "One designer. One Figma file. No account manager in between.",
+    // TODO: rewrite in your own words. Keep it first person.
+    story: [
+      "I'm Samir, a freelance email designer. I work with ecommerce and DTC brands that have a good product and an inbox presence that doesn't do it justice.",
+      "Everything I make starts in Figma: welcome flows, campaigns, abandoned cart and post-purchase emails, plus the template systems that keep them consistent. I design mobile first, because that's where your customers read, and I check dark mode before you have to ask.",
+      "When you hire me you talk to me. I read the brief, I push the pixels, and I answer the message when something needs to change.",
+    ],
+    // TODO: add /public/portrait.webp and set portrait to "/portrait.webp".
+    portrait: "" as string,
+    portraitAlt: "Portrait of Samir Shrestha",
+    toolsHeading: "What I work in",
+    tools: [
+      { name: "Figma", use: "Design, components and handoff" },
+      { name: "Klaviyo", use: "Flows and campaign structure" },
+      { name: "Mailchimp", use: "Campaigns and templates" },
+      { name: "Shopify", use: "Product data and brand assets" },
+    ],
+  },
+
+  process: {
+    heading: "How a project runs",
+    steps: [
+      {
+        title: "Brief",
+        body: "You tell me the goal, the audience and the offer. I ask the questions that save us three rounds of revisions later.",
+        detail: "A short call or a filled-in doc. Either works.",
+      },
+      {
+        title: "Wireframe",
+        body: "Grey boxes first. We agree on the order of the message and where the button goes before anyone argues about colors.",
+        detail: "One round of feedback on structure.",
+      },
+      {
+        title: "Design in Figma",
+        body: "Your brand, real copy, real product shots. Mobile and desktop, light and dark, so nothing surprises you in the inbox.",
+        detail: "Two rounds of revisions included.",
+      },
+      {
+        title: "Handoff",
+        body: "A clean Figma file with named layers, exported assets and build notes. Your developer will not need to message me at midnight.",
+        detail: "Ready to build in Klaviyo or Mailchimp.",
+      },
+    ],
+  },
+
+  services: {
+    heading: "What you can hire me for",
+    sub: "Pick one, or stack them into a full lifecycle. No 'Dear Valued Customer' is involved at any stage.",
+    items: [
+      {
+        id: "welcome",
+        title: "Welcome flows",
+        body: "The first three to five emails a new subscriber gets. I design them as one story: who you are, why you're worth it, and what to buy first.",
+        tag: "3 to 5 emails",
+      },
+      {
+        id: "campaigns",
+        title: "Campaigns",
+        body: "Launches, sales and newsletters, designed one at a time or as a monthly batch.",
+        tag: "One-off or monthly",
+      },
+      {
+        id: "cart",
+        title: "Abandoned cart",
+        body: "A reminder, a reason and a nudge, each with the product they left front and center.",
+        tag: "2 to 3 emails",
+      },
+      {
+        id: "post",
+        title: "Post-purchase",
+        body: "Order follow-ups, how-to-use guides and review requests that turn one order into the next.",
+        tag: "3 to 4 emails",
+      },
+      {
+        id: "templates",
+        title: "Templates",
+        body: "A modular master template in Figma, so your team can build on-brand emails without starting from zero.",
+        tag: "Reusable system",
+      },
+    ],
+  },
+
+  // Real ones only. While this array is empty the section is not rendered.
+  // TODO: add testimonials as { quote, name, role }.
+  testimonials: [] as Testimonial[],
+
+  faq: {
+    heading: "Questions I get, answered honestly",
+    items: [
+      {
+        q: "Do you build the emails too, or only design them?",
+        a: "I design in Figma and hand off a file that's ready to build: named layers, exported assets and notes for every module. If you need someone to code or set it up in Klaviyo, tell me and I'll say plainly whether I can help or who can.",
+      },
+      {
+        q: "Will it look right in Outlook?",
+        a: "I design with Outlook's limits in mind: safe fonts with fallbacks, layouts that hold up without background images, and buttons that are real buttons. Outlook will still find a way to surprise us, but it will be a small surprise.",
+      },
+      {
+        q: "How long does a project take?",
+        a: "A single campaign usually takes a few days. A full flow takes one to two weeks, depending on how quickly feedback comes back. If your sale starts tomorrow, we should have talked last week, but message me anyway.",
+      },
+      {
+        q: "What do you need from me to start?",
+        a: "Brand assets (logo, fonts, colors), product photos, and the copy or at least the key points. If the copy isn't ready, I'll design with realistic draft text and mark it clearly, never lorem ipsum.",
+      },
+      {
+        q: "How many revisions are included?",
+        a: "One round on the wireframe and two on the design. That's enough for almost every project, because we agree on structure before the pretty part starts.",
+      },
+      {
+        q: "Can you redesign the emails I already have?",
+        a: "Yes. Send me your worst one. I'll tell you what I'd change and why, and you can decide whether it's worth a project.",
+      },
+    ],
+  },
+
+  finalCta: {
+    headline: "Your next email deserves better than a stock photo and a prayer.",
+    button: "Hire me for your next flow",
+    mini: "Or copy my address and write whenever you're ready.",
+  },
+
+  contact: {
+    headline: "Send me your worst email. I've seen worse.",
+    sub: "Tell me about the brand and what you need. I reply within two working days, and never with 'per my last email'.",
+    projectTypes: [
+      "Welcome flow",
+      "Campaigns",
+      "Abandoned cart",
+      "Post-purchase",
+      "Templates",
+      "Full lifecycle",
+      "Not sure yet",
+    ],
+    // TODO: set budget ranges that match your pricing.
+    budgets: ["Under $500", "$500 to $1,500", "$1,500 to $3,000", "$3,000+", "Let's talk"],
+    success: {
+      title: "Inquiry sent.",
+      body: "It's in my inbox, and I do open my emails. You'll hear from me within two working days.",
+    },
+  },
+
+  footer: {
+    joke: "You scrolled all the way to the footer. I hope your subscribers are this loyal.",
+  },
+} as const;
+
+export type Site = typeof site;

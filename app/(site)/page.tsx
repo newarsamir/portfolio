@@ -1,0 +1,52 @@
+import About from "@/components/About";
+import BrandStrip from "@/components/BrandStrip";
+import Counters from "@/components/Counters";
+import Faq from "@/components/Faq";
+import FinalCta from "@/components/FinalCta";
+import Hero from "@/components/Hero";
+import Process from "@/components/Process";
+import Services from "@/components/Services";
+import Showcase from "@/components/Showcase";
+import Testimonials from "@/components/Testimonials";
+import { site } from "@/content/site";
+import { getSettings } from "@/lib/settings";
+import { siteUrl } from "@/lib/url";
+
+export const revalidate = 300;
+
+export default async function HomePage() {
+  const settings = await getSettings();
+  const url = siteUrl();
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: site.name,
+    jobTitle: site.title,
+    description: site.seo.description,
+    url,
+    email: site.email.includes("your@") ? undefined : `mailto:${site.email}`,
+    address: { "@type": "PostalAddress", addressLocality: site.location },
+    knowsAbout: ["Email design", "Email marketing", "Figma", "Klaviyo", "Mailchimp", "Ecommerce"],
+    sameAs: site.socials.map((s) => s.href).filter((h) => h && h !== "#"),
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+      />
+      <Hero videoUrl={settings.heroVideoUrl} />
+      <BrandStrip />
+      <Counters items={settings.counters} placeholder={settings.countersArePlaceholder} />
+      <Showcase />
+      <About />
+      <Process />
+      <Services />
+      <Testimonials />
+      <Faq />
+      <FinalCta />
+    </>
+  );
+}

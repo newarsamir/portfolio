@@ -1,0 +1,690 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Tokens. The theme follows the system. There is no toggle.
+------------------------------------------------------------------- */
+:root {
+  color-scheme: light dark;
+
+  --bg: oklch(98% 0.015 95);
+  --surface: oklch(95.6% 0.02 95);
+  --raised: oklch(99.4% 0.008 95);
+  --ink: oklch(21% 0.012 80);
+  --muted: oklch(45% 0.015 80);
+  --line: oklch(87% 0.02 95);
+  --lime: oklch(88% 0.22 125);
+  --lime-deep: oklch(80% 0.21 127);
+  --on-lime: oklch(22% 0.05 125);
+  /* Accent that is safe as text or a thin stroke on the page background.
+     Lime text on cream fails contrast, so in light mode this is ink. */
+  --accent-fg: var(--ink);
+  --danger: oklch(52% 0.19 28);
+  --glass: oklch(99% 0.01 95 / 0.62);
+  --glass-line: oklch(100% 0 0 / 0.75);
+  --glass-shadow: 0 1px 0 oklch(100% 0 0 / 0.6) inset, 0 18px 40px -12px oklch(30% 0.03 80 / 0.28),
+    0 2px 6px oklch(30% 0.03 80 / 0.1);
+
+  --font-display: "Bricolage Grotesque Variable", "Arial Narrow", system-ui, sans-serif;
+  --font-sans: "Geist Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: oklch(17% 0.01 80);
+    --surface: oklch(21% 0.012 80);
+    --raised: oklch(24.5% 0.014 80);
+    --ink: oklch(95% 0.02 95);
+    --muted: oklch(73% 0.02 90);
+    --line: oklch(31% 0.014 80);
+    --accent-fg: var(--lime);
+    --danger: oklch(74% 0.16 28);
+    --glass: oklch(26% 0.012 80 / 0.58);
+    --glass-line: oklch(100% 0 0 / 0.14);
+    --glass-shadow: 0 1px 0 oklch(100% 0 0 / 0.1) inset, 0 20px 44px -12px oklch(0% 0 0 / 0.7),
+      0 2px 6px oklch(0% 0 0 / 0.4);
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-lime: var(--lime);
+  --color-lime-deep: var(--lime-deep);
+  --color-on-lime: var(--on-lime);
+  --color-accent-fg: var(--accent-fg);
+  --color-danger: var(--danger);
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --ease-out: var(--ease-out);
+  --ease-spring: var(--ease-spring);
+}
+
+/* ------------------------------------------------------------------
+   Base
+------------------------------------------------------------------- */
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: 5rem;
+  }
+  body {
+    min-height: 100svh;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    overflow-x: clip;
+  }
+  ::selection {
+    background: var(--lime);
+    color: var(--on-lime);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+    border-radius: 6px;
+    box-shadow: 0 0 0 5px var(--lime);
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-variation-settings: "wdth" 84, "opsz" 72;
+    font-weight: 640;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  button,
+  select,
+  summary,
+  [role="button"] {
+    cursor: pointer;
+  }
+  dialog {
+    color: inherit;
+  }
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+/* Everything below sits in the components layer so Tailwind utilities
+   on the same element can still override it. */
+@layer components {
+/* ------------------------------------------------------------------
+   Shared pieces
+------------------------------------------------------------------- */
+.wrap {
+  width: 100%;
+  max-width: 90rem;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.display-xl {
+  font-size: clamp(2.75rem, 8.2vw, 8rem);
+}
+.display-lg {
+  font-size: clamp(2.25rem, 5.6vw, 5.25rem);
+}
+.display-md {
+  font-size: clamp(1.75rem, 3.4vw, 3rem);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+}
+
+.section {
+  padding-block: clamp(5rem, 11vw, 10rem);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 3.25rem;
+  padding: 0 1.6rem;
+  border-radius: 999px;
+  font-weight: 560;
+  font-size: 1rem;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    background-color 0.25s var(--ease-out),
+    color 0.25s var(--ease-out),
+    border-color 0.25s var(--ease-out);
+  will-change: transform;
+}
+.btn-lime {
+  background: var(--lime);
+  color: var(--on-lime);
+}
+.btn-lime:hover {
+  background: var(--lime-deep);
+}
+.btn-ghost {
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+}
+.btn-ghost:hover {
+  background: var(--ink);
+  color: var(--bg);
+}
+.btn-sm {
+  min-height: 2.5rem;
+  padding: 0 1.1rem;
+  font-size: 0.9375rem;
+}
+.btn[disabled] {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+/* Lime as a highlight fill behind dark text. Never lime text on cream. */
+.hl {
+  background: var(--lime);
+  color: var(--on-lime);
+  padding: 0 0.18em;
+  border-radius: 0.14em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.link {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: var(--line);
+  transition: text-decoration-color 0.2s;
+}
+.link:hover {
+  text-decoration-color: var(--accent-fg);
+}
+
+/* ------------------------------------------------------------------
+   Page transition
+------------------------------------------------------------------- */
+.page-enter {
+  animation: page-in 0.6s var(--ease-out) both;
+}
+.page-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: var(--lime);
+  transform-origin: top;
+  pointer-events: none;
+  animation: curtain 0.7s cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes curtain {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(0);
+  }
+}
+
+/* ------------------------------------------------------------------
+   Hero
+------------------------------------------------------------------- */
+.hero-pin {
+  position: relative;
+  height: 100svh;
+  min-height: 34rem;
+  overflow: clip;
+}
+.hero-copy {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: clamp(6.5rem, 15svh, 9.5rem);
+}
+.hero-h1 {
+  font-size: clamp(2.5rem, 6.4vw, 6.25rem);
+  max-width: 15ch;
+}
+@media (max-height: 760px) and (min-width: 768px) {
+  .hero-h1 {
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+  }
+  .hero-copy {
+    padding-top: 6rem;
+  }
+}
+/* Centers the frame at its final size. The frame itself only ever
+   changes transform (GSAP owns it), so centering lives on this wrapper. */
+.hero-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.hero-frame {
+  pointer-events: auto;
+  --hero-w: min(80vw, calc((100svh - 6rem) * 16 / 9));
+  --s0: 0.25;
+  position: relative;
+  z-index: 3;
+  flex: none;
+  width: var(--hero-w);
+  aspect-ratio: 16 / 9;
+  /* Approximate resting state until the script measures the exact one. */
+  transform: translateY(30svh) scale(var(--s0));
+  border-radius: 1.75rem;
+  overflow: clip;
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line), 0 40px 80px -30px oklch(20% 0.02 80 / 0.45);
+  will-change: transform;
+}
+@media (max-width: 767px) {
+  .hero-frame {
+    --hero-w: 92vw;
+    --s0: 0.652;
+    transform: translateY(26svh) scale(var(--s0));
+    border-radius: 1.1rem;
+  }
+}
+
+/* Word by word load reveal. Pure CSS, so the text paints before any script. */
+.w {
+  display: inline-block;
+  overflow: clip;
+  vertical-align: top;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+.w > span {
+  display: inline-block;
+  animation: word-up 0.9s var(--ease-out) both;
+  animation-delay: calc(var(--i) * 70ms + 120ms);
+}
+@keyframes word-up {
+  from {
+    transform: translateY(110%) rotate(4deg);
+  }
+}
+.load-fade {
+  animation: load-fade 0.9s var(--ease-out) both;
+  animation-delay: var(--d, 0.8s);
+}
+@keyframes load-fade {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+.load-opacity {
+  animation: load-opacity 1s var(--ease-out) both;
+  animation-delay: var(--d, 1.2s);
+}
+@keyframes load-opacity {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Marquee
+------------------------------------------------------------------- */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 38s linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ------------------------------------------------------------------
+   Dock (the only glass on the site)
+------------------------------------------------------------------- */
+.dock {
+  background: var(--glass);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: blur(22px) saturate(1.6);
+  backdrop-filter: blur(22px) saturate(1.6);
+}
+.dock-tip {
+  position: absolute;
+  bottom: calc(100% + 0.9rem);
+  left: 50%;
+  translate: -50% 0;
+  padding: 0.3rem 0.6rem;
+  border-radius: 0.5rem;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 0.75rem;
+  font-weight: 520;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity 0.15s,
+    transform 0.15s;
+  pointer-events: none;
+}
+.dock-item:hover .dock-tip,
+.dock-item:focus-visible .dock-tip {
+  opacity: 1;
+  transform: none;
+}
+@media (hover: none) {
+  .dock-tip {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Showcase fallback carousel
+------------------------------------------------------------------- */
+.snap-row {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 1.5rem max(var(--gutter), calc(50vw - 8.5rem)) 2rem;
+  perspective: 1100px;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.snap-row::-webkit-scrollbar {
+  display: none;
+}
+.snap-card {
+  flex: none;
+  width: min(17rem, 70vw);
+  scroll-snap-align: center;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Lightbox */
+.lightbox {
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+.lightbox::backdrop {
+  background: oklch(15% 0.01 80 / 0.86);
+}
+.lightbox[open] .lightbox-panel {
+  animation: lb-in 0.45s var(--ease-out) both;
+}
+@keyframes lb-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+}
+
+/* FAQ */
+.faq-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.45s var(--ease-out);
+}
+.faq-body[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+.faq-body > div {
+  overflow: hidden;
+}
+
+/* Custom cursor */
+.cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
+  pointer-events: none;
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .cursor {
+    display: block;
+  }
+}
+.cursor-dot {
+  display: grid;
+  place-items: center;
+  width: 5.25rem;
+  height: 5.25rem;
+  margin: -2.625rem 0 0 -2.625rem;
+  border-radius: 50%;
+  background: var(--lime);
+  color: var(--on-lime);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transform: scale(0.12);
+  transition:
+    transform 0.35s var(--ease-out),
+    opacity 0.3s;
+  opacity: 0;
+}
+.cursor-dot > span {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.cursor[data-on="true"] .cursor-dot {
+  opacity: 1;
+}
+.cursor[data-state="link"] .cursor-dot {
+  transform: scale(0.42);
+  opacity: 0.55;
+}
+.cursor[data-state="view"] .cursor-dot {
+  transform: scale(1);
+  opacity: 1;
+}
+.cursor[data-state="view"] .cursor-dot > span {
+  opacity: 1;
+}
+
+/* Form */
+.field {
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.8rem 1rem;
+  border-radius: 0.85rem;
+  border: 1.5px solid var(--line);
+  background: var(--raised);
+  color: var(--ink);
+  font: inherit;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+.field::placeholder {
+  color: var(--muted);
+  opacity: 0.75;
+}
+.field:hover {
+  border-color: var(--muted);
+}
+.field:focus-visible {
+  outline: none;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 4px var(--lime);
+  border-radius: 0.85rem;
+}
+.field[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+select.field {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 1.35rem) 50%,
+    calc(100% - 1rem) 50%;
+  background-size:
+    0.35rem 0.35rem,
+    0.35rem 0.35rem;
+  background-repeat: no-repeat;
+  padding-right: 2.5rem;
+}
+
+/* Success animation on the contact page */
+.sent-envelope {
+  animation: sent-pop 0.7s var(--ease-spring) both;
+}
+.sent-flap {
+  transform-origin: 50% 0%;
+  transform-box: fill-box;
+  animation: sent-flap 0.5s 0.35s var(--ease-out) both;
+}
+.sent-check {
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: sent-check 0.5s 0.8s var(--ease-out) forwards;
+}
+@keyframes sent-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6) rotate(-8deg);
+  }
+}
+@keyframes sent-flap {
+  from {
+    transform: scaleY(-1);
+  }
+}
+@keyframes sent-check {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.sr-only-focusable:not(:focus):not(:focus-within) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------
+   Reduced motion: no pinning, no smooth scroll, everything static.
+------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .marquee-track {
+    animation: none;
+  }
+  .marquee-track > ul:last-child {
+    display: none;
+  }
+  .hero-pin {
+    height: auto;
+    min-height: 0;
+    padding-bottom: 4rem;
+  }
+  .hero-stage {
+    position: static;
+  }
+  .hero-frame {
+    transform: none !important;
+    margin: 3rem auto 0;
+    width: min(92vw, 70rem);
+  }
+  .cursor {
+    display: none !important;
+  }
+  .page-curtain {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Process: steps stack and replace each other while pinned (desktop,
+   motion allowed). Everywhere else they are a plain vertical list.
+------------------------------------------------------------------- */
+.process-stage {
+  display: grid;
+  gap: 4rem;
+}
+@media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+  .process-pin {
+    height: 100svh;
+    min-height: 40rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .process-stage {
+    position: relative;
+    display: block;
+    height: min(58svh, 32rem);
+  }
+  .process-step {
+    position: absolute;
+    inset: 0;
+  }
+  .process-step:not(:first-child) {
+    visibility: hidden;
+  }
+}
+} /* end @layer components */
