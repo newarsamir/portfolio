@@ -4,6 +4,7 @@ import AdminPanel, { type ContactRow } from "@/components/admin/AdminPanel";
 import LoginForm from "@/components/admin/LoginForm";
 import { site } from "@/content/site";
 import { isAdminConfigured, isAuthed } from "@/lib/auth";
+import { getAllCaseStudies } from "@/lib/case-studies";
 import { getSettings } from "@/lib/settings";
 import { getSupabase } from "@/lib/supabase";
 
@@ -45,6 +46,7 @@ export default async function AdminPage() {
     else contacts = (data ?? []) as ContactRow[];
   }
   const settings = await getSettings();
+  const cases = await getAllCaseStudies();
 
   return (
     <AdminPanel
@@ -58,6 +60,11 @@ export default async function AdminPage() {
         counters: settings.counters.map((c) => ({ id: c.id, label: c.label, value: c.value })),
       }}
       poster={site.defaults.heroPoster}
+      caseStudies={{
+        items: cases.items.map(({ sortOrder: _sortOrder, ...c }) => c),
+        fromDb: cases.fromDb,
+        error: cases.error,
+      }}
     />
   );
 }

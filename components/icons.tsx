@@ -85,3 +85,16 @@ export const CheckIcon = (p: P) => (
     <path d="m5 12.5 4.5 4.5L19 7.5" />
   </svg>
 );
+/** An open book: the case studies. */
+export const CasesIcon = (p: P) => (
+  <svg {...base} {...p}>
+    <path d="M12 6.5c-2-1.6-4.8-2-8.5-1.5v13c3.7-.5 6.5-.1 8.5 1.5 2-1.6 4.8-2 8.5-1.5V5c-3.7-.5-6.5-.1-8.5 1.5Z" />
+    <path d="M12 6.5v13" />
+  </svg>
+);
+export const ArrowUpIcon = (p: P) => (
+  <svg {...base} strokeWidth={2} {...p}>
+    <path d="M12 19V5" />
+    <path d="m5.5 11.5 6.5-6.5 6.5 6.5" />
+  </svg>
+);

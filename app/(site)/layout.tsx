@@ -13,6 +13,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   return (
     <>
       <SmoothScroll />
+      <div className="scroll-progress" aria-hidden="true" />
       <Nav available={settings.availableForWork} />
       <main id="main">{children}</main>
       <Footer />

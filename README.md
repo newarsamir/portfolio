@@ -7,7 +7,8 @@ Personal portfolio for a freelance email designer. Next.js (App Router), TypeScr
 - **Concept:** the inbox as a stage. One designer, big confident type, and the emails themselves as the only decoration.
 - **Fonts:** Bricolage Grotesque (display, weight 600, near-normal width and open tracking), Geist (body), Geist Mono (labels and numbers). All self-hosted through Fontsource, so there is no request to Google.
 - **Signature moment:** the hero video grows from 20% to 80% of the viewport as you scroll and starts playing when it lands, then the work section spins a 3D arc of emails.
-- **Glass:** only the dock. Everything else is solid.
+- **Glass:** only the dock. Everything else is solid. A lime light orbits the dock's edge, a puck slides under the active icon, the first icon is a back-to-top button with a scroll-progress ring, and a live local-time chip sits next to the "Hire me" pill.
+- **Motion vocabulary:** button labels roll letter by letter and their hover fill grows from wherever the pointer enters; arrows fly out and come back; section labels decode from random glyphs; a hairline at the top tracks scroll progress; the final CTA has a spinning text badge, a cursor spotlight and a marquee that reacts to scroll speed; the footer name rises letter by letter and fits the page width.
 - **Grid:** a fixed 80px hairline grid sits behind every page (`--grid` and `--grid-size` in `app/globals.css`). Section dividers carry small registration marks.
 
 ### Color tokens
@@ -39,7 +40,7 @@ The site runs without Supabase too. It then uses the defaults from `content/site
 ## Set up Supabase (5 minutes)
 
 1. Create a project at supabase.com.
-2. Open **SQL Editor**, paste the contents of `supabase/schema.sql`, run it. It creates `contacts`, `settings` and `login_attempts`, and turns on row level security with no public policies.
+2. Open **SQL Editor**, paste the contents of `supabase/schema.sql`, run it. It creates `contacts`, `settings`, `case_studies` and `login_attempts`, and turns on row level security with no public policies.
 3. Open **Project Settings, API**. Copy the project URL into `SUPABASE_URL` and the secret key (`sb_secret_...`, or the legacy `service_role` key) into `SUPABASE_SERVICE_ROLE_KEY`.
 
 The secret key is only read in server code (`lib/supabase.ts` is marked `server-only`). It is never sent to the browser.
@@ -82,6 +83,12 @@ Add or remove items freely. The 3D arc, the carousel and the lightbox all follow
 
 Save a 4:5 image as `public/portrait.webp` and set `about.portrait` to `"/portrait.webp"`.
 
+### Case studies
+
+With Supabase connected, manage them in `/admin` under **Case studies**: create, edit, publish or unpublish, reorder and delete. Each one gets a page at `/work/<slug>`, a card in the stacked section on the home page and a row on `/work`. On a fresh table, **Import the samples** copies the three examples from `content/site.ts` in as drafts.
+
+Without Supabase, the samples in `site.caseStudies.items` are shown and the admin tab is read-only. Images are site paths (`/emails/email-01.webp`) or https links.
+
 ### Testimonials
 
 The section is hidden while `testimonials` in `content/site.ts` is empty. Add real ones and it appears.
@@ -91,6 +98,7 @@ The section is hidden while `testimonials` in `content/site.ts` is empty. Add re
 `/admin` is protected by `ADMIN_PASSWORD`. Signing in sets a signed, httpOnly cookie that lasts 7 days and is only sent to `/admin`. Five wrong passwords from one IP lock sign-in for 15 minutes.
 
 - **Contacts:** newest first, search, read and unread, delete, CSV export.
+- **Case studies:** full create, read, update and delete, with a live card preview, publish/draft, and up/down ordering.
 - **Settings:** hero video URL with live preview, the "available for work" switch that drives the nav badge, and the counter values.
 
 Saving settings rebuilds the public pages straight away.
@@ -107,6 +115,9 @@ app/
     layout.tsx            nav, footer, smooth scroll, cursor
     template.tsx          page transition
     page.tsx              home page, JSON-LD Person schema
+    work/
+      page.tsx            case study index with a pointer-following preview
+      [slug]/page.tsx     case study page
     contact/
       page.tsx
       actions.ts          server action that saves to Supabase
@@ -121,17 +132,22 @@ components/
   ShowcaseCanvas.tsx      React Three Fiber arc (loaded lazily)
   ShowcaseCarousel.tsx    CSS 3D fallback
   Lightbox.tsx
+  CaseStudies.tsx         stacked sticky case study cards
+  WorkIndex.tsx, EmailScroll.tsx, CountUp.tsx
+  RollText.tsx            rolling button labels and the arrow swap
+  VelocityMarquee.tsx, Spotlight.tsx, Wordmark.tsx, LocalTime.tsx, BackToTop.tsx
   BrandStrip, Counters, About, Anatomy, Process, Services, Testimonials, Faq, FinalCta, Footer
   SectionRule.tsx         hairline divider with registration marks
   ContactForm.tsx, CopyEmail.tsx
   Reveal.tsx              split headings, staggered and mask reveals
   SmoothScroll.tsx        Lenis wired to ScrollTrigger
   Cursor.tsx, Magnetic.tsx, PageTransition.tsx, AnchorLink.tsx, icons.tsx
-  admin/AdminPanel.tsx, admin/LoginForm.tsx
+  admin/AdminPanel.tsx, admin/LoginForm.tsx, admin/CaseStudiesAdmin.tsx
 content/site.ts           every editable word and number
 lib/
   supabase.ts             server-only client
   settings.ts             settings merged over the defaults
+  case-studies.ts         case studies from Supabase, or the defaults
   auth.ts                 password check and signed cookie
   rate-limit.ts           login and contact form limits
   video.ts                mp4, YouTube and Vimeo parsing

@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { submitContact, type ContactFields, type ContactState } from "@/app/(site)/contact/actions";
 import { site } from "@/content/site";
+import { ArrowSwap, RollText } from "./RollText";
 
 const initial: ContactState = { status: "idle" };
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -169,7 +170,8 @@ export default function ContactForm() {
 
       <div className="flex flex-wrap items-center gap-x-6 gap-y-3 sm:col-span-2">
         <button type="submit" className="btn btn-lime min-h-[3.75rem] px-8 text-lg" disabled={pending}>
-          {pending ? "Sending inquiry" : "Send inquiry"}
+          {pending ? "Sending inquiry" : <RollText text="Send inquiry" />}
+          {!pending && <ArrowSwap />}
         </button>
         <p role="alert" aria-live="assertive" className="max-w-[46ch] font-medium text-danger">
           {state.status === "error" ? state.message : ""}
