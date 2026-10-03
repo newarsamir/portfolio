@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RollText } from "@/components/RollText";
 
 export default function NotFound() {
   return (
@@ -10,7 +11,7 @@ export default function NotFound() {
           Like an email to an address with a typo, it never arrived. The home page has a much better delivery rate.
         </p>
         <Link href="/" className="btn btn-lime mt-8">
-          Back to the home page
+          <RollText text="Back to the home page" />
         </Link>
       </div>
     </main>

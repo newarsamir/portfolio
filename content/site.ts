@@ -24,6 +24,29 @@ export type ShowcaseItem = {
 
 export type Testimonial = { quote: string; name: string; role: string };
 
+export type CaseMetric = { value: string; label: string };
+
+/**
+ * A case study. The ones below are the defaults; once Supabase is connected
+ * they are created, edited and deleted from /admin instead.
+ */
+export type CaseStudy = {
+  slug: string;
+  title: string;
+  client: string;
+  industry: string;
+  year: string;
+  services: string[];
+  summary: string;
+  cover: string;
+  challenge: string;
+  approach: string;
+  outcome: string;
+  metrics: CaseMetric[];
+  gallery: string[];
+  published: boolean;
+};
+
 export const site = {
   name: "Samir Shrestha",
   title: "Email Designer (Figma)",
@@ -49,6 +72,7 @@ export const site = {
   nav: [
     { id: "home", label: "Home" },
     { id: "work", label: "Work" },
+    { id: "cases", label: "Case studies" },
     { id: "about", label: "About" },
     { id: "process", label: "Process" },
     { id: "contact", label: "Contact" },
@@ -168,6 +192,90 @@ export const site = {
         note: "Twelve modules the team can stack in any order without breaking the layout.",
       },
     ] as ShowcaseItem[],
+  },
+
+  caseStudies: {
+    heading: "The thinking behind the inbox.",
+    sub: "A few projects from brief to send, with the problem, the decisions and what changed after.",
+    /**
+     * TODO: these are sample case studies so the layout has something to show.
+     * Replace them here, or connect Supabase and manage them in /admin.
+     * Metrics marked as samples must be swapped for real numbers before launch.
+     */
+    items: [
+      {
+        slug: "welcome-flow-rebuild",
+        title: "A welcome flow that sells the second product, not just the first",
+        client: "Placeholder brand A",
+        industry: "Skincare, DTC",
+        year: "2025",
+        services: ["Welcome flow", "Template system", "Handoff"],
+        summary:
+          "Five emails rebuilt as one story: who the brand is, why it works, and what to buy first. Designed mobile first, checked in dark mode.",
+        cover: "/emails/email-01.webp",
+        challenge:
+          "The old welcome series was a single discount email followed by four newsletters nobody asked for. New subscribers used the code, then went quiet.",
+        approach:
+          "I mapped the flow as a story before opening Figma: a promise, proof, a routine, a bestseller and a gentle last call. Each email has one job and one button. The discount moved above the fold of email one, and every later email links to a product that pairs with the first purchase.",
+        outcome:
+          "The team got five designed emails, a modular template they can reuse, and a build guide for Klaviyo. Swap these sample numbers for the real ones once the flow has run for a month.",
+        metrics: [
+          { value: "5", label: "Emails in the flow" },
+          { value: "12", label: "Reusable modules" },
+          { value: "2", label: "Revision rounds used" },
+        ],
+        gallery: ["/emails/email-01.webp", "/emails/email-02.webp", "/emails/email-07.webp"],
+        published: true,
+      },
+      {
+        slug: "abandoned-cart-sequence",
+        title: "Abandoned cart emails that show the cart, not a stock photo",
+        client: "Placeholder brand B",
+        industry: "Home goods, Shopify",
+        year: "2025",
+        services: ["Abandoned cart", "Product blocks"],
+        summary:
+          "A three-email reminder sequence built around the exact item left behind, with reviews doing the persuading.",
+        cover: "/emails/email-03.webp",
+        challenge:
+          "The existing reminder was a generic 'You forgot something!' banner with no product in sight, and it rendered as a grey box in Outlook.",
+        approach:
+          "Dynamic product blocks sit at the top of every email, set in live text so they survive images being off. Email two adds reviews, email three repeats the checkout button after a short FAQ that answers shipping and returns.",
+        outcome:
+          "A sequence that reads well with images off, a product block the team can reuse in campaigns, and annotated specs for the developer.",
+        metrics: [
+          { value: "3", label: "Emails in the sequence" },
+          { value: "44px", label: "Minimum button height" },
+          { value: "0", label: "Stock photos used" },
+        ],
+        gallery: ["/emails/email-03.webp", "/emails/email-04.webp", "/emails/email-06.webp"],
+        published: true,
+      },
+      {
+        slug: "master-template-system",
+        title: "A master template the whole team can stack without breaking",
+        client: "Placeholder brand C",
+        industry: "Apparel, DTC",
+        year: "2024",
+        services: ["Template system", "Campaigns", "Documentation"],
+        summary:
+          "Twelve modules, one Figma library and a one-page rulebook, so campaigns go out on brand without a designer in the loop.",
+        cover: "/emails/email-08.webp",
+        challenge:
+          "Every campaign was designed from scratch, so no two emails looked like they came from the same brand and the calendar kept slipping.",
+        approach:
+          "I audited forty past sends, kept the patterns that worked and turned them into twelve modules with variants for light and dark backgrounds. Each module has spacing rules baked in, so they stack in any order.",
+        outcome:
+          "The team now builds campaigns from the library in an afternoon. The rulebook covers type sizes, button styles and image ratios.",
+        metrics: [
+          { value: "12", label: "Modules" },
+          { value: "40", label: "Past sends audited" },
+          { value: "1", label: "Page of rules" },
+        ],
+        gallery: ["/emails/email-08.webp", "/emails/email-05.webp", "/emails/email-02.webp"],
+        published: true,
+      },
+    ] as CaseStudy[],
   },
 
   about: {
@@ -340,7 +448,10 @@ export const site = {
   },
 
   finalCta: {
+    eyebrow: "Got an inbox to fix?",
     headline: "Your next email deserves better than a stock photo and a prayer.",
+    badge: "Available for new projects • Hire me • ",
+    marquee: ["Welcome flows", "Campaigns", "Abandoned cart", "Post-purchase", "Templates"],
     button: "Hire me for your next flow",
     mini: "Or copy my address and write whenever you're ready.",
   },
@@ -366,6 +477,9 @@ export const site = {
   },
 
   footer: {
+    /** IANA time zone for the live clock in the footer and the dock. */
+    timeZone: "Asia/Kathmandu",
+    cta: "Let's make your emails the ones people wait for.",
     joke: "You scrolled all the way to the footer. I hope your subscribers are this loyal.",
   },
 } as const;

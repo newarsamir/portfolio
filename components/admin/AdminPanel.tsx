@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState, useDeferredValue, useMemo, useState, useTransition } from "react";
 import { deleteContact, logout, saveSettings, setRead } from "@/app/admin/actions";
 import { embedSrc, parseVideo } from "@/lib/video";
+import CaseStudiesAdmin, { type AdminCaseStudy } from "./CaseStudiesAdmin";
 
 export type ContactRow = {
   id: string;
@@ -38,6 +39,7 @@ export default function AdminPanel({
   dbConnected,
   settings,
   poster,
+  caseStudies,
 }: {
   siteName: string;
   contacts: ContactRow[];
@@ -45,8 +47,9 @@ export default function AdminPanel({
   dbConnected: boolean;
   settings: Settings;
   poster: string;
+  caseStudies: { items: AdminCaseStudy[]; fromDb: boolean; error: string | null };
 }) {
-  const [tab, setTab] = useState<"contacts" | "settings">("contacts");
+  const [tab, setTab] = useState<"contacts" | "cases" | "settings">("contacts");
   const [rows, setRows] = useState(contacts);
   const unread = rows.filter((r) => !r.is_read).length;
 
@@ -78,10 +81,11 @@ export default function AdminPanel({
         </p>
       )}
 
-      <div role="tablist" aria-label="Admin sections" className="mt-8 flex gap-1 border-b border-line">
+      <div role="tablist" aria-label="Admin sections" className="mt-8 flex gap-1 overflow-x-auto border-b border-line">
         {(
           [
             ["contacts", `Contacts${unread ? ` (${unread} unread)` : ""}`],
+            ["cases", `Case studies (${caseStudies.items.length})`],
             ["settings", "Settings"],
           ] as const
         ).map(([id, label]) => (
@@ -92,7 +96,7 @@ export default function AdminPanel({
             aria-selected={tab === id}
             aria-controls={`panel-${id}`}
             onClick={() => setTab(id)}
-            className={`-mb-px border-b-2 px-4 py-3 font-medium ${
+            className={`-mb-px shrink-0 border-b-2 px-4 py-3 font-medium ${
               tab === id ? "border-ink text-ink" : "border-transparent text-muted hover:text-ink"
             }`}
           >
@@ -103,6 +107,14 @@ export default function AdminPanel({
 
       <div role="tabpanel" id="panel-contacts" aria-labelledby="tab-contacts" hidden={tab !== "contacts"} className="pt-6">
         <Contacts rows={rows} setRows={setRows} loadError={loadError} dbConnected={dbConnected} />
+      </div>
+      <div role="tabpanel" id="panel-cases" aria-labelledby="tab-cases" hidden={tab !== "cases"} className="pt-6">
+        <CaseStudiesAdmin
+          items={caseStudies.items}
+          fromDb={caseStudies.fromDb}
+          dbConnected={dbConnected}
+          loadError={caseStudies.error}
+        />
       </div>
       <div role="tabpanel" id="panel-settings" aria-labelledby="tab-settings" hidden={tab !== "settings"} className="pt-6">
         <SettingsForm settings={settings} poster={poster} disabled={!dbConnected} />

@@ -7,6 +7,7 @@ import { gsap, ScrollTrigger, useGSAP, MOTION_OK } from "@/lib/gsap";
 import AnchorLink from "./AnchorLink";
 import HeroVideo, { type HeroVideoHandle } from "./HeroVideo";
 import Magnetic from "./Magnetic";
+import { ArrowSwap, RollText } from "./RollText";
 import { parseVideo } from "@/lib/video";
 
 /** File videos use the poster from site.ts. YouTube brings its own thumbnail. */
@@ -134,12 +135,13 @@ export default function Hero({ videoUrl }: { videoUrl: string }) {
           >
             <Magnetic>
               <AnchorLink to="work" className="btn btn-lime">
-                {site.hero.primary}
+                <RollText text={site.hero.primary} />
+                <ArrowSwap size={16} />
               </AnchorLink>
             </Magnetic>
             <Magnetic>
               <Link href="/contact" className="btn btn-ghost">
-                {site.hero.secondary}
+                <RollText text={site.hero.secondary} />
               </Link>
             </Magnetic>
           </div>

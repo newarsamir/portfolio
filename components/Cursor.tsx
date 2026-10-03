@@ -25,8 +25,15 @@ export default function Cursor() {
       el.dataset.on = "true";
       x(e.clientX);
       y(e.clientY);
-      if (forced) return;
       const t = e.target as Element | null;
+      // Buttons fill from the point where the pointer is (see .btn::before).
+      const btn = t?.closest?.(".btn") as HTMLElement | null;
+      if (btn) {
+        const r = btn.getBoundingClientRect();
+        btn.style.setProperty("--mx", `${e.clientX - r.left}px`);
+        btn.style.setProperty("--my", `${e.clientY - r.top}px`);
+      }
+      if (forced) return;
       const marked = t?.closest?.("[data-cursor]") as HTMLElement | null;
       if (marked) el.dataset.state = marked.dataset.cursor;
       else if (t?.closest?.("a, button, summary, [role='button'], label, select")) el.dataset.state = "link";

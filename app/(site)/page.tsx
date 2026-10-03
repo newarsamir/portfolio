@@ -1,6 +1,7 @@
 import About from "@/components/About";
 import Anatomy from "@/components/Anatomy";
 import BrandStrip from "@/components/BrandStrip";
+import CaseStudies from "@/components/CaseStudies";
 import Counters from "@/components/Counters";
 import Faq from "@/components/Faq";
 import FinalCta from "@/components/FinalCta";
@@ -10,6 +11,7 @@ import Services from "@/components/Services";
 import Showcase from "@/components/Showcase";
 import Testimonials from "@/components/Testimonials";
 import { site } from "@/content/site";
+import { getCaseStudies } from "@/lib/case-studies";
 import { getSettings } from "@/lib/settings";
 import { siteUrl } from "@/lib/url";
 
@@ -17,6 +19,7 @@ export const revalidate = 300;
 
 export default async function HomePage() {
   const settings = await getSettings();
+  const cases = await getCaseStudies();
   const url = siteUrl();
 
   const jsonLd = {
@@ -42,6 +45,7 @@ export default async function HomePage() {
       <BrandStrip />
       <Counters items={settings.counters} placeholder={settings.countersArePlaceholder} />
       <Showcase />
+      <CaseStudies items={cases.map(({ id: _id, sortOrder: _sortOrder, ...c }) => c)} />
       <About />
       <Anatomy />
       <Process />

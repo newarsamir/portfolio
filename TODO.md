@@ -13,6 +13,8 @@ Everything is in `content/site.ts` unless noted. Search that file for `TODO`.
 - [ ] **Environment variables in Vercel**: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET`, `NEXT_PUBLIC_SITE_URL`.
 - [ ] **Run `supabase/schema.sql`** in the Supabase SQL editor.
 
+- [ ] **Case studies** (`caseStudies.items`, or `/admin` once Supabase is connected): the three included are samples built on the placeholder emails. Replace the titles, story and especially the metrics with real ones, or unpublish them. Re-run `supabase/schema.sql` to create the `case_studies` table.
+
 ## Should do
 
 - [ ] **Portrait**: add `public/portrait.webp` (4:5) and set `about.portrait` to `"/portrait.webp"`.
