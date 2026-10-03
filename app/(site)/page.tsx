@@ -1,4 +1,5 @@
 import About from "@/components/About";
+import Anatomy from "@/components/Anatomy";
 import BrandStrip from "@/components/BrandStrip";
 import Counters from "@/components/Counters";
 import Faq from "@/components/Faq";
@@ -42,6 +43,7 @@ export default async function HomePage() {
       <Counters items={settings.counters} placeholder={settings.countersArePlaceholder} />
       <Showcase />
       <About />
+      <Anatomy />
       <Process />
       <Services />
       <Testimonials />

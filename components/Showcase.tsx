@@ -113,7 +113,7 @@ export default function Showcase() {
               <p className="mono text-muted">
                 {String(current + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")}
               </p>
-              <p className="mt-1 font-display text-2xl font-semibold tracking-tight">{item.brand}</p>
+              <p className="mt-1 font-display text-2xl font-semibold">{item.brand}</p>
               <p className="text-muted">{item.type}</p>
             </div>
             <ol className="pointer-events-auto flex gap-1" aria-label="Open an email">
@@ -137,7 +137,7 @@ export default function Showcase() {
         <div className="section pb-[clamp(3rem,6vw,5rem)]">
           <div className="wrap">
             <SplitHeading key="carousel" id="work-h" className="display-lg">
-              {site.showcase.heading.replace("Scroll to spin it.", "Swipe through it.")}
+              {site.showcase.heading.replace("Scroll to spin them.", "Swipe through them.")}
             </SplitHeading>
             <Reveal className="mt-5 max-w-[46ch] text-lg text-muted">
               <p>{site.showcase.sub}</p>

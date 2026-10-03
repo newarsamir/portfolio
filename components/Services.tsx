@@ -1,94 +1,60 @@
+import Image from "next/image";
 import { site } from "@/content/site";
 import { Reveal, SplitHeading } from "./Reveal";
+import SectionRule from "./SectionRule";
 
-const byId = Object.fromEntries(site.services.items.map((s) => [s.id, s]));
-
-function Tag({ children, className = "" }: { children: string; className?: string }) {
-  return <p className={`mono inline-block rounded-full border px-3 py-1 ${className}`}>{children}</p>;
-}
-
+/**
+ * The services as an index: one wide row per email type, with when it sends
+ * and how many emails it usually is. On desktop a sample slides in on hover.
+ */
 export default function Services() {
-  const { welcome, campaigns, cart, post, templates } = byId;
+  const items = site.services.items;
   return (
     <section className="section" aria-labelledby="services-h">
       <div className="wrap">
+        <SectionRule label="Services" note={`${items.length} kinds of email`} />
         <div className="grid gap-6 lg:grid-cols-12">
           <SplitHeading id="services-h" className="display-lg lg:col-span-7">
             {site.services.heading}
           </SplitHeading>
           <Reveal className="self-end text-lg text-muted lg:col-span-5">
-            <p>{site.services.sub}</p>
+            <p className="max-w-[44ch]">{site.services.sub}</p>
           </Reveal>
         </div>
 
-        <div className="mt-14 grid gap-4 lg:grid-cols-12">
-          {/* Welcome flows: the big one, with the flow drawn out. */}
-          <Reveal variant="scale" className="flex flex-col justify-between gap-12 rounded-[1.75rem] bg-surface p-7 md:p-10 lg:col-span-7 lg:row-span-2">
-            <div>
-              <Tag className="border-line">{welcome.tag}</Tag>
-              <h3 className="mt-5 text-[clamp(2.25rem,4.6vw,4.25rem)]">{welcome.title}</h3>
-              <p className="mt-4 max-w-[46ch] text-lg leading-relaxed text-muted">{welcome.body}</p>
-            </div>
-            <ol className="grid grid-cols-3 gap-3" aria-label="Example welcome flow timing">
-              {[
-                ["Day 0", "Hello and the offer"],
-                ["Day 2", "Why we exist"],
-                ["Day 5", "What to buy first"],
-              ].map(([day, what], i) => (
-                <li key={day} className="relative border-t-2 border-ink pt-3">
-                  <span className={`absolute -top-[7px] left-0 h-3 w-3 rounded-full ${i === 0 ? "bg-lime ring-2 ring-ink" : "bg-ink"}`} />
-                  <span className="mono block text-muted">{day}</span>
-                  <span className="mt-1 block text-[0.95rem] leading-snug">{what}</span>
-                </li>
-              ))}
-            </ol>
-          </Reveal>
+        <Reveal as="ul" variant="stagger" className="mt-14 border-t border-ink">
+          {items.map((s) => (
+            <li
+              key={s.id}
+              className="group relative grid gap-x-8 gap-y-3 border-b border-line py-8 transition-colors duration-300 hover:bg-surface md:grid-cols-12 md:py-10 lg:px-4"
+            >
+              <span
+                className="absolute inset-y-0 left-0 w-1 origin-top scale-y-0 bg-lime transition-transform duration-300 ease-out group-hover:scale-y-100"
+                aria-hidden="true"
+              />
+              <h3 className="text-[clamp(1.75rem,3.2vw,2.75rem)] md:col-span-4">{s.title}</h3>
+              <p className="max-w-[48ch] text-lg leading-relaxed text-muted md:col-span-5">{s.body}</p>
+              <dl className="mono space-y-1.5 text-muted md:col-span-3 md:pt-2">
+                <div>
+                  <dt className="sr-only">When it sends</dt>
+                  <dd className="text-ink">{s.when}</dd>
+                </div>
+                <div>
+                  <dt className="sr-only">Size</dt>
+                  <dd>{s.tag}</dd>
+                </div>
+              </dl>
 
-          {/* Campaigns: the lime block. */}
-          <Reveal variant="scale" delay={0.08} className="rounded-[1.75rem] bg-lime p-7 text-on-lime md:p-9 lg:col-span-5">
-            <Tag className="border-on-lime/40">{campaigns.tag}</Tag>
-            <h3 className="mt-5 text-[clamp(2rem,3.4vw,3rem)]">{campaigns.title}</h3>
-            <p className="mt-3 max-w-[40ch] text-lg leading-relaxed">{campaigns.body}</p>
-          </Reveal>
-
-          {/* Abandoned cart: outlined, with the forgotten item. */}
-          <Reveal variant="scale" delay={0.14} className="flex items-start justify-between gap-6 rounded-[1.75rem] border border-line p-7 md:p-9 lg:col-span-5">
-            <div>
-              <Tag className="border-line">{cart.tag}</Tag>
-              <h3 className="mt-5 text-[clamp(1.75rem,2.6vw,2.5rem)]">{cart.title}</h3>
-              <p className="mt-3 max-w-[36ch] leading-relaxed text-muted">{cart.body}</p>
-            </div>
-            <svg viewBox="0 0 64 64" className="mt-1 hidden w-16 shrink-0 text-ink sm:block" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M6 10h8l6 30h28l6-22H18" />
-              <circle cx="24" cy="50" r="4" />
-              <circle cx="44" cy="50" r="4" />
-              <rect x="27" y="22" width="14" height="12" rx="2" className="fill-lime" />
-            </svg>
-          </Reveal>
-
-          {/* Post-purchase and templates share the last row, unevenly. */}
-          <Reveal variant="scale" className="rounded-[1.75rem] border border-line p-7 md:p-9 lg:col-span-4">
-            <Tag className="border-line">{post.tag}</Tag>
-            <h3 className="mt-5 text-[clamp(1.75rem,2.6vw,2.5rem)]">{post.title}</h3>
-            <p className="mt-3 leading-relaxed text-muted">{post.body}</p>
-          </Reveal>
-
-          <Reveal variant="scale" delay={0.08} className="grid gap-8 rounded-[1.75rem] bg-ink p-7 text-bg md:grid-cols-[1.2fr_1fr] md:p-9 lg:col-span-8">
-            <div>
-              <Tag className="border-bg/30">{templates.tag}</Tag>
-              <h3 className="mt-5 text-[clamp(1.75rem,2.6vw,2.5rem)]">{templates.title}</h3>
-              <p className="mt-3 max-w-[40ch] leading-relaxed opacity-80">{templates.body}</p>
-            </div>
-            <div className="grid grid-cols-3 grid-rows-3 gap-2 self-center" aria-hidden="true">
-              <span className="col-span-3 h-7 rounded-md bg-bg/15" />
-              <span className="col-span-2 h-12 rounded-md bg-lime" />
-              <span className="h-12 rounded-md bg-bg/15" />
-              <span className="h-7 rounded-md bg-bg/15" />
-              <span className="h-7 rounded-md bg-bg/15" />
-              <span className="h-7 rounded-md bg-bg/30" />
-            </div>
-          </Reveal>
-        </div>
+              {/* Sample email, desktop hover only. */}
+              <span
+                className="pointer-events-none absolute right-[22%] top-1/2 z-10 hidden h-48 w-36 -translate-y-1/2 rotate-3 scale-90 overflow-clip rounded-lg border border-line opacity-0 shadow-[0_24px_48px_-20px_rgb(0_0_0/0.5)] transition-[opacity,transform] duration-300 ease-out group-hover:rotate-[-4deg] group-hover:scale-100 group-hover:opacity-100 lg:block"
+                aria-hidden="true"
+              >
+                <Image src={s.image} alt="" width={288} height={384} sizes="144px" loading="lazy" className="h-full w-full object-cover object-top" />
+              </span>
+            </li>
+          ))}
+        </Reveal>
       </div>
     </section>
   );

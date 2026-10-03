@@ -19,6 +19,9 @@
      Lime text on cream fails contrast, so in light mode this is ink. */
   --accent-fg: var(--ink);
   --danger: oklch(52% 0.19 28);
+  /* Hairline grid drawn behind every page. */
+  --grid: oklch(45% 0.03 95 / 0.075);
+  --grid-size: 80px;
   --glass: oklch(99% 0.01 95 / 0.62);
   --glass-line: oklch(100% 0 0 / 0.75);
   --glass-shadow: 0 1px 0 oklch(100% 0 0 / 0.6) inset, 0 18px 40px -12px oklch(30% 0.03 80 / 0.28),
@@ -43,6 +46,7 @@
     --line: oklch(31% 0.014 80);
     --accent-fg: var(--lime);
     --danger: oklch(74% 0.16 28);
+    --grid: oklch(100% 0 0 / 0.04);
     --glass: oklch(26% 0.012 80 / 0.58);
     --glass-line: oklch(100% 0 0 / 0.14);
     --glass-shadow: 0 1px 0 oklch(100% 0 0 / 0.1) inset, 0 20px 44px -12px oklch(0% 0 0 / 0.7),
@@ -82,6 +86,12 @@
     scroll-padding-top: 5rem;
   }
   body {
+    background-color: var(--bg);
+    background-image: linear-gradient(to right, var(--grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+    background-size: var(--grid-size) var(--grid-size);
+    background-position: center top;
+    background-attachment: fixed;
     min-height: 100svh;
     font-size: 1.0625rem;
     line-height: 1.6;
@@ -101,10 +111,10 @@
   h2,
   h3 {
     font-family: var(--font-display);
-    font-variation-settings: "wdth" 84, "opsz" 72;
-    font-weight: 640;
-    letter-spacing: -0.035em;
-    line-height: 0.98;
+    font-variation-settings: "wdth" 96, "opsz" 60;
+    font-weight: 600;
+    letter-spacing: -0.012em;
+    line-height: 1.08;
     text-wrap: balance;
   }
   p {
@@ -147,19 +157,66 @@ html.lenis body {
 }
 
 .display-xl {
-  font-size: clamp(2.75rem, 8.2vw, 8rem);
+  font-size: clamp(2.5rem, 6.6vw, 6.5rem);
+  line-height: 1.04;
 }
 .display-lg {
-  font-size: clamp(2.25rem, 5.6vw, 5.25rem);
+  font-size: clamp(2.125rem, 4.6vw, 4.25rem);
 }
 .display-md {
-  font-size: clamp(1.75rem, 3.4vw, 3rem);
+  font-size: clamp(1.625rem, 2.9vw, 2.625rem);
+  line-height: 1.12;
+}
+
+/* Display face outside of headings (names, numbers, labels). */
+.font-display {
+  font-variation-settings: "wdth" 96, "opsz" 48;
+  letter-spacing: -0.008em;
+}
+
+/* Sections with their own background repeat the page grid on top of it. */
+.gridlines {
+  background-image: linear-gradient(to right, var(--grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  background-position: center top;
+  background-attachment: fixed;
+}
+
+/* Section divider: a hairline with a registration mark at each end. */
+.rule {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.875rem;
+  color: var(--muted);
+}
+.rule::before,
+.rule::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  width: 9px;
+  height: 9px;
+  background:
+    linear-gradient(var(--ink), var(--ink)) center / 100% 1px no-repeat,
+    linear-gradient(var(--ink), var(--ink)) center / 1px 100% no-repeat;
+  opacity: 0.55;
+}
+.rule::before {
+  left: -4px;
+}
+.rule::after {
+  right: -4px;
 }
 
 .mono {
   font-family: var(--font-mono);
   font-size: 0.8125rem;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.01em;
   line-height: 1.4;
 }
 
@@ -176,7 +233,7 @@ html.lenis body {
   min-height: 3.25rem;
   padding: 0 1.6rem;
   border-radius: 999px;
-  font-weight: 560;
+  font-weight: 500;
   font-size: 1rem;
   line-height: 1;
   white-space: nowrap;
@@ -280,12 +337,13 @@ html.lenis body {
   padding-top: clamp(6.5rem, 15svh, 9.5rem);
 }
 .hero-h1 {
-  font-size: clamp(2.5rem, 6.4vw, 6.25rem);
-  max-width: 15ch;
+  font-size: clamp(2.375rem, 5.4vw, 5.25rem);
+  line-height: 1.05;
+  max-width: 17ch;
 }
 @media (max-height: 760px) and (min-width: 768px) {
   .hero-h1 {
-    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-size: clamp(2.375rem, 4.4vw, 4rem);
   }
   .hero-copy {
     padding-top: 6rem;
@@ -313,7 +371,7 @@ html.lenis body {
   aspect-ratio: 16 / 9;
   /* Approximate resting state until the script measures the exact one. */
   transform: translateY(30svh) scale(var(--s0));
-  border-radius: 1.75rem;
+  border-radius: 1.25rem;
   overflow: clip;
   background: var(--surface);
   box-shadow: 0 0 0 1px var(--line), 0 40px 80px -30px oklch(20% 0.02 80 / 0.45);
@@ -403,7 +461,7 @@ html.lenis body {
   background: var(--ink);
   color: var(--bg);
   font-size: 0.75rem;
-  font-weight: 520;
+  font-weight: 500;
   white-space: nowrap;
   opacity: 0;
   transform: translateY(4px);

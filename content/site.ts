@@ -66,21 +66,21 @@ export const site = {
   },
 
   hero: {
-    eyebrow: "From: Samir Shrestha, email designer",
-    headline: "I design the emails your customers don't archive.",
-    sub: "Flows and campaigns for ecommerce and DTC brands, designed in Figma and handed off ready to build in Klaviyo or Mailchimp.",
+    eyebrow: "Email design for ecommerce and DTC brands",
+    headline: "I design the emails your subscribers open, read and click.",
+    sub: "Welcome flows, campaigns, abandoned cart and post-purchase emails, designed in Figma and handed off ready to build in Klaviyo or Mailchimp.",
     primary: "See my work",
     secondary: "Hire me",
   },
 
   // Only real tools and clients go here. TODO: add client names you may show.
   brandStrip: {
-    label: "Tools I design in and for",
+    label: "Where my emails are designed and sent from",
     items: ["Figma", "Klaviyo", "Mailchimp", "Shopify"],
   },
 
   counters: {
-    heading: "A few numbers, since founders like numbers.",
+    heading: "A few numbers from the inbox.",
     /**
      * TODO: these are sample values. Replace them here or in /admin, then set
      * `placeholder` to false to remove the "sample numbers" note on the site.
@@ -95,7 +95,7 @@ export const site = {
   },
 
   showcase: {
-    heading: "The work. Scroll to spin it.",
+    heading: "Selected emails. Scroll to spin them.",
     sub: "Click any email to read it top to bottom. Unlike most subscribers, you'll make it to the footer.",
     /**
      * TODO: export each email from Figma as a tall WebP (600 to 1200px wide)
@@ -171,53 +171,95 @@ export const site = {
   },
 
   about: {
-    heading: "One designer. One Figma file. No account manager in between.",
+    heading: "One designer who only does email.",
     // TODO: rewrite in your own words. Keep it first person.
     story: [
-      "I'm Samir, a freelance email designer. I work with ecommerce and DTC brands that have a good product and an inbox presence that doesn't do it justice.",
-      "Everything I make starts in Figma: welcome flows, campaigns, abandoned cart and post-purchase emails, plus the template systems that keep them consistent. I design mobile first, because that's where your customers read, and I check dark mode before you have to ask.",
-      "When you hire me you talk to me. I read the brief, I push the pixels, and I answer the message when something needs to change.",
+      "I'm Samir, a freelance email designer. I work with ecommerce and DTC brands whose product is better than the emails that sell it.",
+      "Email is all I design: welcome flows, campaigns, abandoned cart and post-purchase emails, plus the templates that keep them consistent. I design mobile first, because that's where most subscribers open, and I check dark mode before you have to ask.",
+      "When you hire me you talk to me. I read the brief, I design every email myself, and I answer when a subject line or a button needs to change.",
     ],
     // TODO: add /public/portrait.webp and set portrait to "/portrait.webp".
     portrait: "" as string,
     portraitAlt: "Portrait of Samir Shrestha",
     toolsHeading: "What I work in",
     tools: [
-      { name: "Figma", use: "Design, components and handoff" },
-      { name: "Klaviyo", use: "Flows and campaign structure" },
+      { name: "Figma", use: "Where every email is designed" },
+      { name: "Klaviyo", use: "Flows, segments and campaign structure" },
       { name: "Mailchimp", use: "Campaigns and templates" },
-      { name: "Shopify", use: "Product data and brand assets" },
+      { name: "Shopify", use: "Product feeds and store branding" },
+    ],
+  },
+
+  anatomy: {
+    heading: "Seven places an email wins or loses the click.",
+    sub: "I check every email against these, top to bottom, because that is the order your subscriber meets them.",
+    parts: [
+      {
+        id: "subject",
+        title: "Subject line and preheader",
+        body: "Designed as a pair. The preheader finishes the thought the subject line starts, instead of saying 'View in browser'.",
+      },
+      {
+        id: "header",
+        title: "Header",
+        body: "The logo, and nothing fighting it. Navigation links only when they earn clicks.",
+      },
+      {
+        id: "hero",
+        title: "Hero",
+        body: "One message, readable in two seconds, set in live text so it survives images being turned off.",
+      },
+      {
+        id: "copy",
+        title: "Body copy",
+        body: "Short lines at 16px or larger, written for a thumb that is scrolling fast.",
+      },
+      {
+        id: "cta",
+        title: "Call to action",
+        body: "One primary button, at least 44px tall, repeated after any long section.",
+      },
+      {
+        id: "products",
+        title: "Product block",
+        body: "Real products with names and prices, two across on desktop and stacked on mobile.",
+      },
+      {
+        id: "footer",
+        title: "Footer",
+        body: "An unsubscribe link that is easy to find. Hiding it only earns spam complaints.",
+      },
     ],
   },
 
   process: {
-    heading: "How a project runs",
+    heading: "From brief to send-ready",
     steps: [
       {
         title: "Brief",
-        body: "You tell me the goal, the audience and the offer. I ask the questions that save us three rounds of revisions later.",
+        body: "You tell me the goal, the segment and the offer. I ask the questions that save three rounds of revisions later.",
         detail: "A short call or a filled-in doc. Either works.",
       },
       {
         title: "Wireframe",
-        body: "Grey boxes first. We agree on the order of the message and where the button goes before anyone argues about colors.",
+        body: "Grey boxes first. You approve the order of the message and where the button sits before anyone argues about colors.",
         detail: "One round of feedback on structure.",
       },
       {
         title: "Design in Figma",
-        body: "Your brand, real copy, real product shots. Mobile and desktop, light and dark, so nothing surprises you in the inbox.",
+        body: "Your brand, real copy, real product shots. I design mobile and desktop, light and dark mode, so nothing surprises you in the inbox.",
         detail: "Two rounds of revisions included.",
       },
       {
         title: "Handoff",
-        body: "A clean Figma file with named layers, exported assets and build notes. Your developer will not need to message me at midnight.",
+        body: "Exported images, alt text, link notes and a build guide for every email. Whoever sets it up in Klaviyo will not need to message me at midnight.",
         detail: "Ready to build in Klaviyo or Mailchimp.",
       },
     ],
   },
 
   services: {
-    heading: "What you can hire me for",
+    heading: "Emails you can hire me for",
     sub: "Pick one, or stack them into a full lifecycle. No 'Dear Valued Customer' is involved at any stage.",
     items: [
       {
@@ -225,30 +267,40 @@ export const site = {
         title: "Welcome flows",
         body: "The first three to five emails a new subscriber gets. I design them as one story: who you are, why you're worth it, and what to buy first.",
         tag: "3 to 5 emails",
+        when: "Sends when someone subscribes",
+        image: "/emails/email-01.webp",
       },
       {
         id: "campaigns",
         title: "Campaigns",
         body: "Launches, sales and newsletters, designed one at a time or as a monthly batch.",
         tag: "One-off or monthly",
+        when: "Sends on your calendar",
+        image: "/emails/email-05.webp",
       },
       {
         id: "cart",
         title: "Abandoned cart",
         body: "A reminder, a reason and a nudge, each with the product they left front and center.",
         tag: "2 to 3 emails",
+        when: "Sends when a cart is left behind",
+        image: "/emails/email-03.webp",
       },
       {
         id: "post",
         title: "Post-purchase",
         body: "Order follow-ups, how-to-use guides and review requests that turn one order into the next.",
         tag: "3 to 4 emails",
+        when: "Sends after an order",
+        image: "/emails/email-04.webp",
       },
       {
         id: "templates",
         title: "Templates",
-        body: "A modular master template in Figma, so your team can build on-brand emails without starting from zero.",
-        tag: "Reusable system",
+        body: "A modular master template, so your team can put together on-brand emails without starting from zero.",
+        tag: "Reusable modules",
+        when: "Used by every send",
+        image: "/emails/email-08.webp",
       },
     ],
   },
@@ -266,11 +318,11 @@ export const site = {
       },
       {
         q: "Will it look right in Outlook?",
-        a: "I design with Outlook's limits in mind: safe fonts with fallbacks, layouts that hold up without background images, and buttons that are real buttons. Outlook will still find a way to surprise us, but it will be a small surprise.",
+        a: "I design with Outlook's limits in mind: safe fonts with fallbacks, layouts that hold up without background images, and buttons that are real buttons. Outlook will still find a way to surprise everyone, but it will be a small surprise.",
       },
       {
         q: "How long does a project take?",
-        a: "A single campaign usually takes a few days. A full flow takes one to two weeks, depending on how quickly feedback comes back. If your sale starts tomorrow, we should have talked last week, but message me anyway.",
+        a: "A single campaign usually takes a few days. A full flow takes one to two weeks, depending on how quickly feedback comes back. If your sale starts tomorrow, last week was the time to message me, but message me anyway.",
       },
       {
         q: "What do you need from me to start?",
@@ -278,7 +330,7 @@ export const site = {
       },
       {
         q: "How many revisions are included?",
-        a: "One round on the wireframe and two on the design. That's enough for almost every project, because we agree on structure before the pretty part starts.",
+        a: "One round on the wireframe and two on the design. That's enough for almost every project, because the structure is approved before the pretty part starts.",
       },
       {
         q: "Can you redesign the emails I already have?",

@@ -14,7 +14,7 @@ export default function Testimonials() {
           What clients said, unprompted
         </SplitHeading>
         <Reveal as="figure" variant="slide" className="mt-12 border-l-4 border-lime pl-6 md:pl-10">
-          <blockquote className="font-display text-[clamp(1.6rem,3.4vw,3rem)] font-medium leading-[1.12] tracking-tight">
+          <blockquote className="font-display text-[clamp(1.6rem,3.4vw,3rem)] font-medium leading-[1.12]">
             {first.quote}
           </blockquote>
           <figcaption className="mt-6 text-muted">

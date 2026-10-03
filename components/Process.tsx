@@ -71,7 +71,7 @@ export default function Process() {
   );
 
   return (
-    <section ref={root} id="process" aria-labelledby="process-h" className="bg-surface">
+    <section ref={root} id="process" aria-labelledby="process-h" className="gridlines bg-surface">
       <div data-process-pin className="process-pin py-24 min-[900px]:py-0">
         <div className="wrap w-full">
           <div className="flex flex-wrap items-end justify-between gap-6">
@@ -96,18 +96,26 @@ export default function Process() {
                   </p>
                   <h3 className="mt-3 text-[clamp(2.5rem,5.5vw,5rem)]">{step.title}</h3>
                   <p className="mt-5 max-w-[42ch] text-lg leading-relaxed text-muted md:text-xl">{step.body}</p>
-                  <p className="mt-5 inline-block rounded-full border border-line bg-bg px-3.5 py-1.5 text-[0.95rem]">
+                  <p className="mono mt-6 flex items-center gap-3 text-ink">
+                    <span className="h-px w-8 bg-ink" aria-hidden="true" />
                     {step.detail}
                   </p>
                 </div>
                 <div
                   data-visual
-                  className="relative h-[27rem] overflow-clip rounded-[1.5rem] border border-line bg-bg min-[900px]:col-span-7 min-[900px]:h-full"
+                  className="relative h-[27rem] overflow-clip rounded-2xl border border-line bg-bg min-[900px]:col-span-7 min-[900px]:h-full"
                   aria-hidden="true"
                 >
                   {i === 0 && <BriefVisual />}
                   {i === 1 && <MiniEmail mode="wire" />}
-                  {i === 2 && <MiniEmail mode="design" />}
+                  {i === 2 && (
+                    <div className="grid h-full grid-cols-2">
+                      <MiniEmail mode="design" label="Light mode" />
+                      <div className="bg-[oklch(19%_0.01_80)]">
+                        <MiniEmail mode="design" dark label="Dark mode" />
+                      </div>
+                    </div>
+                  )}
                   {i === 3 && <HandoffVisual />}
                 </div>
               </li>
@@ -145,101 +153,89 @@ function BriefVisual() {
   );
 }
 
-function MiniEmail({ mode }: { mode: "wire" | "design" }) {
+function MiniEmail({ mode, dark = false, label }: { mode: "wire" | "design"; dark?: boolean; label?: string }) {
   const wire = mode === "wire";
-  const box = wire ? "border border-dashed border-muted/70 bg-surface" : "";
+  const box = "border border-dashed border-muted/70 bg-surface";
+  // The dark variant is drawn with fixed colors so it looks the same in both site themes.
+  const c = dark
+    ? { card: "border-white/15 bg-[oklch(24%_0.012_80)]", ink: "bg-[oklch(95%_0.02_95)]", soft: "bg-white/25", tile: "bg-white/10", btn: "bg-[oklch(95%_0.02_95)] text-[oklch(19%_0.01_80)]", label: "text-[oklch(78%_0.02_90)]" }
+    : { card: "border-line bg-raised", ink: "bg-ink", soft: "bg-ink/30", tile: "bg-surface", btn: "bg-ink text-bg", label: "text-muted" };
   return (
-    <div className="relative grid h-full place-items-center px-5 py-11">
+    <div className="relative grid h-full place-items-center px-4 py-11">
       <div
-        className={`relative flex h-full max-h-[26rem] w-[15.5rem] flex-col gap-2.5 rounded-xl border p-3.5 ${
-          wire ? "border-line bg-raised" : "border-line bg-raised shadow-[0_24px_50px_-28px_rgb(0_0_0/0.5)]"
+        className={`relative flex h-full max-h-[24rem] w-full max-w-[14.5rem] flex-col gap-2.5 rounded-xl border p-3.5 ${
+          wire ? "border-line bg-raised" : `${c.card} shadow-[0_24px_50px_-28px_rgb(0_0_0/0.5)]`
         }`}
       >
         <div className="flex items-center justify-between">
-          <span className={`h-3 w-14 rounded ${wire ? "bg-line" : "bg-ink"}`} />
+          <span className={`h-3 w-14 rounded-sm ${wire ? "bg-line" : c.ink}`} />
           <span className="flex gap-1">
-            <span className="h-1.5 w-5 rounded bg-line" />
-            <span className="h-1.5 w-5 rounded bg-line" />
+            <span className={`h-1.5 w-5 rounded-sm ${wire ? "bg-line" : c.soft}`} />
+            <span className={`h-1.5 w-5 rounded-sm ${wire ? "bg-line" : c.soft}`} />
           </span>
         </div>
-        <div
-          className={`relative grid flex-[1.5] place-items-center overflow-clip rounded-lg ${
-            wire ? box : "bg-lime text-on-lime"
-          }`}
-        >
+        <div className={`relative grid flex-[1.5] place-items-center overflow-clip rounded-lg ${wire ? box : "bg-lime text-on-lime"}`}>
           {wire ? (
             <svg className="absolute inset-0 h-full w-full text-muted/50" preserveAspectRatio="none" viewBox="0 0 10 10">
               <path d="M0 0 10 10M10 0 0 10" stroke="currentColor" strokeWidth="0.12" vectorEffect="non-scaling-stroke" />
             </svg>
           ) : (
-            <span className="px-3 text-center font-display text-[1.35rem] font-semibold leading-[1.02] tracking-tight">
-              Hello, nice to meet you
-            </span>
+            <span className="px-3 text-center font-display text-xl font-semibold leading-[1.08]">Hello, nice to meet you</span>
           )}
         </div>
         <div className="space-y-1.5 px-1">
-          <span className={`block h-2 w-full rounded ${wire ? "bg-line" : "bg-ink/70"}`} />
-          <span className={`block h-2 w-4/5 rounded ${wire ? "bg-line" : "bg-ink/35"}`} />
+          <span className={`block h-2 w-full rounded-sm ${wire ? "bg-line" : c.ink} ${wire ? "" : "opacity-70"}`} />
+          <span className={`block h-2 w-4/5 rounded-sm ${wire ? "bg-line" : c.soft}`} />
         </div>
         <span
-          className={`mx-auto grid h-8 w-32 place-items-center rounded-full text-[0.7rem] font-semibold ${
-            wire ? box + " text-muted" : "bg-ink text-bg"
+          className={`mx-auto grid h-8 w-32 max-w-full place-items-center rounded-full text-xs font-medium ${
+            wire ? `${box} text-muted` : c.btn
           }`}
         >
-          {wire ? "button" : "Shop the bestsellers"}
+          {wire ? "button" : "Shop bestsellers"}
         </span>
         <div className="grid flex-1 grid-cols-2 gap-2.5">
-          <span className={`rounded-lg ${wire ? box : "bg-surface"}`} />
-          <span className={`rounded-lg ${wire ? box : "bg-ink/15"}`} />
+          <span className={`rounded-lg ${wire ? box : c.tile}`} />
+          <span className={`rounded-lg ${wire ? box : c.tile}`} />
         </div>
-
-        {!wire && (
-          <>
-            {/* Figma-style selection */}
-            <span className="pointer-events-none absolute -inset-1.5 rounded-[0.9rem] border-[1.5px] border-accent-fg" />
-            <span className="mono absolute -top-7 left-0 text-[0.7rem] text-accent-fg">Welcome 01 / Mobile</span>
-            <span className="absolute -bottom-9 -right-14 flex items-start gap-1">
-              <svg width="16" height="16" viewBox="0 0 16 16" className="text-ink">
-                <path d="M2 2l4.5 11 1.6-4.4L12.5 7 2 2Z" fill="currentColor" />
-              </svg>
-              <span className="mt-2.5 rounded-md bg-lime px-2 py-0.5 text-[0.7rem] font-semibold text-on-lime">Samir</span>
-            </span>
-          </>
-        )}
       </div>
-      {wire && <span className="mono absolute bottom-4 left-5 text-muted">wireframe, no colors yet</span>}
+      <span className={`mono absolute bottom-3.5 left-4 ${wire ? "text-muted" : c.label}`}>
+        {wire ? "Wireframe, no colors yet" : label}
+      </span>
     </div>
   );
 }
 
 function HandoffVisual() {
-  const layers = ["Header / Logo", "Hero / Headline", "Hero / Image", "Body / Intro copy", "CTA / Primary button", "Products / Grid 2-up", "Footer / Legal"];
-  const chips = ["hero@2x.jpg", "600px desktop", "375px mobile", "Dark mode checked", "Alt text written"];
+  const checks = [
+    "600px wide, one column on mobile",
+    "Images exported at 2x and compressed",
+    "Alt text written for every image",
+    "Headline and button in live text",
+    "Dark mode checked",
+    "Links and tracking notes listed",
+  ];
   return (
-    <div className="grid h-full gap-4 p-5 sm:grid-cols-[1.1fr_1fr] sm:p-7">
-      <div className="rounded-xl border border-line bg-raised p-4">
-        <p className="mono text-muted">Layers</p>
-        <ul className="mt-3 space-y-1">
-          {layers.map((l, i) => (
-            <li
-              key={l}
-              className={`flex items-center gap-2.5 rounded-md px-2 py-1.5 text-[0.9rem] ${i === 4 ? "bg-lime text-on-lime" : ""}`}
-            >
-              <span className={`h-2.5 w-2.5 rounded-[3px] border ${i === 4 ? "border-on-lime" : "border-muted"}`} />
-              {l}
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="hidden flex-col justify-between sm:flex">
-        <ul className="flex flex-wrap content-start gap-2">
-          {chips.map((c) => (
-            <li key={c} className="mono rounded-full border border-line bg-raised px-3 py-1.5">
+    <div className="grid h-full place-items-center p-4 sm:p-6">
+      <div className="w-full max-w-md rounded-2xl border border-line bg-raised p-5 shadow-[0_24px_50px_-28px_rgb(0_0_0/0.45)] sm:p-6">
+        <div className="flex items-baseline justify-between">
+          <p className="mono text-muted">Pre-send checklist</p>
+          <p className="mono text-muted">
+            {checks.length} / {checks.length}
+          </p>
+        </div>
+        <ul className="mt-4">
+          {checks.map((c) => (
+            <li key={c} className="flex items-center gap-3 border-t border-line py-3 text-[0.9375rem]">
+              <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-lime text-on-lime">
+                <svg viewBox="0 0 12 12" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m2.5 6.5 2.3 2.3L9.5 3.7" />
+                </svg>
+              </span>
               {c}
             </li>
           ))}
         </ul>
-        <p className="mono text-muted">No layer is called &quot;Rectangle 247&quot;.</p>
       </div>
     </div>
   );

@@ -4,11 +4,15 @@ import { useState } from "react";
 import { site } from "@/content/site";
 import { PlusIcon } from "./icons";
 import { Reveal, SplitHeading } from "./Reveal";
+import SectionRule from "./SectionRule";
 
 export default function Faq() {
   const [open, setOpen] = useState<number | null>(0);
   return (
     <section className="section" aria-labelledby="faq-h">
+      <div className="wrap">
+        <SectionRule label="Questions" note={`${site.faq.items.length} answers`} />
+      </div>
       <div className="wrap grid gap-10 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <SplitHeading id="faq-h" className="display-md lg:sticky lg:top-28">

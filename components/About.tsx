@@ -1,14 +1,18 @@
 import Image from "next/image";
 import { site } from "@/content/site";
 import { MaskReveal, Reveal, SplitHeading } from "./Reveal";
+import SectionRule from "./SectionRule";
 
 export default function About() {
   const { about } = site;
   return (
     <section id="about" className="section" aria-labelledby="about-h">
+      <div className="wrap">
+        <SectionRule label="About" note={site.location} />
+      </div>
       <div className="wrap grid gap-12 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-5">
-          <MaskReveal className="aspect-[4/5] w-full max-w-[30rem] rounded-[1.75rem] bg-surface">
+          <MaskReveal className="aspect-[4/5] w-full max-w-[30rem] rounded-2xl bg-surface">
             {about.portrait ? (
               <Image
                 src={about.portrait}
@@ -55,7 +59,7 @@ export default function About() {
                 key={t.name}
                 className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-line py-4"
               >
-                <span className="font-display text-2xl font-semibold tracking-tight">{t.name}</span>
+                <span className="font-display text-2xl font-semibold">{t.name}</span>
                 <span className="text-muted">{t.use}</span>
               </li>
             ))}

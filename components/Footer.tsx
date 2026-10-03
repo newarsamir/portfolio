@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className="border-t border-line pb-32 pt-12">
       <div className="wrap grid gap-10 md:grid-cols-12">
         <div className="md:col-span-6">
-          <p className="font-display text-3xl font-semibold tracking-tight">{site.name}</p>
+          <p className="font-display text-3xl font-semibold">{site.name}</p>
           <p className="mt-1 text-muted">
             {site.title}, {site.location}
           </p>

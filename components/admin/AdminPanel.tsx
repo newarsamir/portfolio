@@ -308,7 +308,7 @@ function SettingsForm({ settings, poster, disabled }: { settings: Settings; post
   return (
     <form action={action} className="grid gap-10 lg:grid-cols-2">
       <fieldset className="space-y-4" disabled={disabled}>
-        <legend className="font-display text-2xl font-semibold tracking-tight">Home page video</legend>
+        <legend className="font-display text-2xl font-semibold">Home page video</legend>
         <div>
           <label htmlFor="heroVideoUrl" className="mb-2 block font-medium">
             Video URL
@@ -349,7 +349,7 @@ function SettingsForm({ settings, poster, disabled }: { settings: Settings; post
 
       <div className="space-y-10">
         <fieldset disabled={disabled}>
-          <legend className="font-display text-2xl font-semibold tracking-tight">Availability</legend>
+          <legend className="font-display text-2xl font-semibold">Availability</legend>
           <label className="mt-4 flex cursor-pointer items-center justify-between gap-6 rounded-xl border border-line p-4">
             <span>
               <span className="block font-medium">Available for work</span>
@@ -373,7 +373,7 @@ function SettingsForm({ settings, poster, disabled }: { settings: Settings; post
         </fieldset>
 
         <fieldset disabled={disabled}>
-          <legend className="font-display text-2xl font-semibold tracking-tight">Counters</legend>
+          <legend className="font-display text-2xl font-semibold">Counters</legend>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {settings.counters.map((c) => (
               <div key={c.id}>

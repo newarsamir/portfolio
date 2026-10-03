@@ -5,9 +5,10 @@ Personal portfolio for a freelance email designer. Next.js (App Router), TypeScr
 ## Design direction
 
 - **Concept:** the inbox as a stage. One designer, big confident type, and the emails themselves as the only decoration.
-- **Fonts:** Bricolage Grotesque (display, set narrow and heavy), Geist (body), Geist Mono (labels and numbers). All self-hosted through Fontsource, so there is no request to Google.
+- **Fonts:** Bricolage Grotesque (display, weight 600, near-normal width and open tracking), Geist (body), Geist Mono (labels and numbers). All self-hosted through Fontsource, so there is no request to Google.
 - **Signature moment:** the hero video grows from 20% to 80% of the viewport as you scroll and starts playing when it lands, then the work section spins a 3D arc of emails.
 - **Glass:** only the dock. Everything else is solid.
+- **Grid:** a fixed 80px hairline grid sits behind every page (`--grid` and `--grid-size` in `app/globals.css`). Section dividers carry small registration marks.
 
 ### Color tokens
 
@@ -120,7 +121,8 @@ components/
   ShowcaseCanvas.tsx      React Three Fiber arc (loaded lazily)
   ShowcaseCarousel.tsx    CSS 3D fallback
   Lightbox.tsx
-  BrandStrip, Counters, About, Process, Services, Testimonials, Faq, FinalCta, Footer
+  BrandStrip, Counters, About, Anatomy, Process, Services, Testimonials, Faq, FinalCta, Footer
+  SectionRule.tsx         hairline divider with registration marks
   ContactForm.tsx, CopyEmail.tsx
   Reveal.tsx              split headings, staggered and mask reveals
   SmoothScroll.tsx        Lenis wired to ScrollTrigger

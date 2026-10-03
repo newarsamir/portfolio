@@ -4,12 +4,14 @@ import CopyEmail from "./CopyEmail";
 import Magnetic from "./Magnetic";
 import { Reveal, SplitHeading } from "./Reveal";
 import { ArrowUpRight } from "./icons";
+import SectionRule from "./SectionRule";
 
 export default function FinalCta() {
   return (
     <section id="contact" className="section pb-[clamp(4rem,8vw,7rem)]" aria-labelledby="cta-h">
       <div className="wrap">
-        <SplitHeading id="cta-h" className="display-xl max-w-[14ch]">
+        <SectionRule label="Start a project" />
+        <SplitHeading id="cta-h" className="display-xl max-w-[17ch]">
           {site.finalCta.headline}
         </SplitHeading>
         <Reveal className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-6">

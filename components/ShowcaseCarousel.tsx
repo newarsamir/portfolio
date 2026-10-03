@@ -71,7 +71,7 @@ export default function ShowcaseCarousel({
                 className="h-full w-full object-cover object-top"
               />
             </span>
-            <span className="mt-3 block font-display text-xl font-semibold tracking-tight">{item.brand}</span>
+            <span className="mt-3 block font-display text-xl font-semibold">{item.brand}</span>
             <span className="block text-[0.95rem] text-muted">{item.type}</span>
           </button>
         </li>

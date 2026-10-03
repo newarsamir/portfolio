@@ -149,7 +149,7 @@ export default function Nav({ available }: { available: boolean }) {
           style={{ transform: docked ? "scaleX(0.5)" : "none" }}
         >
           <div className="flex min-w-0 items-center gap-3">
-            <AnchorLink to="home" className="truncate font-display text-xl font-semibold tracking-tight">
+            <AnchorLink to="home" className="truncate font-display text-xl font-semibold">
               {site.name}
             </AnchorLink>
             <span className="hidden shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-line px-2.5 py-1 text-xs sm:max-md:inline-flex lg:inline-flex">

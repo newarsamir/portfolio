@@ -21,6 +21,8 @@ Everything is in `content/site.ts` unless noted. Search that file for `TODO`.
 - [ ] **Process details** (`process.steps[].detail`): "one round on the wireframe, two on the design" also appears in the FAQ. Change both if your terms differ.
 - [ ] **FAQ timelines** (`faq.items`): "a few days" for a campaign and "one to two weeks" for a flow, and the "two working days" reply time on the contact page.
 - [ ] **Service sizes** (`services.items[].tag`): "3 to 5 emails" and so on.
+- [ ] **Service samples** (`services.items[].image`): each row shows one of the showcase emails on hover. Point them at the emails that fit once the real ones are in.
+- [ ] **Anatomy notes** (`anatomy.parts`): seven short notes on how I approach each part of an email. Edit them to match how you actually work.
 - [ ] **Brand strip** (`brandStrip.items`): add client names you are allowed to show.
 
 ## When you have them

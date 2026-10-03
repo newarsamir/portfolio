@@ -55,7 +55,7 @@ export default function ContactForm() {
         ref={successRef}
         tabIndex={-1}
         role="status"
-        className="rounded-[1.75rem] bg-surface p-8 outline-none md:p-12"
+        className="rounded-2xl bg-surface p-8 outline-none md:p-12"
       >
         <svg viewBox="0 0 96 96" className="sent-envelope w-24" fill="none" aria-hidden="true">
           <rect x="10" y="26" width="76" height="52" rx="9" className="fill-lime" stroke="var(--on-lime)" strokeWidth="3.5" />
