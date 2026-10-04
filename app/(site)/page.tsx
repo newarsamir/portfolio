@@ -1,10 +1,12 @@
 import About from "@/components/About";
-import Anatomy from "@/components/Anatomy";
+// Hidden for now, kept for later. Re-enable here and in the JSX below.
+// import Anatomy from "@/components/Anatomy";
 import BrandStrip from "@/components/BrandStrip";
 import CaseStudies from "@/components/CaseStudies";
 import Counters from "@/components/Counters";
 import Faq from "@/components/Faq";
 import FinalCta from "@/components/FinalCta";
+import HireNudge from "@/components/HireNudge";
 import Hero from "@/components/Hero";
 import Process from "@/components/Process";
 import Services from "@/components/Services";
@@ -44,12 +46,14 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
       <Hero videoUrl={settings.heroVideoUrl} />
-      <BrandStrip />
+      <BrandStrip items={settings.brands} />
       <Counters items={settings.counters} placeholder={settings.countersArePlaceholder} />
       <Showcase items={showcase} heading={settings.showcaseHeading} sub={settings.showcaseSub} />
       <CaseStudies items={cases.map(({ id: _id, sortOrder: _sortOrder, ...c }) => c)} />
+      <HireNudge available={settings.availableForWork} />
       <About />
-      <Anatomy />
+      {/* "Anatomy of an email" is hidden for now. Uncomment to bring it back. */}
+      {/* <Anatomy /> */}
       <Process />
       <Services />
       <Testimonials />

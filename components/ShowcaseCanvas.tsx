@@ -110,11 +110,13 @@ function Card({
     const target = h.on ? Math.max(0, texture.offset.y - dt * 0.035) : topOffset;
     texture.offset.y += (target - texture.offset.y) * (h.on ? 1 : k * 0.6);
 
-    // Cards further around the arc fade back, go transparent and blur out.
+    // As the arc turns, each email blurs and fades in from the right, is
+    // sharp and solid in the center, then blurs and fades out to the left.
     const dist = Math.abs(angle + (arc.current?.rotation.y ?? 0)) / STEP;
-    const fade = THREE.MathUtils.clamp(1.5 - dist * 0.38, 0.12, 1);
+    const fade = THREE.MathUtils.clamp(1.35 - dist * 0.42, 0, 1);
     m.opacity += (fade - m.opacity) * k;
-    const soft = h.on ? 0 : THREE.MathUtils.clamp((dist - 0.6) * 1.35, 0, 4.2);
+    m.visible = m.opacity > 0.01;
+    const soft = h.on ? 0 : THREE.MathUtils.clamp((dist - 0.45) * 1.7, 0, 5);
     blur.value += (soft - blur.value) * k;
   });
 

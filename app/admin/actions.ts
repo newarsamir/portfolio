@@ -83,9 +83,19 @@ export async function saveSettings(_prev: ActionResult | null, form: FormData): 
     counters[c.id] = Math.round(n);
   }
 
+  const brands = Array.from(
+    new Set(
+      String(form.get("brands") ?? "")
+        .split("\n")
+        .map((b) => b.trim().slice(0, 60))
+        .filter(Boolean),
+    ),
+  ).slice(0, 40);
+
   const now = new Date().toISOString();
   const { error } = await db.from("settings").upsert(
     [
+      { key: SETTING_KEYS.brands, value: brands, updated_at: now },
       { key: SETTING_KEYS.video, value: videoUrl, updated_at: now },
       { key: SETTING_KEYS.available, value: form.get("available") === "on", updated_at: now },
       { key: SETTING_KEYS.counters, value: counters, updated_at: now },

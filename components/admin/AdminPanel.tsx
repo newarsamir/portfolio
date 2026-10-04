@@ -24,6 +24,7 @@ type Settings = {
   heroVideoUrl: string;
   availableForWork: boolean;
   counters: { id: string; label: string; value: number }[];
+  brands: string[];
 };
 
 const fmt = new Intl.DateTimeFormat("en-GB", {
@@ -51,7 +52,14 @@ export default function AdminPanel({
   settings: Settings;
   poster: string;
   caseStudies: { items: AdminCaseStudy[]; fromDb: boolean; error: string | null };
-  showcase: { items: AdminShowcaseItem[]; fromDb: boolean; error: string | null; heading: string; sub: string };
+  showcase: {
+    items: AdminShowcaseItem[];
+    fromDb: boolean;
+    error: string | null;
+    heading: string;
+    sub: string;
+    placeholderSrcs: string[];
+  };
 }) {
   const [tab, setTab] = useState<"contacts" | "showcase" | "cases" | "settings">("contacts");
   const [rows, setRows] = useState(contacts);
@@ -121,6 +129,7 @@ export default function AdminPanel({
           loadError={showcase.error}
           heading={showcase.heading}
           sub={showcase.sub}
+          placeholderSrcs={showcase.placeholderSrcs}
         />
       </div>
       <div role="tabpanel" id="panel-cases" aria-labelledby="tab-cases" hidden={tab !== "cases"} className="pt-6">
@@ -400,6 +409,26 @@ function SettingsForm({ settings, poster, disabled }: { settings: Settings; post
               <span className="pointer-events-none absolute left-1 top-1 h-6 w-6 rounded-full bg-ink transition-transform peer-checked:translate-x-6 peer-checked:bg-on-lime" />
             </span>
           </label>
+        </fieldset>
+
+        <fieldset disabled={disabled}>
+          <legend className="font-display text-2xl font-semibold">Brands you&apos;ve worked with</legend>
+          <label htmlFor="brands" className="mb-2 mt-4 block font-medium">
+            One brand per line
+          </label>
+          <textarea
+            id="brands"
+            name="brands"
+            rows={5}
+            defaultValue={settings.brands.join("\n")}
+            placeholder={"Brand one\nBrand two"}
+            className="field"
+            aria-describedby="brands-help"
+          />
+          <p id="brands-help" className="mt-2 text-[0.95rem] text-muted">
+            Shown in the scrolling strip under the hero. Only list clients you&apos;re allowed to name. The strip is hidden
+            while this is empty.
+          </p>
         </fieldset>
 
         <fieldset disabled={disabled}>

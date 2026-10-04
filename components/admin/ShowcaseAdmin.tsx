@@ -34,7 +34,9 @@ export default function ShowcaseAdmin({
   loadError,
   heading,
   sub,
+  placeholderSrcs,
 }: {
+  placeholderSrcs: string[];
   items: AdminShowcaseItem[];
   fromDb: boolean;
   dbConnected: boolean;
@@ -48,6 +50,7 @@ export default function ShowcaseAdmin({
   const [busy, startTransition] = useTransition();
   const canEdit = dbConnected && fromDb;
   const showingDefaults = canEdit && rows.length === 0;
+  const missingPlaceholders = placeholderSrcs.filter((src) => !rows.some((r) => r.src === src)).length;
 
   useEffect(() => setRows(items), [items]);
 
@@ -80,9 +83,13 @@ export default function ShowcaseAdmin({
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            {showingDefaults && (
+            {canEdit && missingPlaceholders > 0 && (
               <button type="button" className="btn btn-ghost btn-sm" disabled={busy} onClick={() => run(importDefaultShowcase)}>
-                Import the placeholders
+                {rows.length === 0
+                  ? "Import the placeholders"
+                  : missingPlaceholders === 1
+                    ? "Add the missing placeholder"
+                    : `Add the ${missingPlaceholders} placeholders after these`}
               </button>
             )}
             <button type="button" className="btn btn-lime btn-sm" disabled={!canEdit} onClick={() => setEditing("new")}>

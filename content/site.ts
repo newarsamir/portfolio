@@ -52,15 +52,14 @@ export type CaseStudy = {
 export const site = {
   name: "Samir Shrestha",
   title: "Email Designer (Figma)",
-  // TODO: your real inbox. It is shown on the site and used by the copy button.
-  email: "your@email.com",
+  email: "design@sthasamir.com.np",
   // TODO: confirm your location.
   location: "Kathmandu, Nepal",
 
   seo: {
-    title: "Samir Shrestha, email designer for ecommerce and DTC brands",
+    title: "Samir Shrestha, email designer for revenue-focused ecommerce and DTC brands",
     description:
-      "I design email flows and campaigns in Figma for ecommerce and DTC brands. Welcome flows, abandoned cart, post-purchase and templates, handed off ready to build.",
+      "Email design for ecommerce and DTC brands that want more revenue from the list they already have. Welcome flows, abandoned cart, post-purchase and campaigns, designed in Figma and ready to build.",
   },
 
   // TODO: replace each "#" with your real profile link. Empty or "#" links are hidden.
@@ -93,20 +92,24 @@ export const site = {
 
   hero: {
     eyebrow: "Email design for ecommerce and DTC brands",
-    headline: "I design the emails your subscribers open, read and click.",
-    sub: "Welcome flows, campaigns, abandoned cart and post-purchase emails, designed in Figma and handed off ready to build in Klaviyo or Mailchimp.",
-    primary: "See my work",
+    headline: "Emails that turn subscribers into repeat revenue.",
+    sub: "Your list is the one audience you own. I design the welcome, cart, post-purchase and campaign emails that get it buying, in Figma, ready to build in Klaviyo or Mailchimp.",
+    primary: "See the work",
     secondary: "Hire me",
   },
 
-  // Only real tools and clients go here. TODO: add client names you may show.
+  /**
+   * Real clients only. The names are edited in /admin (Settings) once
+   * Supabase is connected; this list is the fallback. The strip is hidden
+   * while it is empty. TODO: add brands you are allowed to name.
+   */
   brandStrip: {
-    label: "Where my emails are designed and sent from",
-    items: ["Figma", "Klaviyo", "Mailchimp", "Shopify"],
+    label: "Brands I've worked with",
+    items: [] as string[],
   },
 
   counters: {
-    heading: "A few numbers from the inbox.",
+    heading: "The numbers behind the inbox.",
     /**
      * TODO: these are sample values. Replace them here or in /admin, then set
      * `placeholder` to false to remove the "sample numbers" note on the site.
@@ -121,8 +124,8 @@ export const site = {
   },
 
   showcase: {
-    heading: "Selected emails. Scroll to spin them.",
-    sub: "Click any email to read it top to bottom. Unlike most subscribers, you'll make it to the footer.",
+    heading: "Emails built to be clicked. Scroll to spin them.",
+    sub: "Every one has a single job: the click that leads to the order. Open any email to read it top to bottom, along with the reason behind it.",
     /**
      * TODO: export each email from Figma as a tall WebP (600 to 1200px wide)
      * into /public/emails, then update brand, type, note, width and height.
@@ -197,8 +200,8 @@ export const site = {
   },
 
   caseStudies: {
-    heading: "The thinking behind the inbox.",
-    sub: "A few projects from brief to send, with the problem, the decisions and what changed after.",
+    heading: "Where the revenue was leaking, and how it got fixed.",
+    sub: "Real problems from real inboxes: the brief, the design decisions, and what changed after the send.",
     /**
      * TODO: these are sample case studies so the layout has something to show.
      * Replace them here, or connect Supabase and manage them in /admin.
@@ -281,12 +284,12 @@ export const site = {
   },
 
   about: {
-    heading: "One designer who only does email.",
+    heading: "An email designer who thinks in revenue, not just pixels.",
     // TODO: rewrite in your own words. Keep it first person.
     story: [
-      "I'm Samir, a freelance email designer. I work with ecommerce and DTC brands whose product is better than the emails that sell it.",
-      "Email is all I design: welcome flows, campaigns, abandoned cart and post-purchase emails, plus the templates that keep them consistent. I design mobile first, because that's where most subscribers open, and I check dark mode before you have to ask.",
-      "When you hire me you talk to me. I read the brief, I design every email myself, and I answer when a subject line or a button needs to change.",
+      "I'm Samir, a freelance email designer for ecommerce and DTC brands. Most brands I meet have a product people love and emails that leave money on the table.",
+      "Email is the channel you own, and it should be your most profitable one. So I design every email around one job: the click that leads to the order. Welcome flows that sell the first product, cart emails that bring buyers back, post-purchase emails that earn the second order, and campaigns people actually open.",
+      "I design mobile first, check dark mode and Outlook before you ask, and hand off files your developer can build without guessing. You work with me directly, from brief to send.",
     ],
     // TODO: add /public/portrait.webp and set portrait to "/portrait.webp".
     portrait: "" as string,
@@ -347,35 +350,30 @@ export const site = {
     steps: [
       {
         title: "Brief",
-        body: "You tell me the goal, the segment and the offer. I ask the questions that save three rounds of revisions later.",
+        body: "We start with the numbers, not the colors: which flows exist, where people drop off, what the offer is and who it's for. I ask the questions that save three rounds of revisions later.",
         detail: "A short call or a filled-in doc. Either works.",
       },
       {
-        title: "Wireframe",
-        body: "Grey boxes first. You approve the order of the message and where the button sits before anyone argues about colors.",
-        detail: "One round of feedback on structure.",
-      },
-      {
         title: "Design in Figma",
-        body: "Your brand, real copy, real product shots. I design mobile and desktop, light and dark mode, so nothing surprises you in the inbox.",
+        body: "Your brand, real copy, real product shots, laid out so the eye lands on the offer and the thumb lands on the button. Mobile and desktop, light and dark mode.",
         detail: "Two rounds of revisions included.",
       },
       {
         title: "Handoff",
-        body: "Exported images, alt text, link notes and a build guide for every email. Whoever sets it up in Klaviyo will not need to message me at midnight.",
+        body: "Exported images, alt text, link and tracking notes, and a build guide for every email, so it goes live this week, not next quarter.",
         detail: "Ready to build in Klaviyo or Mailchimp.",
       },
     ],
   },
 
   services: {
-    heading: "Emails you can hire me for",
-    sub: "Pick one, or stack them into a full lifecycle. No 'Dear Valued Customer' is involved at any stage.",
+    heading: "Emails that pay for themselves",
+    sub: "Each one fixes a leak in the customer journey. Pick the one that hurts most, or stack them into a full lifecycle.",
     items: [
       {
         id: "welcome",
         title: "Welcome flows",
-        body: "The first three to five emails a new subscriber gets. I design them as one story: who you are, why you're worth it, and what to buy first.",
+        body: "New subscribers are never more interested than in their first week. Three to five emails that turn that interest into a first order: who you are, why it's worth it, what to buy first.",
         tag: "3 to 5 emails",
         when: "Sends when someone subscribes",
         image: "/emails/email-01.webp",
@@ -383,7 +381,7 @@ export const site = {
       {
         id: "campaigns",
         title: "Campaigns",
-        body: "Launches, sales and newsletters, designed one at a time or as a monthly batch.",
+        body: "Launches, sales and newsletters designed to be clicked, not just admired. One at a time or as a monthly batch, without training your list to wait for a discount.",
         tag: "One-off or monthly",
         when: "Sends on your calendar",
         image: "/emails/email-05.webp",
@@ -391,7 +389,7 @@ export const site = {
       {
         id: "cart",
         title: "Abandoned cart",
-        body: "A reminder, a reason and a nudge, each with the product they left front and center.",
+        body: "The easiest revenue you're not collecting. A reminder, a reason and a nudge, each with the exact product they left front and center.",
         tag: "2 to 3 emails",
         when: "Sends when a cart is left behind",
         image: "/emails/email-03.webp",
@@ -399,7 +397,7 @@ export const site = {
       {
         id: "post",
         title: "Post-purchase",
-        body: "Order follow-ups, how-to-use guides and review requests that turn one order into the next.",
+        body: "The second order is where the profit is. Follow-ups, how-to guides and review requests that turn one-time buyers into regulars.",
         tag: "3 to 4 emails",
         when: "Sends after an order",
         image: "/emails/email-04.webp",
@@ -407,7 +405,7 @@ export const site = {
       {
         id: "templates",
         title: "Templates",
-        body: "A modular master template, so your team can put together on-brand emails without starting from zero.",
+        body: "A modular master template, so your team ships on-brand campaigns fast, without breaking the layout or waiting on a designer.",
         tag: "Reusable modules",
         when: "Used by every send",
         image: "/emails/email-08.webp",
@@ -422,6 +420,10 @@ export const site = {
   faq: {
     heading: "Questions I get, answered honestly",
     items: [
+      {
+        q: "Will better design actually make us more money?",
+        a: "Design alone won't fix a bad offer. What it does is make the offer obvious, the button easy to tap and the brand easy to trust, which is what turns opens into clicks and clicks into orders. If the real problem is the offer, the timing or the list, I'll tell you that instead.",
+      },
       {
         q: "Do you build the emails too, or only design them?",
         a: "I design in Figma and hand off a file that's ready to build: named layers, exported assets and notes for every module. If you need someone to code or set it up in Klaviyo, tell me and I'll say plainly whether I can help or who can.",
@@ -440,7 +442,7 @@ export const site = {
       },
       {
         q: "How many revisions are included?",
-        a: "One round on the wireframe and two on the design. That's enough for almost every project, because the structure is approved before the pretty part starts.",
+        a: "Two rounds on the design. That's enough for almost every project, because we agree on the goal, the offer and the order of the message in the brief, before design starts.",
       },
       {
         q: "Can you redesign the emails I already have?",
@@ -449,9 +451,18 @@ export const site = {
     ],
   },
 
+  /** The short hire-me break in the middle of the home page. */
+  nudge: {
+    eyebrow: "Quick gut check",
+    headline: "Is your welcome flow still one discount code and a logo?",
+    body: "If your cart emails haven't changed since launch and every campaign is a sale, there's revenue sitting in your inbox. Send me your worst-performing email and I'll tell you what I'd change and why.",
+    button: "Hire me",
+    secondary: "Email me instead",
+  },
+
   finalCta: {
-    eyebrow: "Got an inbox to fix?",
-    headline: "Your next email deserves better than a stock photo and a prayer.",
+    eyebrow: "Ready to stop leaving money in the inbox?",
+    headline: "Your best customers are already on your list. Let's email them like it.",
     badge: "Available for new projects • Hire me • ",
     marquee: ["Welcome flows", "Campaigns", "Abandoned cart", "Post-purchase", "Templates"],
     button: "Hire me for your next flow",
@@ -459,8 +470,8 @@ export const site = {
   },
 
   contact: {
-    headline: "Send me your worst email. I've seen worse.",
-    sub: "Tell me about the brand and what you need. I reply within two working days, and never with 'per my last email'.",
+    headline: "Tell me where your emails are leaking money.",
+    sub: "Share the brand, the flows you have and what isn't working. I reply within two working days with honest next steps, and never with 'per my last email'.",
     projectTypes: [
       "Welcome flow",
       "Campaigns",
@@ -481,7 +492,7 @@ export const site = {
   footer: {
     /** IANA time zone for the live clock in the footer and the dock. */
     timeZone: "Asia/Kathmandu",
-    cta: "Let's make your emails the ones people wait for.",
+    cta: "Let's turn your list into your best-performing channel.",
     joke: "You scrolled all the way to the footer. I hope your subscribers are this loyal.",
   },
 } as const;
