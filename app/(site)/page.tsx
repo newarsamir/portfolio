@@ -5,7 +5,6 @@ import BrandStrip from "@/components/BrandStrip";
 import CaseStudies from "@/components/CaseStudies";
 import Counters from "@/components/Counters";
 import Faq from "@/components/Faq";
-import FinalCta from "@/components/FinalCta";
 import HireNudge from "@/components/HireNudge";
 import Hero from "@/components/Hero";
 import Process from "@/components/Process";
@@ -58,7 +57,6 @@ export default async function HomePage() {
       <Services />
       <Testimonials />
       <Faq />
-      <FinalCta />
     </>
   );
 }

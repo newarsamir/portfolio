@@ -132,11 +132,15 @@ export default function CaseStudiesAdmin({
       </div>
 
       {!canEdit && (
-        <p className="mt-5 rounded-xl border border-line bg-surface p-4 text-[0.95rem]">
-          {loadError ??
-            "Supabase isn't connected, so these are the read-only samples from content/site.ts."}{" "}
-          Connect Supabase and run <code className="mono">supabase/schema.sql</code> to create, edit and delete case
-          studies here.
+        <p role="alert" className="mt-5 rounded-xl border border-danger/40 bg-surface p-4 text-[0.95rem]">
+          {loadError ?? (
+            <>
+              Supabase isn&apos;t connected, so these are the read-only samples from content/site.ts. Add{" "}
+              <code className="mono">SUPABASE_URL</code> and <code className="mono">SUPABASE_SERVICE_ROLE_KEY</code> in
+              Vercel to create, edit and delete case studies here.
+            </>
+          )}{" "}
+          The Settings tab has a full database check.
         </p>
       )}
 

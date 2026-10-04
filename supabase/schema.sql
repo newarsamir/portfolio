@@ -105,3 +105,6 @@ begin
     on conflict (id) do nothing;
   end if;
 end $$;
+
+-- Tell Supabase's API about the new tables right away.
+notify pgrst, 'reload schema';

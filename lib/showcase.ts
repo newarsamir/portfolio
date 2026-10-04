@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { site, type ShowcaseItem } from "@/content/site";
+import { explainDbError } from "./db-status";
 import { getSupabase } from "./supabase";
 
 export type ShowcaseRecord = Omit<ShowcaseItem, "id"> & {
@@ -67,12 +68,12 @@ export const getAllShowcaseItems = cache(
         return {
           items: defaultShowcase(),
           fromDb: false,
-          error: "Couldn't read the showcase_items table. Run supabase/schema.sql again to create it.",
+          error: explainDbError(error, "showcase_items"),
         };
       }
       return { items: (data as Row[]).map(fromRow), fromDb: true, error: null };
     } catch {
-      return { items: defaultShowcase(), fromDb: false, error: "Couldn't reach Supabase." };
+      return { items: defaultShowcase(), fromDb: false, error: explainDbError({ message: "fetch failed" }, "showcase_items") };
     }
   },
 );

@@ -6,6 +6,7 @@ import { site } from "@/content/site";
 import { isAdminConfigured, isAuthed } from "@/lib/auth";
 import { getAllCaseStudies } from "@/lib/case-studies";
 import { getAllShowcaseItems } from "@/lib/showcase";
+import { checkDatabase } from "@/lib/db-status";
 import { getSettings } from "@/lib/settings";
 import { getSupabase } from "@/lib/supabase";
 
@@ -49,6 +50,7 @@ export default async function AdminPage() {
   const settings = await getSettings();
   const cases = await getAllCaseStudies();
   const showcase = await getAllShowcaseItems();
+  const dbStatus = await checkDatabase();
 
   return (
     <AdminPanel
@@ -63,6 +65,7 @@ export default async function AdminPage() {
         brands: settings.brands,
       }}
       poster={site.defaults.heroPoster}
+      dbStatus={dbStatus}
       showcase={{
         items: showcase.items.map((s) => ({
           id: s.id,

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import FinalCta from "@/components/FinalCta";
 import WorkIndex from "@/components/WorkIndex";
 import { site } from "@/content/site";
 import { getCaseStudies } from "@/lib/case-studies";
@@ -45,7 +44,6 @@ export default async function WorkPage() {
         )}
       </section>
 
-      <FinalCta />
     </>
   );
 }

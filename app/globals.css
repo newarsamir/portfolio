@@ -302,6 +302,9 @@ html.lenis body {
   display: inline-flex;
   white-space: pre;
 }
+.roll {
+  user-select: none;
+}
 .roll-c {
   display: inline-flex;
   flex-direction: column;
@@ -309,11 +312,15 @@ html.lenis body {
   line-height: 1.2;
   overflow: clip;
 }
-.roll-c > span {
+.roll-c::before,
+.roll-c::after {
+  content: attr(data-c);
+  white-space: pre;
   transition: transform 0.5s var(--ease-out);
   transition-delay: calc(var(--i) * 14ms);
 }
-:is(a, button, .roll-host):is(:hover, :focus-visible) .roll-c > span {
+:is(a, button, .roll-host):is(:hover, :focus-visible) .roll-c::before,
+:is(a, button, .roll-host):is(:hover, :focus-visible) .roll-c::after {
   transform: translateY(-100%);
 }
 
@@ -787,9 +794,6 @@ select.field {
   .dock::before {
     display: none;
   }
-  .badge-ring {
-    animation: none !important;
-  }
 }
 
 /* ------------------------------------------------------------------
@@ -985,65 +989,6 @@ select.field {
     scale: 2.8;
     opacity: 0;
   }
-}
-
-/* ------------------------------------------------------------------
-   Rotating text badge (final CTA)
-------------------------------------------------------------------- */
-.badge-ring {
-  animation: badge-spin 16s linear infinite;
-}
-.badge:hover .badge-ring {
-  animation-duration: 5s;
-}
-@keyframes badge-spin {
-  to {
-    rotate: 360deg;
-  }
-}
-.badge-core {
-  transition:
-    scale 0.5s var(--ease-spring),
-    background-color 0.3s,
-    color 0.3s;
-}
-.badge:hover .badge-core,
-.badge:focus-visible .badge-core {
-  scale: 1.12;
-  background: var(--ink);
-  color: var(--lime);
-}
-.badge-core svg {
-  transition: rotate 0.5s var(--ease-spring);
-}
-.badge:hover .badge-core svg {
-  rotate: 45deg;
-}
-
-/* Cursor spotlight for sections that ask for it. */
-.spotlight {
-  position: relative;
-  isolation: isolate;
-}
-.spotlight::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: radial-gradient(
-    32rem circle at var(--sx, 50%) var(--sy, 40%),
-    oklch(88% 0.22 125 / 0.22),
-    transparent 70%
-  );
-  opacity: var(--so, 0);
-  transition: opacity 0.5s;
-  pointer-events: none;
-}
-
-/* Outlined display text for marquees. */
-.outline-text {
-  color: transparent;
-  -webkit-text-stroke: 1.5px var(--ink);
 }
 
 /* ------------------------------------------------------------------

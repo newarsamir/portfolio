@@ -460,15 +460,6 @@ export const site = {
     secondary: "Email me instead",
   },
 
-  finalCta: {
-    eyebrow: "Ready to stop leaving money in the inbox?",
-    headline: "Your best customers are already on your list. Let's email them like it.",
-    badge: "Available for new projects • Hire me • ",
-    marquee: ["Welcome flows", "Campaigns", "Abandoned cart", "Post-purchase", "Templates"],
-    button: "Hire me for your next flow",
-    mini: "Or copy my address and write whenever you're ready.",
-  },
-
   contact: {
     headline: "Tell me where your emails are leaking money.",
     sub: "Share the brand, the flows you have and what isn't working. I reply within two working days with honest next steps, and never with 'per my last email'.",

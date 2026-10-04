@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import CountUp from "@/components/CountUp";
 import EmailScroll from "@/components/EmailScroll";
-import FinalCta from "@/components/FinalCta";
 import { MaskReveal, Reveal, SplitHeading } from "@/components/Reveal";
 import { ArrowSwap } from "@/components/RollText";
 import SectionRule from "@/components/SectionRule";
@@ -210,7 +209,6 @@ export default async function CaseStudyPage({ params }: Props) {
           </nav>
         )}
       </article>
-      <FinalCta />
     </>
   );
 }

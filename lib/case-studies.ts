@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { site, type CaseMetric, type CaseStudy } from "@/content/site";
+import { explainDbError } from "./db-status";
 import { getSupabase } from "./supabase";
 
 /** A case study as stored in Supabase. The defaults in site.ts have no id. */
@@ -78,12 +79,12 @@ export const getAllCaseStudies = cache(
         return {
           items: defaults(),
           fromDb: false,
-          error: "Couldn't read the case_studies table. Run supabase/schema.sql again to create it.",
+          error: explainDbError(error, "case_studies"),
         };
       }
       return { items: (data as Row[]).map(fromRow), fromDb: true, error: null };
     } catch {
-      return { items: defaults(), fromDb: false, error: "Couldn't reach Supabase." };
+      return { items: defaults(), fromDb: false, error: explainDbError({ message: "fetch failed" }, "case_studies") };
     }
   },
 );

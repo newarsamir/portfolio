@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { site, type CaseStudy } from "@/content/site";
 import { gsap, useGSAP } from "@/lib/gsap";
 import EmailScroll from "./EmailScroll";
+import Parallax from "./Parallax";
 import { Reveal, SplitHeading } from "./Reveal";
 import { ArrowSwap, RollText } from "./RollText";
 import SectionRule from "./SectionRule";
@@ -113,12 +114,15 @@ export default function CaseStudies({ items }: { items: CaseStudy[] }) {
                     className="absolute left-1/2 top-1/2 h-[70%] w-[70%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-lime opacity-40 blur-3xl transition-transform duration-700 ease-out group-hover:scale-125"
                     aria-hidden="true"
                   />
-                  <EmailScroll
-                    src={c.cover}
-                    phone
-                    height="clamp(20rem, 52svh, 30rem)"
-                    className="relative w-[min(16rem,70%)] -rotate-3 transition-transform duration-700 ease-[var(--ease-spring)] group-hover:rotate-0 group-hover:scale-[1.03]"
-                  />
+                  {/* The phone drifts against the scroll inside its card. */}
+                  <Parallax y={18} rotate={2} className="relative w-[min(16rem,70%)]">
+                    <EmailScroll
+                      src={c.cover}
+                      phone
+                      height="clamp(20rem, 52svh, 30rem)"
+                      className="-rotate-3 transition-transform duration-700 ease-[var(--ease-spring)] group-hover:rotate-0 group-hover:scale-[1.03]"
+                    />
+                  </Parallax>
                 </div>
               </article>
             </li>

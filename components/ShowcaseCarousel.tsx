@@ -3,12 +3,14 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import type { ShowcaseItem } from "@/content/site";
+import { gsap } from "@/lib/gsap";
 import { isRemote } from "@/lib/images";
 
 /**
  * Fallback for touch devices, small screens, reduced motion and browsers
  * without WebGL: a horizontal snap row where cards turn in CSS 3D as they
- * pass the center.
+ * pass the center. Scrolling the page also drifts the row sideways, so the
+ * emails move even before anyone swipes.
  */
 export default function ShowcaseCarousel({
   items,
@@ -46,7 +48,18 @@ export default function ShowcaseCarousel({
     update();
     el.addEventListener("scroll", queue, { passive: true });
     window.addEventListener("resize", queue);
+    const drift = gsap.fromTo(
+      el.querySelectorAll("li"),
+      { x: 110 },
+      {
+        x: -110,
+        ease: "none",
+        scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: 0.4, onUpdate: queue },
+      },
+    );
     return () => {
+      drift.scrollTrigger?.kill();
+      drift.kill();
       cancelAnimationFrame(raf);
       el.removeEventListener("scroll", queue);
       window.removeEventListener("resize", queue);
