@@ -50,14 +50,14 @@ export type CaseStudy = {
 };
 
 export const site = {
-  name: "Samir Shrestha",
+  name: "Sthasamir",
   title: "Email Designer (Figma)",
   email: "design@sthasamir.com.np",
   // TODO: confirm your location.
   location: "Kathmandu, Nepal",
 
   seo: {
-    title: "Samir Shrestha, email designer for revenue-focused ecommerce and DTC brands",
+    title: "Sthasamir, email designer for revenue-focused ecommerce and DTC brands",
     description:
       "Email design for ecommerce and DTC brands that want more revenue from the list they already have. Welcome flows, abandoned cart, post-purchase and campaigns, designed in Figma and ready to build.",
   },
@@ -289,12 +289,12 @@ export const site = {
     heading: "An email designer who thinks in revenue, not just pixels.",
     // TODO: rewrite in your own words. Keep it first person.
     story: [
-      "I'm Samir, a freelance email designer for ecommerce and DTC brands. Most brands I meet have a product people love and emails that leave money on the table.",
+      "I'm Sthasamir, a freelance email designer for ecommerce and DTC brands. Most brands I meet have a product people love and emails that leave money on the table.",
       "Email is the channel you own, and it should be your most profitable one. So I design every email around one job: the click that leads to the order. Welcome flows that sell the first product, cart emails that bring buyers back, post-purchase emails that earn the second order, and campaigns people actually open.",
       "I design mobile first, check dark mode and Outlook before you ask, and hand off files your developer can build without guessing. You work with me directly, from brief to send.",
     ],
     portrait: "/portrait.webp" as string,
-    portraitAlt: "Portrait of Samir Shrestha",
+    portraitAlt: "Portrait of Sthasamir",
     toolsHeading: "What I work in",
     tools: [
       { name: "Figma", use: "Where every email is designed" },

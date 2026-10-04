@@ -557,7 +557,7 @@ const HeroStory = forwardRef<HeroVideoHandle, { reduced?: boolean }>(function He
         {/* End card */}
         <div data-end className="absolute inset-x-0 flex flex-col items-center text-center" style={{ top: "13cqw" }}>
           <p className="font-mono text-[#6b675c] opacity-0" style={{ fontSize: "1.2cqw" }}>Email designer for DTC brands</p>
-          <p className="mt-[1cqw] font-display font-semibold tracking-[-0.03em] opacity-0" style={{ fontSize: "6.4cqw", lineHeight: 1 }}>Samir Shrestha</p>
+          <p className="mt-[1cqw] font-display font-semibold tracking-[-0.03em] opacity-0" style={{ fontSize: "6.4cqw", lineHeight: 1 }}>Sthasamir</p>
           <p className="mt-[1.4cqw] opacity-0" style={{ fontSize: "2cqw" }}>Email design that pays for itself.</p>
           <span className="mt-[2cqw] rounded-full bg-[#c6f432] px-[2.6cqw] py-[1.1cqw] font-semibold text-[#23300f] opacity-0" style={{ fontSize: "1.5cqw" }}>
             Hire me
