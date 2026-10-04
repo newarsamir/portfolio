@@ -34,7 +34,7 @@ export const AboutIcon = (p: P) => (
     <path d="M4.8 20c.9-3.6 3.8-5.4 7.2-5.4s6.3 1.8 7.2 5.4" />
   </svg>
 );
-/** Layers: wireframe to design to handoff. */
+/** Layers: brief to design to handoff. */
 export const ProcessIcon = (p: P) => (
   <svg {...base} {...p}>
     <path d="m12 3.5 8.5 4.6L12 12.7 3.5 8.1 12 3.5Z" />

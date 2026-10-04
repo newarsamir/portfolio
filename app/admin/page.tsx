@@ -60,6 +60,7 @@ export default async function AdminPage() {
         heroVideoUrl: settings.heroVideoUrl,
         availableForWork: settings.availableForWork,
         counters: settings.counters.map((c) => ({ id: c.id, label: c.label, value: c.value })),
+        brands: settings.brands,
       }}
       poster={site.defaults.heroPoster}
       showcase={{
@@ -78,6 +79,7 @@ export default async function AdminPage() {
         error: showcase.error,
         heading: settings.showcaseHeading,
         sub: settings.showcaseSub,
+        placeholderSrcs: site.showcase.items.map((i) => i.src),
       }}
       caseStudies={{
         items: cases.items.map(({ sortOrder: _sortOrder, ...c }) => c),

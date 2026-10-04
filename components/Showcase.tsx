@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import type { ShowcaseItem } from "@/content/site";
-import { gsap, ScrollTrigger, useGSAP, MOTION_OK } from "@/lib/gsap";
+import { ScrollTrigger, useGSAP } from "@/lib/gsap";
 import Lightbox from "./Lightbox";
 import { Reveal, SplitHeading } from "./Reveal";
 import ShowcaseCarousel from "./ShowcaseCarousel";
@@ -95,43 +95,6 @@ export default function Showcase({
     { scope: root, dependencies: [mode] },
   );
 
-  // The whole section arrives out of a blur and leaves into one, fading as it goes.
-  useGSAP(
-    () => {
-      const mm = gsap.matchMedia();
-      mm.add(MOTION_OK, () => {
-        const el = root.current!;
-        const targets = gsap.utils.toArray<HTMLElement>("[data-blur-stage]", el);
-        if (!targets.length) return;
-        gsap.fromTo(
-          targets,
-          { filter: "blur(26px)", opacity: 0, scale: 0.94 },
-          {
-            filter: "blur(0px)",
-            opacity: 1,
-            scale: 1,
-            ease: "none",
-            scrollTrigger: { trigger: el, start: "top 95%", end: "top 15%", scrub: true },
-          },
-        );
-        gsap.fromTo(
-          targets,
-          { filter: "blur(0px)", opacity: 1, scale: 1 },
-          {
-            filter: "blur(22px)",
-            opacity: 0,
-            scale: 1.04,
-            ease: "none",
-            immediateRender: false,
-            scrollTrigger: { trigger: el, start: "bottom 70%", end: "bottom 5%", scrub: true },
-          },
-        );
-      });
-      return () => mm.revert();
-    },
-    { scope: root, dependencies: [mode] },
-  );
-
   if (items.length === 0) return null;
   const item = items[Math.min(current, items.length - 1)];
 
@@ -140,20 +103,20 @@ export default function Showcase({
       {mode === "3d" ? (
         <div data-showcase-pin className="relative h-svh min-h-[38rem] overflow-clip">
           <div className="wrap relative z-10 flex items-start justify-between gap-8 pt-[clamp(1.5rem,5svh,3.5rem)]">
-            <SplitHeading key="3d" id="work-h" className="display-md" blur>
+            <SplitHeading key="3d" id="work-h" className="display-md">
               {heading}
             </SplitHeading>
             <p className="hidden max-w-[34ch] pt-1 text-muted lg:block">{sub}</p>
           </div>
 
-          <div data-blur-stage className="absolute inset-0 will-change-[filter,opacity,transform]">
+          <div className="absolute inset-0">
             {near && (
               <ShowcaseCanvas items={items} progress={progress} active={inView && open === null} onOpen={setOpen} />
             )}
           </div>
 
           {/* Labels stay in HTML, outside the canvas. */}
-          <div data-blur-stage className="wrap pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-6 pb-[clamp(5.5rem,11svh,7rem)]">
+          <div className="wrap pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-6 pb-[clamp(5.5rem,11svh,7rem)]">
             {/* Keyed on the index so each change blurs the new label in. */}
             <div aria-live="off" key={current} className="blur-swap">
               <p className="mono text-muted">
@@ -182,14 +145,14 @@ export default function Showcase({
       ) : (
         <div className="section pb-[clamp(3rem,6vw,5rem)]">
           <div className="wrap">
-            <SplitHeading key="carousel" id="work-h" className="display-lg" blur>
+            <SplitHeading key="carousel" id="work-h" className="display-lg">
               {heading.replace(/Scroll to spin them\.?/i, "Swipe through them.")}
             </SplitHeading>
             <Reveal className="mt-5 max-w-[46ch] text-lg text-muted">
               <p>{sub}</p>
             </Reveal>
           </div>
-          <div data-blur-stage className="mt-6">
+          <div className="mt-6">
             <ShowcaseCarousel items={items} onOpen={setOpen} />
           </div>
         </div>

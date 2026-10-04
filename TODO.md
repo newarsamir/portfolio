@@ -4,7 +4,6 @@ Everything is in `content/site.ts` unless noted. Search that file for `TODO`.
 
 ## Must do before sharing the link
 
-- [ ] **Email address** (`email`). It is `your@email.com` right now and appears in the final CTA, the contact page, the footer and the form's error messages.
 - [ ] **Social links** (`socials`): LinkedIn, Dribbble, Behance, Instagram. Links left as `#` are hidden.
 - [ ] **Location** (`location`). Set to Kathmandu, Nepal. Confirm or change it.
 - [ ] **Re-run `supabase/schema.sql`** after pulling this update. It adds the `showcase_items` table and the `showcase` storage bucket, and is safe to run again.
@@ -21,12 +20,12 @@ Everything is in `content/site.ts` unless noted. Search that file for `TODO`.
 - [ ] **Portrait**: add `public/portrait.webp` (4:5) and set `about.portrait` to `"/portrait.webp"`.
 - [ ] **About story** (`about.story`): rewrite in your own words. I kept it to what the brief said and invented no biography.
 - [ ] **Budget ranges** (`contact.budgets`): they are in USD and are my guess at sensible brackets.
-- [ ] **Process details** (`process.steps[].detail`): "one round on the wireframe, two on the design" also appears in the FAQ. Change both if your terms differ.
+- [ ] **Process details** (`process.steps[].detail`): "two rounds on the design" also appears in the FAQ. Change both if your terms differ.
 - [ ] **FAQ timelines** (`faq.items`): "a few days" for a campaign and "one to two weeks" for a flow, and the "two working days" reply time on the contact page.
 - [ ] **Service sizes** (`services.items[].tag`): "3 to 5 emails" and so on.
 - [ ] **Service samples** (`services.items[].image`): each row shows one of the showcase emails on hover. Point them at the emails that fit once the real ones are in.
-- [ ] **Anatomy notes** (`anatomy.parts`): seven short notes on how I approach each part of an email. Edit them to match how you actually work.
-- [ ] **Brand strip** (`brandStrip.items`): add client names you are allowed to show.
+- [ ] **Anatomy notes** (`anatomy.parts`, section hidden for now in `app/(site)/page.tsx`): seven short notes on how I approach each part of an email. Edit them to match how you actually work.
+- [ ] **Brand strip**: add the brands you've worked with in `/admin` under Settings (one per line). The strip under the hero stays hidden until there's at least one.
 
 ## When you have them
 

@@ -1,10 +1,10 @@
 import { site } from "@/content/site";
 
-/** Slow marquee of the tools from /content/site.ts. Pauses on hover. */
-export default function BrandStrip() {
-  const items = site.brandStrip.items;
+/** Slow marquee of client names. Pauses on hover; hidden while there are none. */
+export default function BrandStrip({ items }: { items: string[] }) {
+  if (items.length === 0) return null;
   // Repeat enough to fill wide screens, then duplicate once for the loop.
-  const row = Array.from({ length: 4 }, () => items).flat();
+  const row = Array.from({ length: Math.max(2, Math.ceil(12 / items.length)) }, () => items).flat();
 
   const Row = ({ hidden }: { hidden?: boolean }) => (
     <ul className="flex shrink-0 items-center" aria-hidden={hidden || undefined}>

@@ -167,19 +167,29 @@ export async function reorderShowcase(ids: string[]): Promise<ActionResult> {
   return { ok: true, message: "Order saved." };
 }
 
-/** Copies the placeholder emails from site.ts into an empty table so they can be edited. */
+/**
+ * Adds the placeholder emails from site.ts after whatever is already in the
+ * showcase, skipping any that are already there, so it is safe to click twice.
+ */
 export async function importDefaultShowcase(): Promise<ActionResult> {
   await requireAdmin();
   const db = getSupabase();
   if (!db) return NO_DB;
-  const { count, error: countError } = await db.from("showcase_items").select("id", { count: "exact", head: true });
-  if (countError) return { ok: false, message: "Couldn't read the showcase_items table. Run supabase/schema.sql again." };
-  if (count) return { ok: false, message: "The showcase already has emails, so nothing was imported." };
-  const rows = site.showcase.items.map((it, i) => ({ ...it, published: true, sort_order: i }));
+  const { data: existing, error: readError } = await db.from("showcase_items").select("src, sort_order");
+  if (readError) return { ok: false, message: "Couldn't read the showcase_items table. Run supabase/schema.sql again." };
+  const have = new Set(existing.map((r) => r.src as string));
+  const start = existing.reduce((max, r) => Math.max(max, r.sort_order as number), -1) + 1;
+  const rows = site.showcase.items
+    .filter((it) => !have.has(it.src))
+    .map((it, i) => ({ ...it, published: true, sort_order: start + i }));
+  if (rows.length === 0) return { ok: false, message: "All the placeholders are already in the showcase." };
   const { error } = await db.from("showcase_items").insert(rows);
   if (error) return { ok: false, message: "The import failed. Try again." };
   done();
-  return { ok: true, message: `Imported ${rows.length} emails. Edit or replace them one by one.` };
+  return {
+    ok: true,
+    message: `Added ${rows.length} placeholder${rows.length === 1 ? "" : "s"} after your emails. Edit or replace them one by one.`,
+  };
 }
 
 export async function saveShowcaseText(_prev: ActionResult | null, form: FormData): Promise<ActionResult> {

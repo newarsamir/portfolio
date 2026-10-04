@@ -11,6 +11,8 @@ export type SiteSettings = {
   countersArePlaceholder: boolean;
   showcaseHeading: string;
   showcaseSub: string;
+  /** Client names for the brand strip. */
+  brands: string[];
 };
 
 export const SETTING_KEYS = {
@@ -19,6 +21,7 @@ export const SETTING_KEYS = {
   counters: "counters",
   showcaseHeading: "showcase_heading",
   showcaseSub: "showcase_sub",
+  brands: "brands",
 } as const;
 
 function defaults(): SiteSettings {
@@ -29,6 +32,7 @@ function defaults(): SiteSettings {
     countersArePlaceholder: site.counters.placeholder,
     showcaseHeading: site.showcase.heading,
     showcaseSub: site.showcase.sub,
+    brands: [...site.brandStrip.items],
   };
 }
 
@@ -51,6 +55,9 @@ export const getSettings = cache(async (): Promise<SiteSettings> => {
       }
       if (row.key === SETTING_KEYS.showcaseSub && typeof row.value === "string" && row.value.trim()) {
         out.showcaseSub = row.value.trim();
+      }
+      if (row.key === SETTING_KEYS.brands && Array.isArray(row.value)) {
+        out.brands = row.value.filter((b): b is string => typeof b === "string" && b.trim() !== "");
       }
       if (row.key === SETTING_KEYS.available && typeof row.value === "boolean") {
         out.availableForWork = row.value;

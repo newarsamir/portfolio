@@ -107,16 +107,15 @@ export default function Process() {
                   aria-hidden="true"
                 >
                   {i === 0 && <BriefVisual />}
-                  {i === 1 && <MiniEmail mode="wire" />}
-                  {i === 2 && (
+                  {i === 1 && (
                     <div className="grid h-full grid-cols-2">
-                      <MiniEmail mode="design" label="Light mode" />
+                      <MiniEmail label="Light mode" />
                       <div className="bg-[oklch(19%_0.01_80)]">
-                        <MiniEmail mode="design" dark label="Dark mode" />
+                        <MiniEmail dark label="Dark mode" />
                       </div>
                     </div>
                   )}
-                  {i === 3 && <HandoffVisual />}
+                  {i === 2 && <HandoffVisual />}
                 </div>
               </li>
             ))}
@@ -153,9 +152,7 @@ function BriefVisual() {
   );
 }
 
-function MiniEmail({ mode, dark = false, label }: { mode: "wire" | "design"; dark?: boolean; label?: string }) {
-  const wire = mode === "wire";
-  const box = "border border-dashed border-muted/70 bg-surface";
+function MiniEmail({ dark = false, label }: { dark?: boolean; label: string }) {
   // The dark variant is drawn with fixed colors so it looks the same in both site themes.
   const c = dark
     ? { card: "border-white/15 bg-[oklch(24%_0.012_80)]", ink: "bg-[oklch(95%_0.02_95)]", soft: "bg-white/25", tile: "bg-white/10", btn: "bg-[oklch(95%_0.02_95)] text-[oklch(19%_0.01_80)]", label: "text-[oklch(78%_0.02_90)]" }
@@ -163,45 +160,31 @@ function MiniEmail({ mode, dark = false, label }: { mode: "wire" | "design"; dar
   return (
     <div className="relative grid h-full place-items-center px-4 py-11">
       <div
-        className={`relative flex h-full max-h-[24rem] w-full max-w-[14.5rem] flex-col gap-2.5 rounded-xl border p-3.5 ${
-          wire ? "border-line bg-raised" : `${c.card} shadow-[0_24px_50px_-28px_rgb(0_0_0/0.5)]`
-        }`}
+        className={`relative flex h-full max-h-[24rem] w-full max-w-[14.5rem] flex-col gap-2.5 rounded-xl border p-3.5 ${c.card} shadow-[0_24px_50px_-28px_rgb(0_0_0/0.5)]`}
       >
         <div className="flex items-center justify-between">
-          <span className={`h-3 w-14 rounded-sm ${wire ? "bg-line" : c.ink}`} />
+          <span className={`h-3 w-14 rounded-sm ${c.ink}`} />
           <span className="flex gap-1">
-            <span className={`h-1.5 w-5 rounded-sm ${wire ? "bg-line" : c.soft}`} />
-            <span className={`h-1.5 w-5 rounded-sm ${wire ? "bg-line" : c.soft}`} />
+            <span className={`h-1.5 w-5 rounded-sm ${c.soft}`} />
+            <span className={`h-1.5 w-5 rounded-sm ${c.soft}`} />
           </span>
         </div>
-        <div className={`relative grid flex-[1.5] place-items-center overflow-clip rounded-lg ${wire ? box : "bg-lime text-on-lime"}`}>
-          {wire ? (
-            <svg className="absolute inset-0 h-full w-full text-muted/50" preserveAspectRatio="none" viewBox="0 0 10 10">
-              <path d="M0 0 10 10M10 0 0 10" stroke="currentColor" strokeWidth="0.12" vectorEffect="non-scaling-stroke" />
-            </svg>
-          ) : (
-            <span className="px-3 text-center font-display text-xl font-semibold leading-[1.08]">Hello, nice to meet you</span>
-          )}
+        <div className="relative grid flex-[1.5] place-items-center overflow-clip rounded-lg bg-lime text-on-lime">
+          <span className="px-3 text-center font-display text-xl font-semibold leading-[1.08]">Your cart misses you</span>
         </div>
         <div className="space-y-1.5 px-1">
-          <span className={`block h-2 w-full rounded-sm ${wire ? "bg-line" : c.ink} ${wire ? "" : "opacity-70"}`} />
-          <span className={`block h-2 w-4/5 rounded-sm ${wire ? "bg-line" : c.soft}`} />
+          <span className={`block h-2 w-full rounded-sm opacity-70 ${c.ink}`} />
+          <span className={`block h-2 w-4/5 rounded-sm ${c.soft}`} />
         </div>
-        <span
-          className={`mx-auto grid h-8 w-32 max-w-full place-items-center rounded-full text-xs font-medium ${
-            wire ? `${box} text-muted` : c.btn
-          }`}
-        >
-          {wire ? "button" : "Shop bestsellers"}
+        <span className={`mx-auto grid h-8 w-32 max-w-full place-items-center rounded-full text-xs font-medium ${c.btn}`}>
+          Finish checkout
         </span>
         <div className="grid flex-1 grid-cols-2 gap-2.5">
-          <span className={`rounded-lg ${wire ? box : c.tile}`} />
-          <span className={`rounded-lg ${wire ? box : c.tile}`} />
+          <span className={`rounded-lg ${c.tile}`} />
+          <span className={`rounded-lg ${c.tile}`} />
         </div>
       </div>
-      <span className={`mono absolute bottom-3.5 left-4 ${wire ? "text-muted" : c.label}`}>
-        {wire ? "Wireframe, no colors yet" : label}
-      </span>
+      <span className={`mono absolute bottom-3.5 left-4 ${c.label}`}>{label}</span>
     </div>
   );
 }

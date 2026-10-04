@@ -36,8 +36,8 @@ export default function ShowcaseCarousel({
         const a = Math.abs(off);
         card.style.transform = `rotateY(${(-off * 32).toFixed(2)}deg) translateZ(${(-a * 70).toFixed(1)}px)`;
         // Cards leaving the center blur and turn transparent.
-        card.style.filter = a > 0.15 ? `blur(${((a - 0.15) * 5).toFixed(2)}px)` : "";
-        card.style.opacity = (1 - Math.min(0.6, a * 0.45)).toFixed(3);
+        card.style.filter = a > 0.12 ? `blur(${((a - 0.12) * 7).toFixed(2)}px)` : "";
+        card.style.opacity = Math.max(0.15, 1 - a * 0.7).toFixed(3);
       }
     };
     const queue = () => {
