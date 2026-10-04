@@ -7,6 +7,7 @@ import { isAdminConfigured, isAuthed } from "@/lib/auth";
 import { getAllCaseStudies } from "@/lib/case-studies";
 import { getAllShowcaseItems } from "@/lib/showcase";
 import { checkDatabase } from "@/lib/db-status";
+import { getAllGalleryItems } from "@/lib/gallery";
 import { getSettings } from "@/lib/settings";
 import { getSupabase } from "@/lib/supabase";
 
@@ -51,6 +52,7 @@ export default async function AdminPage() {
   const cases = await getAllCaseStudies();
   const showcase = await getAllShowcaseItems();
   const dbStatus = await checkDatabase();
+  const gallery = await getAllGalleryItems();
 
   return (
     <AdminPanel
@@ -66,6 +68,11 @@ export default async function AdminPage() {
       }}
       poster={site.defaults.heroPoster}
       dbStatus={dbStatus}
+      gallery={{
+        items: gallery.items.map(({ storagePath, sortOrder: _sortOrder, ...g }) => ({ ...g, uploaded: Boolean(storagePath) })),
+        fromDb: gallery.fromDb,
+        error: gallery.error,
+      }}
       showcase={{
         items: showcase.items.map((s) => ({
           id: s.id,

@@ -72,6 +72,25 @@ create table if not exists public.showcase_items (
 create index if not exists showcase_items_sort_idx
   on public.showcase_items (sort_order, created_at);
 
+-- AI product and lifestyle shots in the photography gallery, managed from /admin
+create table if not exists public.gallery_items (
+  id            uuid primary key default gen_random_uuid(),
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now(),
+  src           text not null,
+  storage_path  text,                          -- set when uploaded through /admin
+  width         integer not null check (width > 0),
+  height        integer not null check (height > 0),
+  kind          text not null default 'product' check (kind in ('product', 'lifestyle')),
+  caption       text not null default '',
+  prompt        text not null default '',      -- shown on hover: how the image was made
+  published     boolean not null default true,
+  sort_order    integer not null default 0
+);
+
+create index if not exists gallery_items_sort_idx
+  on public.gallery_items (sort_order, created_at);
+
 -- Failed admin logins, used for rate limiting across serverless instances
 create table if not exists public.login_attempts (
   id          bigint generated always as identity primary key,
@@ -90,6 +109,7 @@ alter table public.settings       enable row level security;
 alter table public.login_attempts enable row level security;
 alter table public.case_studies   enable row level security;
 alter table public.showcase_items enable row level security;
+alter table public.gallery_items  enable row level security;
 
 insert into public.settings (key, value) values
   ('available_for_work', 'true'::jsonb)

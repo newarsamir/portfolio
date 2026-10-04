@@ -8,6 +8,7 @@ import { toast } from "@/lib/toast";
 import CaseStudiesAdmin, { type AdminCaseStudy } from "./CaseStudiesAdmin";
 import ShowcaseAdmin, { type AdminShowcaseItem } from "./ShowcaseAdmin";
 import DbStatus, { type DbStatusData } from "./DbStatus";
+import GalleryAdmin, { type AdminGalleryItem } from "./GalleryAdmin";
 
 export type ContactRow = {
   id: string;
@@ -46,8 +47,10 @@ export default function AdminPanel({
   caseStudies,
   showcase,
   dbStatus,
+  gallery,
 }: {
   dbStatus: DbStatusData;
+  gallery: { items: AdminGalleryItem[]; fromDb: boolean; error: string | null };
   siteName: string;
   contacts: ContactRow[];
   loadError: string | null;
@@ -64,7 +67,7 @@ export default function AdminPanel({
     placeholderSrcs: string[];
   };
 }) {
-  const [tab, setTab] = useState<"contacts" | "showcase" | "cases" | "settings">("contacts");
+  const [tab, setTab] = useState<"contacts" | "showcase" | "gallery" | "cases" | "settings">("contacts");
   const [rows, setRows] = useState(contacts);
   const unread = rows.filter((r) => !r.is_read).length;
 
@@ -118,6 +121,7 @@ export default function AdminPanel({
           [
             ["contacts", `Contacts${unread ? ` (${unread} unread)` : ""}`],
             ["showcase", `Showcase (${showcase.items.length})`],
+            ["gallery", `Gallery (${gallery.items.length})`],
             ["cases", `Case studies (${caseStudies.items.length})`],
             ["settings", "Settings"],
           ] as const
@@ -151,6 +155,9 @@ export default function AdminPanel({
           sub={showcase.sub}
           placeholderSrcs={showcase.placeholderSrcs}
         />
+      </div>
+      <div role="tabpanel" id="panel-gallery" aria-labelledby="tab-gallery" hidden={tab !== "gallery"} className="pt-6">
+        <GalleryAdmin items={gallery.items} fromDb={gallery.fromDb} dbConnected={dbConnected} loadError={gallery.error} />
       </div>
       <div role="tabpanel" id="panel-cases" aria-labelledby="tab-cases" hidden={tab !== "cases"} className="pt-6">
         <CaseStudiesAdmin

@@ -414,6 +414,15 @@ export const site = {
     ],
   },
 
+  /** AI product and lifestyle photography. Images are managed in /admin (Gallery). */
+  gallery: {
+    label: "AI product photography",
+    heading: "No product photos? I'll make them.",
+    sub: "Studio product shots and lifestyle scenes, generated with AI tools like Higgsfield and ChatGPT and styled to your brand, so your emails never wait on a photoshoot.",
+    tools: ["Higgsfield", "ChatGPT", "Other AI tools"],
+    cta: "Ask about product shots",
+  },
+
   // Real ones only. While this array is empty the section is not rendered.
   // TODO: add testimonials as { quote, name, role }.
   testimonials: [] as Testimonial[],
