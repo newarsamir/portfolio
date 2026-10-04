@@ -48,8 +48,8 @@ export const getSettings = cache(async (): Promise<SiteSettings> => {
 
     for (const row of data as { key: string; value: unknown }[]) {
       if (row.key === SETTING_KEYS.video && typeof row.value === "string" && row.value.trim()) {
-        // The old placeholder reel was never real content; show the story instead.
-        out.heroVideoUrl = row.value.trim() === "/hero/reel-placeholder.mp4" ? "story" : row.value.trim();
+        // The old placeholder reel was never real content; keep the default hero film instead.
+        if (row.value.trim() !== "/hero/reel-placeholder.mp4") out.heroVideoUrl = row.value.trim();
       }
       if (row.key === SETTING_KEYS.showcaseHeading && typeof row.value === "string" && row.value.trim()) {
         out.showcaseHeading = row.value.trim();

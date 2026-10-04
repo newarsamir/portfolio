@@ -81,7 +81,7 @@ Add or remove items freely. The 3D arc, the carousel and the lightbox all follow
 
 - **Without a redeploy:** sign in at `/admin`, open **Settings**, paste a direct `.mp4` link, a YouTube link or a Vimeo link, check the preview, save.
 - **In code:** set `defaults.heroVideoUrl` in `content/site.ts`. For a local file, put it in `public/hero/` and use a path such as `/hero/reel.mp4`.
-- The image shown before the video plays is `defaults.heroPoster` (`public/hero/poster-placeholder.webp`). Replace it with a 1280x720 frame of your video. YouTube links use the YouTube thumbnail.
+- The image shown before the video plays is `defaults.heroPoster` (`public/hero/hero-video-poster.webp`). Replace it with a 1280x720 frame of your video. YouTube links use the YouTube thumbnail.
 
 ### Add your portrait
 

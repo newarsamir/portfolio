@@ -19,6 +19,8 @@ const HeroVideo = forwardRef<
   const frameRef = useRef<HTMLIFrameElement>(null);
   const [mounted, setMounted] = useState(false);
   const [showing, setShowing] = useState(false);
+  // Browsers only allow autoplay when muted, so sound is a choice the visitor makes.
+  const [muted, setMuted] = useState(true);
   const wantPlay = useRef(false);
 
   const post = (kind: "play" | "pause") => {
@@ -63,7 +65,7 @@ const HeroVideo = forwardRef<
           className="absolute inset-0 h-full w-full object-cover"
           src={parsed.src}
           poster={poster}
-          muted
+          muted={muted}
           loop
           playsInline
           autoPlay
@@ -106,6 +108,25 @@ const HeroVideo = forwardRef<
           className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700"
           style={{ opacity: showing ? 0 : 1, pointerEvents: "none" }}
         />
+      )}
+
+      {mounted && showing && parsed?.kind === "file" && !controls && (
+        <button
+          type="button"
+          onClick={() => {
+            const next = !muted;
+            setMuted(next);
+            if (videoRef.current) videoRef.current.muted = next;
+          }}
+          aria-pressed={!muted}
+          className="absolute bottom-4 right-4 z-10 inline-flex min-h-11 items-center gap-2 rounded-full bg-ink px-4 text-sm font-medium text-bg transition-colors hover:bg-lime hover:text-on-lime md:bottom-6 md:right-6 md:text-base"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5H4Z" />
+            {muted ? <path d="m16 9.5 5 5m0-5-5 5" /> : <path d="M15.5 9a4.2 4.2 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11" />}
+          </svg>
+          {muted ? "Turn sound on" : "Turn sound off"}
+        </button>
       )}
 
       {!parsed && (

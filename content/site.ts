@@ -85,10 +85,11 @@ export const site = {
    */
   defaults: {
     availableForWork: true,
-    // "story" is the built-in animated, narrated story (components/HeroStory.tsx).
-    // A direct .mp4, a YouTube link or a Vimeo link also work, from /admin too.
-    heroVideoUrl: "story",
-    heroPoster: "/hero/poster-placeholder.webp",
+    // The narrated 45-second hero film. "story" switches back to the built-in
+    // animated story (components/HeroStory.tsx). A YouTube or Vimeo link also
+    // works, and all of these can be set from /admin too.
+    heroVideoUrl: "/hero/hero-video.mp4",
+    heroPoster: "/hero/hero-video-poster.webp",
   },
 
   hero: {
