@@ -40,7 +40,7 @@ The site runs without Supabase too. It then uses the defaults from `content/site
 ## Set up Supabase (5 minutes)
 
 1. Create a project at supabase.com.
-2. Open **SQL Editor**, paste the contents of `supabase/schema.sql`, run it. It creates `contacts`, `settings`, `case_studies` and `login_attempts`, and turns on row level security with no public policies.
+2. Open **SQL Editor**, paste the contents of `supabase/schema.sql`, run it. It creates `contacts`, `settings`, `showcase_items`, `case_studies` and `login_attempts` plus the `showcase` storage bucket, and turns on row level security with no public policies.
 3. Open **Project Settings, API**. Copy the project URL into `SUPABASE_URL` and the secret key (`sb_secret_...`, or the legacy `service_role` key) into `SUPABASE_SERVICE_ROLE_KEY`.
 
 The secret key is only read in server code (`lib/supabase.ts` is marked `server-only`). It is never sent to the browser.
@@ -66,6 +66,10 @@ The secret key is only read in server code (`lib/supabase.ts` is marked `server-
 Everything you can read on the site is in **`content/site.ts`**: name, email, socials, hero copy, counters, showcase items, about, process, services, FAQ, contact options and footer. `TODO.md` lists what still needs your real content.
 
 ### Swap the emails
+
+**From `/admin` (recommended):** open **Showcase**, then **Add an email**. Drop in a tall WebP, PNG or JPEG export (up to 4 MB) or paste a link; the size is read automatically. You can edit, hide, reorder and delete emails, and change the section heading, without a redeploy. Uploads go to the public `showcase` bucket in Supabase Storage, which `supabase/schema.sql` creates. Until you add the first email the site shows the placeholders below.
+
+**In code:**
 
 1. Export each email from Figma as WebP, 600 to 1200px wide, full height.
 2. Save them in `public/emails/` as `email-01.webp` to `email-08.webp` (replace the placeholders).
@@ -98,7 +102,9 @@ The section is hidden while `testimonials` in `content/site.ts` is empty. Add re
 `/admin` is protected by `ADMIN_PASSWORD`. Signing in sets a signed, httpOnly cookie that lasts 7 days and is only sent to `/admin`. Five wrong passwords from one IP lock sign-in for 15 minutes.
 
 - **Contacts:** newest first, search, read and unread, delete, CSV export.
+- **Showcase:** upload or link emails, automatic image size, edit, hide, reorder, delete, and the section heading.
 - **Case studies:** full create, read, update and delete, with a live card preview, publish/draft, and up/down ordering.
+- Errors and confirmations appear as pop-ups in the corner (bottom on phones).
 - **Settings:** hero video URL with live preview, the "available for work" switch that drives the nav badge, and the counter values.
 
 Saving settings rebuilds the public pages straight away.

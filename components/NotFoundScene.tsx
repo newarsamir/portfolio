@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { site } from "@/content/site";
 import { toast } from "@/lib/toast";
@@ -48,7 +48,10 @@ function Envelope({ className }: { className?: string }) {
 }
 
 export default function NotFoundScene() {
-  const pathname = usePathname() ?? "/that-page";
+  // The server doesn't know the requested URL here, so it's filled in
+  // after mount to keep the server and browser markup identical.
+  const [pathname, setPathname] = useState("/this-page");
+  useEffect(() => setPathname(window.location.pathname), []);
   const router = useRouter();
   const scene = useRef<HTMLDivElement>(null);
   const [quip, setQuip] = useState(0);
@@ -219,7 +222,7 @@ export default function NotFoundScene() {
             </span>
           </div>
 
-          <p className="display-lg mt-6 max-w-[14ch]">This page bounced.</p>
+          <p className="display-lg mt-6 max-w-[14ch] font-display font-semibold leading-[1.05] tracking-[-0.015em]">This page bounced.</p>
           <p key={quip} className="blur-swap mt-5 min-h-[5.5rem] max-w-[46ch] text-lg text-muted md:text-xl" aria-live="polite">
             {QUIPS[quip]}
           </p>

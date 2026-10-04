@@ -5,8 +5,8 @@ import SmoothScroll from "@/components/SmoothScroll";
 import { getSettings } from "@/lib/settings";
 
 // Settings changed in /admin show up right away (the admin actions
-// revalidate), and at the latest after five minutes.
-export const revalidate = 300;
+// revalidate), and at the latest after a minute.
+export const revalidate = 60;
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSettings();

@@ -16,7 +16,7 @@ import { getSettings } from "@/lib/settings";
 import { getShowcaseItems } from "@/lib/showcase";
 import { siteUrl } from "@/lib/url";
 
-export const revalidate = 300;
+export const revalidate = 60;
 
 export default async function HomePage() {
   const settings = await getSettings();
