@@ -19,7 +19,7 @@ export default function Footer() {
   const city = site.location.split(",")[0];
 
   return (
-    <footer className="relative overflow-clip border-t border-line bg-surface pt-[clamp(3.5rem,7vw,6rem)] gridlines">
+    <footer id="contact" className="relative overflow-clip border-t border-line bg-surface pt-[clamp(3.5rem,7vw,6rem)] gridlines">
       <div className="wrap">
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-6">

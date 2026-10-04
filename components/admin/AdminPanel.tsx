@@ -7,6 +7,7 @@ import { embedSrc, parseVideo } from "@/lib/video";
 import { toast } from "@/lib/toast";
 import CaseStudiesAdmin, { type AdminCaseStudy } from "./CaseStudiesAdmin";
 import ShowcaseAdmin, { type AdminShowcaseItem } from "./ShowcaseAdmin";
+import DbStatus, { type DbStatusData } from "./DbStatus";
 
 export type ContactRow = {
   id: string;
@@ -44,7 +45,9 @@ export default function AdminPanel({
   poster,
   caseStudies,
   showcase,
+  dbStatus,
 }: {
+  dbStatus: DbStatusData;
   siteName: string;
   contacts: ContactRow[];
   loadError: string | null;
@@ -91,6 +94,23 @@ export default function AdminPanel({
           <code className="mono">supabase/schema.sql</code>, then redeploy. Until then the site uses the defaults from{" "}
           <code className="mono">content/site.ts</code>.
         </p>
+      )}
+
+      {dbConnected && dbStatus.checks.some((c) => !c.ok) && (
+        <div role="alert" className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-danger/40 bg-surface p-4">
+          <p>
+            <strong className="font-semibold">Part of the database isn&apos;t set up</strong> in{" "}
+            <code className="mono">{dbStatus.host}</code>:{" "}
+            {dbStatus.checks
+              .filter((c) => !c.ok)
+              .map((c) => c.name)
+              .join(", ")}
+            .
+          </p>
+          <button type="button" className="btn btn-ghost btn-sm" onClick={() => setTab("settings")}>
+            See what to fix
+          </button>
+        </div>
       )}
 
       <div role="tablist" aria-label="Admin sections" className="mt-8 flex gap-1 overflow-x-auto border-b border-line">
@@ -141,7 +161,10 @@ export default function AdminPanel({
         />
       </div>
       <div role="tabpanel" id="panel-settings" aria-labelledby="tab-settings" hidden={tab !== "settings"} className="pt-6">
-        <SettingsForm settings={settings} poster={poster} disabled={!dbConnected} />
+        <DbStatus status={dbStatus} />
+        <div className="mt-10">
+          <SettingsForm settings={settings} poster={poster} disabled={!dbConnected} />
+        </div>
       </div>
     </main>
   );

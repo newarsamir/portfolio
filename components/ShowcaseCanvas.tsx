@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
-import { Suspense, useEffect, useMemo, useRef, type RefObject } from "react";
+import { Component, Suspense, useEffect, useMemo, useRef, type ReactNode, type RefObject } from "react";
 import * as THREE from "three";
 import type { ShowcaseItem } from "@/content/site";
 import { setCursor } from "./Cursor";
@@ -12,6 +12,23 @@ const CARD_H = 3.3;
 const RADIUS = 6.4;
 const CAMERA_Z = 10.4;
 export const STEP = 0.36; // radians between neighbours on the arc
+
+/**
+ * One card's image failing to load (a deleted upload, a mistyped link) only
+ * removes that card; the rest of the arc and the page carry on.
+ */
+class SkipOnError extends Component<{ children: ReactNode; src: string }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch(error: unknown) {
+    console.warn(`Showcase image skipped: ${this.props.src}`, error);
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
 
 /** Rounded rectangle with 0..1 UVs so a texture maps cleanly onto it. */
 function useCardGeometry() {
@@ -206,7 +223,11 @@ function Arc({
     <group position={[0, 0.16, -RADIUS]}>
       <group ref={arc}>
         {items.map((item, i) => (
-          <Card key={item.id ?? item.src} item={item} index={i} geometry={geometry} arc={arc} onOpen={onOpen} />
+          <SkipOnError key={item.id ?? item.src} src={item.src}>
+            <Suspense fallback={null}>
+              <Card item={item} index={i} geometry={geometry} arc={arc} onOpen={onOpen} />
+            </Suspense>
+          </SkipOnError>
         ))}
       </group>
     </group>

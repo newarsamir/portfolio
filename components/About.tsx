@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { site } from "@/content/site";
 import { MaskReveal, Reveal, SplitHeading } from "./Reveal";
+import Parallax from "./Parallax";
 import SectionRule from "./SectionRule";
 
 export default function About() {
@@ -12,7 +13,10 @@ export default function About() {
       </div>
       <div className="wrap grid gap-12 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-5">
-          <MaskReveal className="aspect-[4/5] w-full max-w-[30rem] rounded-2xl bg-surface">
+          {/* The card stays in view while the story scrolls past, tilting as it goes. */}
+          <div className="lg:sticky lg:top-28">
+          <Parallax y={0} rotate={2.5} trigger="#about">
+          <MaskReveal className="aspect-[4/5] w-full max-w-[30rem] rounded-2xl bg-surface lg:max-w-[22rem] shadow-[0_40px_80px_-40px_oklch(20%_0.02_80/0.45)]">
             {about.portrait ? (
               <Image
                 src={about.portrait}
@@ -33,9 +37,11 @@ export default function About() {
               </div>
             )}
           </MaskReveal>
+          </Parallax>
           <p className="mono mt-4 text-muted">
             {site.name}, {site.location}
           </p>
+          </div>
         </div>
 
         <div className="lg:col-span-7">

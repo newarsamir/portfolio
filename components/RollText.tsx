@@ -2,7 +2,9 @@ import { ArrowUpRight } from "./icons";
 
 /**
  * A label whose letters roll up and are replaced by their twins when the
- * nearest link or button is hovered. Screen readers get the plain text.
+ * nearest link or button is hovered. The letters are drawn by CSS from
+ * data-c, so the page text (copy and paste, search engines, screen
+ * readers) contains the label exactly once.
  */
 export function RollText({ text, className }: { text: string; className?: string }) {
   return (
@@ -10,10 +12,7 @@ export function RollText({ text, className }: { text: string; className?: string
       <span className="sr-only">{text}</span>
       <span className="roll" aria-hidden="true">
         {Array.from(text).map((c, i) => (
-          <span key={i} className="roll-c" style={{ ["--i" as string]: i }}>
-            <span>{c}</span>
-            <span>{c}</span>
-          </span>
+          <span key={i} className="roll-c" data-c={c} style={{ ["--i" as string]: i }} />
         ))}
       </span>
     </span>
