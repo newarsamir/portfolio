@@ -69,8 +69,8 @@ export async function saveSettings(_prev: ActionResult | null, form: FormData): 
   const db = getSupabase();
   if (!db) return { ok: false, message: "Supabase isn't connected, so settings can't be saved." };
 
-  const videoUrl = String(form.get("heroVideoUrl") ?? "").trim();
-  if (!videoUrl || !parseVideo(videoUrl)) {
+  const videoUrl = form.get("heroMode") === "story" ? "story" : String(form.get("heroVideoUrl") ?? "").trim();
+  if (videoUrl !== "story" && (!videoUrl || !parseVideo(videoUrl))) {
     return { ok: false, message: "Use a direct .mp4 link, a YouTube link or a Vimeo link for the video." };
   }
 
