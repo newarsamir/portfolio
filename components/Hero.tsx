@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { site } from "@/content/site";
 import { gsap, ScrollTrigger, useGSAP, MOTION_OK } from "@/lib/gsap";
 import AnchorLink from "./AnchorLink";
+import HeroStory from "./HeroStory";
 import HeroVideo, { type HeroVideoHandle } from "./HeroVideo";
 import Magnetic from "./Magnetic";
 import { ArrowSwap, RollText } from "./RollText";
@@ -150,13 +151,17 @@ export default function Hero({ videoUrl }: { videoUrl: string }) {
         <div className="hero-stage">
         <div ref={frame} className="hero-frame">
           <div className="load-opacity h-full w-full" style={{ ["--d" as string]: "1.15s" }}>
-            <HeroVideo
-              ref={video}
-              url={videoUrl}
-              poster={posterFor(videoUrl)}
-              title={`${site.name} showreel`}
-              controls={reduced}
-            />
+            {videoUrl === "story" ? (
+              <HeroStory ref={video} reduced={reduced} />
+            ) : (
+              <HeroVideo
+                ref={video}
+                url={videoUrl}
+                poster={posterFor(videoUrl)}
+                title={`${site.name} showreel`}
+                controls={reduced}
+              />
+            )}
           </div>
         </div>
         </div>

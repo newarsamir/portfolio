@@ -1349,3 +1349,59 @@ select.field {
 .nf-in > :nth-child(4) { animation-delay: 0.26s; }
 .nf-in > :nth-child(n + 5) { animation-delay: 0.34s; }
 }
+
+@layer components {
+/* ------------------------------------------------------------------
+   Hero story: sized in container units so it scales with the frame.
+------------------------------------------------------------------- */
+.story-grid {
+  background-image: linear-gradient(to right, oklch(45% 0.03 95 / 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(45% 0.03 95 / 0.08) 1px, transparent 1px);
+  background-size: 4.6cqw 4.6cqw;
+  background-position: center;
+}
+.story-caption {
+  font-size: max(1.55cqw, 12px) !important;
+  max-width: min(70cqw, 92%) !important;
+  animation: blur-swap 0.45s var(--ease-out) both;
+}
+.story-btn {
+  height: max(2.8cqw, 34px);
+  min-width: max(2.8cqw, 34px);
+  font-size: max(1.1cqw, 12px);
+  transition: transform 0.3s var(--ease-spring), background-color 0.2s;
+}
+.story-btn:hover {
+  transform: scale(1.06);
+}
+.story-btn svg {
+  width: max(1.3cqw, 15px);
+  height: max(1.3cqw, 15px);
+}
+.story-sound:not([aria-pressed="true"]) {
+  box-shadow: 0 0 0 0 oklch(88% 0.22 125 / 0.7);
+  animation: sound-pulse 2.4s ease-out infinite;
+}
+@keyframes sound-pulse {
+  70% { box-shadow: 0 0 0 max(1cqw, 10px) oklch(88% 0.22 125 / 0); }
+  100% { box-shadow: 0 0 0 0 oklch(88% 0.22 125 / 0); }
+}
+}
+
+@layer components {
+/* Small frames (phones): lighter controls so the story stays visible. */
+@container (max-width: 560px) {
+  .story-btn {
+    height: 28px;
+    min-width: 28px;
+    font-size: 11px;
+  }
+  .story-btn svg {
+    width: 13px;
+    height: 13px;
+  }
+  .story-caption {
+    font-size: 11px !important;
+  }
+}
+}

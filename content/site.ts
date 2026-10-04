@@ -85,8 +85,9 @@ export const site = {
    */
   defaults: {
     availableForWork: true,
-    // TODO: your showreel. A direct .mp4, a YouTube link or a Vimeo link all work.
-    heroVideoUrl: "/hero/reel-placeholder.mp4",
+    // "story" is the built-in animated, narrated story (components/HeroStory.tsx).
+    // A direct .mp4, a YouTube link or a Vimeo link also work, from /admin too.
+    heroVideoUrl: "story",
     heroPoster: "/hero/poster-placeholder.webp",
   },
 

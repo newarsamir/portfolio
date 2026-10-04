@@ -361,7 +361,8 @@ function SettingsForm({ settings, poster, disabled }: { settings: Settings; post
   useEffect(() => {
     if (state) toast.result(state);
   }, [state]);
-  const [url, setUrl] = useState(settings.heroVideoUrl);
+  const [mode, setMode] = useState<"story" | "video">(settings.heroVideoUrl === "story" ? "story" : "video");
+  const [url, setUrl] = useState(settings.heroVideoUrl === "story" ? "" : settings.heroVideoUrl);
   const [available, setAvailable] = useState(settings.availableForWork);
   const preview = useDeferredValue(url);
   const parsed = useMemo(() => parseVideo(preview), [preview]);
@@ -371,6 +372,39 @@ function SettingsForm({ settings, poster, disabled }: { settings: Settings; post
     <form action={action} className="grid gap-10 lg:grid-cols-2">
       <fieldset className="space-y-4" disabled={disabled}>
         <legend className="font-display text-2xl font-semibold">Home page video</legend>
+        <div className="grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="What plays in the hero">
+          {(
+            [
+              ["story", "Animated story", "Built in, narrated, with Tap for sound"],
+              ["video", "My own video", "An .mp4, YouTube or Vimeo link"],
+            ] as const
+          ).map(([value, title, help]) => (
+            <label
+              key={value}
+              className={`flex cursor-pointer gap-3 rounded-xl border p-4 ${mode === value ? "border-ink bg-surface" : "border-line"}`}
+            >
+              <input
+                type="radio"
+                name="heroMode"
+                value={value}
+                checked={mode === value}
+                onChange={() => setMode(value)}
+                className="mt-1 h-4 w-4 accent-[var(--lime-deep)]"
+              />
+              <span>
+                <span className="block font-medium">{title}</span>
+                <span className="block text-[0.9rem] text-muted">{help}</span>
+              </span>
+            </label>
+          ))}
+        </div>
+        {mode === "story" ? (
+          <p className="rounded-xl border border-line bg-surface p-4 text-[0.95rem] text-muted">
+            The hero plays the narrated story about email design and revenue. Its words, timing and voice live in{" "}
+            <code className="mono">components/HeroStory.tsx</code> and <code className="mono">public/hero/story/</code>.
+          </p>
+        ) : (
+        <>
         <div>
           <label htmlFor="heroVideoUrl" className="mb-2 block font-medium">
             Video URL
@@ -407,6 +441,8 @@ function SettingsForm({ settings, poster, disabled }: { settings: Settings; post
             </p>
           )}
         </div>
+        </>
+        )}
       </fieldset>
 
       <div className="space-y-10">
