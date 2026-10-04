@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useDeferredValue, useMemo, useState, useTransition } from "react";
+import { useActionState, useDeferredValue, useEffect, useMemo, useState, useTransition } from "react";
 import { deleteContact, logout, saveSettings, setRead } from "@/app/admin/actions";
 import { embedSrc, parseVideo } from "@/lib/video";
+import { toast } from "@/lib/toast";
 import CaseStudiesAdmin, { type AdminCaseStudy } from "./CaseStudiesAdmin";
+import ShowcaseAdmin, { type AdminShowcaseItem } from "./ShowcaseAdmin";
 
 export type ContactRow = {
   id: string;
@@ -40,6 +42,7 @@ export default function AdminPanel({
   settings,
   poster,
   caseStudies,
+  showcase,
 }: {
   siteName: string;
   contacts: ContactRow[];
@@ -48,8 +51,9 @@ export default function AdminPanel({
   settings: Settings;
   poster: string;
   caseStudies: { items: AdminCaseStudy[]; fromDb: boolean; error: string | null };
+  showcase: { items: AdminShowcaseItem[]; fromDb: boolean; error: string | null; heading: string; sub: string };
 }) {
-  const [tab, setTab] = useState<"contacts" | "cases" | "settings">("contacts");
+  const [tab, setTab] = useState<"contacts" | "showcase" | "cases" | "settings">("contacts");
   const [rows, setRows] = useState(contacts);
   const unread = rows.filter((r) => !r.is_read).length;
 
@@ -85,6 +89,7 @@ export default function AdminPanel({
         {(
           [
             ["contacts", `Contacts${unread ? ` (${unread} unread)` : ""}`],
+            ["showcase", `Showcase (${showcase.items.length})`],
             ["cases", `Case studies (${caseStudies.items.length})`],
             ["settings", "Settings"],
           ] as const
@@ -107,6 +112,16 @@ export default function AdminPanel({
 
       <div role="tabpanel" id="panel-contacts" aria-labelledby="tab-contacts" hidden={tab !== "contacts"} className="pt-6">
         <Contacts rows={rows} setRows={setRows} loadError={loadError} dbConnected={dbConnected} />
+      </div>
+      <div role="tabpanel" id="panel-showcase" aria-labelledby="tab-showcase" hidden={tab !== "showcase"} className="pt-6">
+        <ShowcaseAdmin
+          items={showcase.items}
+          fromDb={showcase.fromDb}
+          dbConnected={dbConnected}
+          loadError={showcase.error}
+          heading={showcase.heading}
+          sub={showcase.sub}
+        />
       </div>
       <div role="tabpanel" id="panel-cases" aria-labelledby="tab-cases" hidden={tab !== "cases"} className="pt-6">
         <CaseStudiesAdmin
@@ -139,7 +154,6 @@ function Contacts({
   const [query, setQuery] = useState("");
   const deferred = useDeferredValue(query);
   const [openId, setOpenId] = useState<string | null>(null);
-  const [notice, setNotice] = useState("");
   const [busy, startTransition] = useTransition();
 
   const filtered = useMemo(() => {
@@ -157,7 +171,7 @@ function Contacts({
       const res = await setRead(row.id, next);
       if (!res.ok) {
         setRows((all) => all.map((r) => (r.id === row.id ? { ...r, is_read: row.is_read } : r)));
-        setNotice(res.message);
+        toast.error(res.message);
       }
     });
   };
@@ -167,7 +181,8 @@ function Contacts({
     startTransition(async () => {
       const res = await deleteContact(row.id);
       if (res.ok) setRows((all) => all.filter((r) => r.id !== row.id));
-      setNotice(res.ok ? `Deleted the inquiry from ${row.name}.` : res.message);
+      if (res.ok) toast.success(`Deleted the inquiry from ${row.name}.`);
+      else toast.error(res.message);
     });
   };
 
@@ -197,7 +212,7 @@ function Contacts({
       </div>
 
       <p role="status" className="mt-3 min-h-6 text-[0.95rem] text-muted">
-        {loadError ?? notice}
+        {loadError}
       </p>
 
       {rows.length === 0 ? (
@@ -311,6 +326,9 @@ function FragmentRow({ children }: { children: React.ReactNode }) {
 
 function SettingsForm({ settings, poster, disabled }: { settings: Settings; poster: string; disabled: boolean }) {
   const [state, action, pending] = useActionState(saveSettings, null);
+  useEffect(() => {
+    if (state) toast.result(state);
+  }, [state]);
   const [url, setUrl] = useState(settings.heroVideoUrl);
   const [available, setAvailable] = useState(settings.availableForWork);
   const preview = useDeferredValue(url);

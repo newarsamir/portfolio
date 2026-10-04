@@ -13,6 +13,7 @@ import Testimonials from "@/components/Testimonials";
 import { site } from "@/content/site";
 import { getCaseStudies } from "@/lib/case-studies";
 import { getSettings } from "@/lib/settings";
+import { getShowcaseItems } from "@/lib/showcase";
 import { siteUrl } from "@/lib/url";
 
 export const revalidate = 300;
@@ -20,6 +21,7 @@ export const revalidate = 300;
 export default async function HomePage() {
   const settings = await getSettings();
   const cases = await getCaseStudies();
+  const showcase = await getShowcaseItems();
   const url = siteUrl();
 
   const jsonLd = {
@@ -44,7 +46,7 @@ export default async function HomePage() {
       <Hero videoUrl={settings.heroVideoUrl} />
       <BrandStrip />
       <Counters items={settings.counters} placeholder={settings.countersArePlaceholder} />
-      <Showcase />
+      <Showcase items={showcase} heading={settings.showcaseHeading} sub={settings.showcaseSub} />
       <CaseStudies items={cases.map(({ id: _id, sortOrder: _sortOrder, ...c }) => c)} />
       <About />
       <Anatomy />

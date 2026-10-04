@@ -53,6 +53,25 @@ create table if not exists public.case_studies (
 create index if not exists case_studies_sort_idx
   on public.case_studies (sort_order, created_at);
 
+-- Emails in the "Selected emails" section, managed from /admin
+create table if not exists public.showcase_items (
+  id            uuid primary key default gen_random_uuid(),
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now(),
+  src           text not null,                 -- site path or public image URL
+  storage_path  text,                          -- set when uploaded through /admin
+  width         integer not null check (width > 0),
+  height        integer not null check (height > 0),
+  brand         text not null default '',
+  type          text not null default '',
+  note          text not null default '',
+  published     boolean not null default true,
+  sort_order    integer not null default 0
+);
+
+create index if not exists showcase_items_sort_idx
+  on public.showcase_items (sort_order, created_at);
+
 -- Failed admin logins, used for rate limiting across serverless instances
 create table if not exists public.login_attempts (
   id          bigint generated always as identity primary key,
@@ -70,7 +89,19 @@ alter table public.contacts       enable row level security;
 alter table public.settings       enable row level security;
 alter table public.login_attempts enable row level security;
 alter table public.case_studies   enable row level security;
+alter table public.showcase_items enable row level security;
 
 insert into public.settings (key, value) values
   ('available_for_work', 'true'::jsonb)
 on conflict (key) do nothing;
+
+-- Public bucket for email images uploaded from /admin. Uploads go through
+-- the server with the secret key, so no storage policies are needed.
+do $$
+begin
+  if to_regclass('storage.buckets') is not null then
+    insert into storage.buckets (id, name, public)
+    values ('showcase', 'showcase', true)
+    on conflict (id) do nothing;
+  end if;
+end $$;

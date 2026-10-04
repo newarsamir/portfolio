@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import type { ShowcaseItem } from "@/content/site";
+import { isRemote } from "@/lib/images";
 
 /**
  * Fallback for touch devices, small screens, reduced motion and browsers
@@ -32,7 +33,11 @@ export default function ShowcaseCarousel({
       for (const card of cards) {
         const r = card.getBoundingClientRect();
         const off = Math.max(-1.4, Math.min(1.4, (r.left + r.width / 2 - mid) / (box.width * 0.6)));
-        card.style.transform = `rotateY(${(-off * 32).toFixed(2)}deg) translateZ(${(-Math.abs(off) * 70).toFixed(1)}px)`;
+        const a = Math.abs(off);
+        card.style.transform = `rotateY(${(-off * 32).toFixed(2)}deg) translateZ(${(-a * 70).toFixed(1)}px)`;
+        // Cards leaving the center blur and turn transparent.
+        card.style.filter = a > 0.15 ? `blur(${((a - 0.15) * 5).toFixed(2)}px)` : "";
+        card.style.opacity = (1 - Math.min(0.6, a * 0.45)).toFixed(3);
       }
     };
     const queue = () => {
@@ -51,7 +56,7 @@ export default function ShowcaseCarousel({
   return (
     <ul ref={row} className="snap-row" data-lenis-prevent-touch aria-label="Email designs">
       {items.map((item, i) => (
-        <li key={item.src} className="snap-card">
+        <li key={item.id ?? item.src} className="snap-card">
           <button
             type="button"
             data-card
@@ -67,6 +72,7 @@ export default function ShowcaseCarousel({
                 width={item.width}
                 height={item.height}
                 sizes="280px"
+                unoptimized={isRemote(item.src)}
                 loading="lazy"
                 className="h-full w-full object-cover object-top"
               />

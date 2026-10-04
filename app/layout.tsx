@@ -5,6 +5,7 @@ import "@fontsource-variable/geist-mono/wght.css";
 import "./globals.css";
 import { site } from "@/content/site";
 import { siteUrl } from "@/lib/url";
+import Toaster from "@/components/Toaster";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
@@ -37,7 +38,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

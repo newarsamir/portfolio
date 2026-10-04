@@ -9,11 +9,14 @@ export function SplitHeading({
   children,
   className,
   id,
+  blur = false,
 }: {
   as?: "h2" | "h3";
   children: ReactNode;
   className?: string;
   id?: string;
+  /** Lines also come in from a blur and from transparent. */
+  blur?: boolean;
 }) {
   const ref = useRef<HTMLElement>(null);
 
@@ -29,6 +32,7 @@ export function SplitHeading({
           autoSplit: true,
           onSplit(self) {
             return gsap.from(self.lines, {
+              ...(blur ? { filter: "blur(14px)", opacity: 0 } : {}),
               yPercent: 110,
               duration: 1,
               ease: "power4.out",

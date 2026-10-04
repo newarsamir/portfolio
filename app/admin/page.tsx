@@ -5,6 +5,7 @@ import LoginForm from "@/components/admin/LoginForm";
 import { site } from "@/content/site";
 import { isAdminConfigured, isAuthed } from "@/lib/auth";
 import { getAllCaseStudies } from "@/lib/case-studies";
+import { getAllShowcaseItems } from "@/lib/showcase";
 import { getSettings } from "@/lib/settings";
 import { getSupabase } from "@/lib/supabase";
 
@@ -47,6 +48,7 @@ export default async function AdminPage() {
   }
   const settings = await getSettings();
   const cases = await getAllCaseStudies();
+  const showcase = await getAllShowcaseItems();
 
   return (
     <AdminPanel
@@ -60,6 +62,23 @@ export default async function AdminPage() {
         counters: settings.counters.map((c) => ({ id: c.id, label: c.label, value: c.value })),
       }}
       poster={site.defaults.heroPoster}
+      showcase={{
+        items: showcase.items.map((s) => ({
+          id: s.id,
+          src: s.src,
+          width: s.width,
+          height: s.height,
+          brand: s.brand,
+          type: s.type,
+          note: s.note,
+          published: s.published,
+          uploaded: Boolean(s.storagePath),
+        })),
+        fromDb: showcase.fromDb,
+        error: showcase.error,
+        heading: settings.showcaseHeading,
+        sub: settings.showcaseSub,
+      }}
       caseStudies={{
         items: cases.items.map(({ sortOrder: _sortOrder, ...c }) => c),
         fromDb: cases.fromDb,

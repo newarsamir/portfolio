@@ -13,7 +13,7 @@ const STACK = "(min-width: 900px) and (min-height: 700px) and (prefers-reduced-m
 
 /**
  * Case study cards that stack on top of each other as you scroll. Each one
- * sinks back and dims a little as the next slides over it.
+ * eases back a little as the next slides over it, without dimming.
  */
 export default function CaseStudies({ items }: { items: CaseStudy[] }) {
   const root = useRef<HTMLElement>(null);
@@ -28,7 +28,6 @@ export default function CaseStudies({ items }: { items: CaseStudy[] }) {
           if (!next) return;
           gsap.to(card, {
             scale: 0.92 + i * 0.012,
-            filter: "brightness(0.82)",
             ease: "none",
             scrollTrigger: { trigger: next, start: "top bottom", end: "top 20%", scrub: true },
           });

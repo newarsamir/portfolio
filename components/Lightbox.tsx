@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import type { ShowcaseItem } from "@/content/site";
+import { isRemote } from "@/lib/images";
 import { ChevronIcon, CloseIcon } from "./icons";
 import { getLenis } from "./SmoothScroll";
 
@@ -82,6 +83,7 @@ export default function Lightbox({
               width={item.width}
               height={item.height}
               sizes="(min-width: 768px) 640px, 100vw"
+              unoptimized={isRemote(item.src)}
               className="h-auto w-full"
               priority
             />
