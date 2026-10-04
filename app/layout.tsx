@@ -37,7 +37,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    // The intro script adds a class to <html> before React loads.
+    <html lang="en" suppressHydrationWarning>
       <body>
         {children}
         <Toaster />
