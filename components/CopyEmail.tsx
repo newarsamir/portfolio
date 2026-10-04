@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { site } from "@/content/site";
+import { toast } from "@/lib/toast";
 import { CheckIcon, CopyIcon } from "./icons";
 
 /** The email address as a button. Click copies it. */
@@ -13,7 +14,8 @@ export default function CopyEmail({ className = "" }: { className?: string }) {
     try {
       await navigator.clipboard.writeText(site.email);
     } catch {
-      // Clipboard blocked: fall back to opening the mail app.
+      // Clipboard blocked: say so, then fall back to opening the mail app.
+      toast.info(`Your browser blocked the clipboard, so your mail app is opening instead.`, "Couldn't copy");
       window.location.href = `mailto:${site.email}`;
       return;
     }

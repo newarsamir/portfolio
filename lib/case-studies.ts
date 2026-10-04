@@ -88,9 +88,13 @@ export const getAllCaseStudies = cache(
   },
 );
 
-/** Published case studies, in display order. */
+/**
+ * Published case studies, in display order. An empty table falls back to
+ * the samples in site.ts until the first one is added in /admin.
+ */
 export async function getCaseStudies(): Promise<CaseStudyRecord[]> {
-  const { items } = await getAllCaseStudies();
+  const { items, fromDb } = await getAllCaseStudies();
+  if (fromDb && items.length === 0) return defaults().filter((c) => c.published);
   return items.filter((c) => c.published);
 }
 

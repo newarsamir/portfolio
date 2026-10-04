@@ -11,7 +11,7 @@ import { site } from "@/content/site";
 import { getCaseStudies, getCaseStudy } from "@/lib/case-studies";
 import { siteUrl } from "@/lib/url";
 
-export const revalidate = 300;
+export const revalidate = 60;
 
 type Props = { params: Promise<{ slug: string }> };
 

@@ -10,6 +10,7 @@ import {
   setCaseStudyPublished,
 } from "@/app/admin/actions";
 import type { CaseMetric } from "@/content/site";
+import { toast } from "@/lib/toast";
 
 export type AdminCaseStudy = {
   id: string | null;
@@ -70,7 +71,6 @@ export default function CaseStudiesAdmin({
   const router = useRouter();
   const [rows, setRows] = useState(items);
   const [editing, setEditing] = useState<AdminCaseStudy | null>(null);
-  const [notice, setNotice] = useState("");
   const [busy, startTransition] = useTransition();
   const canEdit = dbConnected && fromDb;
 
@@ -79,7 +79,7 @@ export default function CaseStudiesAdmin({
   const run = (fn: () => Promise<{ ok: boolean; message: string }>) =>
     startTransition(async () => {
       const res = await fn();
-      setNotice(res.message);
+      toast.result(res);
       if (res.ok) router.refresh();
     });
 
@@ -97,9 +97,8 @@ export default function CaseStudiesAdmin({
       <Editor
         key={editing.id ?? "new"}
         initial={editing}
-        onDone={(msg) => {
+        onDone={() => {
           setEditing(null);
-          if (msg) setNotice(msg);
           router.refresh();
         }}
       />
@@ -141,16 +140,13 @@ export default function CaseStudiesAdmin({
         </p>
       )}
 
-      <p role="status" className="mt-3 min-h-6 text-[0.95rem] text-muted">
-        {notice}
-      </p>
-
       {rows.length === 0 ? (
-        <p className="mt-2 rounded-xl border border-dashed border-line p-8 text-center text-muted">
-          No case studies yet. Start a new one, or import the samples and edit them.
+        <p className="mt-6 rounded-xl border border-dashed border-line p-8 text-center text-muted">
+          No case studies yet, so the site shows the samples from content/site.ts. Start a new one, or import the samples
+          and edit them.
         </p>
       ) : (
-        <ol className="mt-2 grid gap-3">
+        <ol className="mt-6 grid gap-3">
           {rows.map((c, i) => (
             <li
               key={c.id ?? c.slug}
@@ -249,7 +245,7 @@ export default function CaseStudiesAdmin({
 
 /* ------------------------------- Editor ------------------------------- */
 
-function Editor({ initial, onDone }: { initial: AdminCaseStudy; onDone: (message?: string) => void }) {
+function Editor({ initial, onDone }: { initial: AdminCaseStudy; onDone: () => void }) {
   const [state, action, pending] = useActionState(saveCaseStudy, null);
   const [id, setId] = useState(initial.id);
   const [title, setTitle] = useState(initial.title);
@@ -265,7 +261,9 @@ function Editor({ initial, onDone }: { initial: AdminCaseStudy; onDone: (message
 
   // A new case study gets its id on the first save, so later saves update it.
   useEffect(() => {
-    if (state?.ok && state.id) setId(state.id);
+    if (!state) return;
+    toast.result(state);
+    if (state.ok && state.id) setId(state.id);
   }, [state]);
 
   const field = "field";
@@ -526,7 +524,7 @@ function Editor({ initial, onDone }: { initial: AdminCaseStudy; onDone: (message
             <button type="submit" className="btn btn-lime" disabled={pending}>
               {pending ? "Saving" : "Save case study"}
             </button>
-            <button type="button" className="btn btn-ghost" onClick={() => onDone(state?.ok ? state.message : undefined)}>
+            <button type="button" className="btn btn-ghost" onClick={() => onDone()}>
               Done
             </button>
           </div>

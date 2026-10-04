@@ -7,7 +7,8 @@ Everything is in `content/site.ts` unless noted. Search that file for `TODO`.
 - [ ] **Email address** (`email`). It is `your@email.com` right now and appears in the final CTA, the contact page, the footer and the form's error messages.
 - [ ] **Social links** (`socials`): LinkedIn, Dribbble, Behance, Instagram. Links left as `#` are hidden.
 - [ ] **Location** (`location`). Set to Kathmandu, Nepal. Confirm or change it.
-- [ ] **Email designs**: replace `public/emails/email-01.webp` to `email-08.webp`, then update `brand`, `type`, `note`, `width` and `height` for each item in `showcase.items`.
+- [ ] **Re-run `supabase/schema.sql`** after pulling this update. It adds the `showcase_items` table and the `showcase` storage bucket, and is safe to run again.
+- [ ] **Email designs**: upload them in `/admin` under Showcase, or replace `public/emails/email-01.webp` to `email-08.webp`, then update `brand`, `type`, `note`, `width` and `height` for each item in `showcase.items`.
 - [ ] **Hero video**: paste your showreel link in `/admin`, or set `defaults.heroVideoUrl`. Replace `public/hero/poster-placeholder.webp` with a frame from it.
 - [ ] **Counters** (`counters.items`): the values are samples (100+, 10+, 3, 404). Put in real numbers here or in `/admin`. If you edit them in code, also set `counters.placeholder` to `false` to remove the "sample numbers" note. Saving them in `/admin` removes the note automatically.
 - [ ] **Environment variables in Vercel**: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET`, `NEXT_PUBLIC_SITE_URL`.

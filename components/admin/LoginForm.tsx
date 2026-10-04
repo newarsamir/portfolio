@@ -1,10 +1,15 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { toast } from "@/lib/toast";
 import { login } from "@/app/admin/actions";
 
 export default function LoginForm({ configured }: { configured: boolean }) {
   const [state, action, pending] = useActionState(login, null);
+
+  useEffect(() => {
+    if (state && !state.ok) toast.error(state.message, "Not signed in");
+  }, [state]);
 
   if (!configured) {
     return (

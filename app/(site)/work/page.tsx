@@ -4,7 +4,7 @@ import WorkIndex from "@/components/WorkIndex";
 import { site } from "@/content/site";
 import { getCaseStudies } from "@/lib/case-studies";
 
-export const revalidate = 300;
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Case studies",

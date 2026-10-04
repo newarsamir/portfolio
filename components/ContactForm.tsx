@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { submitContact, type ContactFields, type ContactState } from "@/app/(site)/contact/actions";
 import { site } from "@/content/site";
+import { toast } from "@/lib/toast";
 import { ArrowSwap, RollText } from "./RollText";
 
 const initial: ContactState = { status: "idle" };
@@ -37,6 +38,11 @@ export default function ContactForm() {
   useEffect(() => {
     if (state.status === "error") {
       setLocal(state.errors ?? {});
+      const count = Object.values(state.errors ?? {}).filter(Boolean).length;
+      toast.error(
+        count ? `${count === 1 ? "One field needs" : `${count} fields need`} a second look. They're marked in red.` : (state.message ?? "Try again in a minute."),
+        count ? "Almost there" : "Your inquiry wasn't sent",
+      );
       const first = formRef.current?.querySelector<HTMLElement>("[aria-invalid='true']");
       first?.focus();
     }
@@ -44,8 +50,12 @@ export default function ContactForm() {
   }, [state]);
 
   const errorFor = (f: ContactFields) => local[f];
-  const onBlur = (f: ContactFields) => (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
+  const onBlur = (f: ContactFields) => (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    // Leaving a field by pressing Send: the submit checks everything anyway,
+    // and an error appearing here would push the button away mid-click.
+    if ((e.relatedTarget as HTMLButtonElement | null)?.type === "submit") return;
     setLocal((prev) => ({ ...prev, [f]: check(f, e.target.value) }));
+  };
   const onChange = (f: ContactFields) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     if (local[f]) setLocal((prev) => ({ ...prev, [f]: check(f, e.target.value) }));
   };

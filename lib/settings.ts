@@ -9,12 +9,16 @@ export type SiteSettings = {
   counters: Counter[];
   /** True while the counters are still the sample values from site.ts. */
   countersArePlaceholder: boolean;
+  showcaseHeading: string;
+  showcaseSub: string;
 };
 
 export const SETTING_KEYS = {
   video: "hero_video_url",
   available: "available_for_work",
   counters: "counters",
+  showcaseHeading: "showcase_heading",
+  showcaseSub: "showcase_sub",
 } as const;
 
 function defaults(): SiteSettings {
@@ -23,6 +27,8 @@ function defaults(): SiteSettings {
     availableForWork: site.defaults.availableForWork,
     counters: site.counters.items.map((c) => ({ ...c })),
     countersArePlaceholder: site.counters.placeholder,
+    showcaseHeading: site.showcase.heading,
+    showcaseSub: site.showcase.sub,
   };
 }
 
@@ -39,6 +45,12 @@ export const getSettings = cache(async (): Promise<SiteSettings> => {
     for (const row of data as { key: string; value: unknown }[]) {
       if (row.key === SETTING_KEYS.video && typeof row.value === "string" && row.value.trim()) {
         out.heroVideoUrl = row.value.trim();
+      }
+      if (row.key === SETTING_KEYS.showcaseHeading && typeof row.value === "string" && row.value.trim()) {
+        out.showcaseHeading = row.value.trim();
+      }
+      if (row.key === SETTING_KEYS.showcaseSub && typeof row.value === "string" && row.value.trim()) {
+        out.showcaseSub = row.value.trim();
       }
       if (row.key === SETTING_KEYS.available && typeof row.value === "boolean") {
         out.availableForWork = row.value;

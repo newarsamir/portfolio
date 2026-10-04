@@ -14,6 +14,8 @@ export type Counter = {
 };
 
 export type ShowcaseItem = {
+  /** Set for items stored in Supabase. The defaults below have none. */
+  id?: string;
   src: string;
   width: number;
   height: number;

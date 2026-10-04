@@ -57,6 +57,22 @@ function Card({
   const inner = useRef<THREE.Group>(null);
   const material = useRef<THREE.MeshBasicMaterial>(null);
   const hover = useRef({ on: false, x: 0, y: 0 });
+  // Mipmap bias: cards away from the center are sampled from smaller
+  // mip levels, which reads as a soft depth-of-field blur.
+  const blur = useMemo(() => ({ value: 0 }), []);
+  const patch = useMemo(
+    () => (shader: THREE.WebGLProgramParametersWithUniforms) => {
+      shader.uniforms.uBlur = blur;
+      shader.fragmentShader = `uniform float uBlur;\n${shader.fragmentShader.replace(
+        "#include <map_fragment>",
+        `#ifdef USE_MAP
+  vec4 sampledDiffuseColor = texture2D( map, vMapUv, uBlur );
+  diffuseColor *= sampledDiffuseColor;
+#endif`,
+      )}`;
+    },
+    [blur],
+  );
   const angle = index * STEP;
 
   // Each card shows the top slice of its (tall) email.
@@ -66,6 +82,8 @@ function Card({
     const repeatY = Math.min(1, img.width / img.height / (CARD_W / CARD_H));
     t.colorSpace = THREE.SRGBColorSpace;
     t.anisotropy = 8;
+    t.generateMipmaps = true;
+    t.minFilter = THREE.LinearMipmapLinearFilter;
     t.repeat.set(1, repeatY);
     t.offset.set(0, 1 - repeatY);
     t.needsUpdate = true;
@@ -92,10 +110,12 @@ function Card({
     const target = h.on ? Math.max(0, texture.offset.y - dt * 0.035) : topOffset;
     texture.offset.y += (target - texture.offset.y) * (h.on ? 1 : k * 0.6);
 
-    // Cards further around the arc fade back.
+    // Cards further around the arc fade back, go transparent and blur out.
     const dist = Math.abs(angle + (arc.current?.rotation.y ?? 0)) / STEP;
-    const fade = THREE.MathUtils.clamp(1.65 - dist * 0.36, 0.25, 1);
+    const fade = THREE.MathUtils.clamp(1.5 - dist * 0.38, 0.12, 1);
     m.opacity += (fade - m.opacity) * k;
+    const soft = h.on ? 0 : THREE.MathUtils.clamp((dist - 0.6) * 1.35, 0, 4.2);
+    blur.value += (soft - blur.value) * k;
   });
 
   const over = (e: ThreeEvent<PointerEvent>) => {
@@ -128,7 +148,15 @@ function Card({
             onOpen(index);
           }}
         >
-          <meshBasicMaterial ref={material} map={texture} transparent toneMapped={false} side={THREE.DoubleSide} />
+          <meshBasicMaterial
+            ref={material}
+            map={texture}
+            transparent
+            toneMapped={false}
+            side={THREE.DoubleSide}
+            onBeforeCompile={patch}
+            customProgramCacheKey={() => "showcase-blur"}
+          />
         </mesh>
       </group>
     </group>
@@ -176,7 +204,7 @@ function Arc({
     <group position={[0, 0.16, -RADIUS]}>
       <group ref={arc}>
         {items.map((item, i) => (
-          <Card key={item.src} item={item} index={i} geometry={geometry} arc={arc} onOpen={onOpen} />
+          <Card key={item.id ?? item.src} item={item} index={i} geometry={geometry} arc={arc} onOpen={onOpen} />
         ))}
       </group>
     </group>

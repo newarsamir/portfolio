@@ -14,6 +14,7 @@ import { loginAllowed, recordFailedLogin } from "@/lib/rate-limit";
 import { SETTING_KEYS } from "@/lib/settings";
 import { getSupabase } from "@/lib/supabase";
 import { parseVideo } from "@/lib/video";
+import { imageSourceOk as imageOk } from "@/lib/images";
 
 export type ActionResult = { ok: boolean; message: string };
 
@@ -106,16 +107,6 @@ export async function saveSettings(_prev: ActionResult | null, form: FormData): 
 export type CaseActionResult = ActionResult & { id?: string };
 
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-
-/** Site paths ("/emails/x.webp") or https links. Anything else is refused. */
-function imageOk(src: string) {
-  if (src.startsWith("/") && !src.startsWith("//")) return true;
-  try {
-    return new URL(src).protocol === "https:";
-  } catch {
-    return false;
-  }
-}
 
 function text(form: FormData, key: string, max: number) {
   return String(form.get(key) ?? "").trim().slice(0, max);
