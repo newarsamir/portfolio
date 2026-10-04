@@ -482,8 +482,22 @@ export const site = {
       "Full lifecycle",
       "Not sure yet",
     ],
-    // TODO: set budget ranges that match your pricing.
-    budgets: ["Under $500", "$500 to $1,500", "$1,500 to $3,000", "$3,000+", "Let's talk"],
+    /**
+     * Budget ranges per currency. TODO: set these to match your pricing; the
+     * non-USD ranges are rough equivalents of the USD ones. Visitors can also
+     * pick "Custom amount" (typed in) or "Let's talk".
+     */
+    currencies: [
+      { code: "USD", symbol: "$", ranges: ["Under $500", "$500 to $1,500", "$1,500 to $3,000", "$3,000+"] },
+      { code: "EUR", symbol: "€", ranges: ["Under €450", "€450 to €1,400", "€1,400 to €2,800", "€2,800+"] },
+      { code: "GBP", symbol: "£", ranges: ["Under £400", "£400 to £1,200", "£1,200 to £2,400", "£2,400+"] },
+      { code: "AUD", symbol: "A$", ranges: ["Under A$750", "A$750 to A$2,300", "A$2,300 to A$4,600", "A$4,600+"] },
+      { code: "CAD", symbol: "C$", ranges: ["Under C$700", "C$700 to C$2,000", "C$2,000 to C$4,100", "C$4,100+"] },
+      { code: "INR", symbol: "₹", ranges: ["Under ₹40,000", "₹40,000 to ₹1,25,000", "₹1,25,000 to ₹2,50,000", "₹2,50,000+"] },
+      { code: "NPR", symbol: "Rs", ranges: ["Under Rs 65,000", "Rs 65,000 to Rs 2,00,000", "Rs 2,00,000 to Rs 4,00,000", "Rs 4,00,000+"] },
+    ],
+    customBudget: "Custom amount",
+    openBudget: "Let's talk",
     success: {
       title: "Inquiry sent.",
       body: "It's in my inbox, and I do open my emails. You'll hear from me within two working days.",

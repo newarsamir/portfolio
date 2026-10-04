@@ -32,12 +32,39 @@ export default function ContactForm() {
   const [state, action, pending] = useActionState(submitContact, initial);
   const [local, setLocal] = useState<Partial<Record<ContactFields, string | undefined>>>({});
   const formRef = useRef<HTMLFormElement>(null);
+  const [currencyCode, setCurrencyCode] = useState<string>(site.contact.currencies[0].code);
+  const [budgetChoice, setBudgetChoice] = useState("");
+  // Selects are kept in state: React resets the form after each submit, and
+  // an uncontrolled select would lose the visitor's pick on a failed one.
+  const [projectType, setProjectType] = useState("");
+
+  // Start in the visitor's likely currency, guessed from their time zone.
+  useEffect(() => {
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone ?? "";
+      const guess =
+        tz === "Asia/Kathmandu" || tz === "Asia/Katmandu" ? "NPR"
+        : tz === "Asia/Kolkata" || tz === "Asia/Calcutta" ? "INR"
+        : tz === "Europe/London" ? "GBP"
+        : tz.startsWith("Australia/") ? "AUD"
+        : /^America\/(Toronto|Vancouver|Edmonton|Winnipeg|Halifax|St_Johns|Regina)/.test(tz) ? "CAD"
+        : tz.startsWith("Europe/") ? "EUR"
+        : null;
+      if (guess && site.contact.currencies.some((c) => c.code === guess)) setCurrencyCode(guess);
+    } catch {
+      // Keep the default.
+    }
+  }, []);
   const successRef = useRef<HTMLDivElement>(null);
 
   // Server errors replace local ones after each submit.
   useEffect(() => {
     if (state.status === "error") {
       setLocal(state.errors ?? {});
+      // Keep what they picked after a failed submit.
+      if (state.values?.currency) setCurrencyCode(state.values.currency);
+      if (state.values?.budget !== undefined) setBudgetChoice(state.values.budget);
+      if (state.values?.projectType !== undefined) setProjectType(state.values.projectType);
       const count = Object.values(state.errors ?? {}).filter(Boolean).length;
       toast.error(
         count ? `${count === 1 ? "One field needs" : `${count} fields need`} a second look. They're marked in red.` : (state.message ?? "Try again in a minute."),
@@ -81,6 +108,7 @@ export default function ContactForm() {
   }
 
   const v = state.values ?? {};
+  const currency = site.contact.currencies.find((c) => c.code === currencyCode) ?? site.contact.currencies[0];
   const field = (f: ContactFields) => ({
     id: f,
     name: f,
@@ -133,7 +161,15 @@ export default function ContactForm() {
         <label htmlFor="projectType" className="mb-2 block font-medium">
           Project type
         </label>
-        <select {...field("projectType")} required defaultValue={v.projectType ?? ""}>
+        <select
+          {...field("projectType")}
+          required
+          value={projectType}
+          onChange={(e) => {
+            setProjectType(e.target.value);
+            onChange("projectType")(e);
+          }}
+        >
           <option value="" disabled>
             Choose one
           </option>
@@ -145,16 +181,74 @@ export default function ContactForm() {
       </div>
       <div>
         <label htmlFor="budget" className="mb-2 block font-medium">
-          Budget range
+          Budget
         </label>
-        <select {...field("budget")} required defaultValue={v.budget ?? ""}>
-          <option value="" disabled>
-            Choose one
-          </option>
-          {site.contact.budgets.map((b) => (
-            <option key={b}>{b}</option>
-          ))}
-        </select>
+        <div className="flex gap-2">
+          <label htmlFor="currency" className="sr-only">
+            Currency
+          </label>
+          <select
+            id="currency"
+            name="currency"
+            value={currency.code}
+            onChange={(e) => {
+              setCurrencyCode(e.target.value);
+              // Ranges differ per currency, so a picked range no longer applies.
+              if (budgetChoice !== site.contact.customBudget && budgetChoice !== site.contact.openBudget) setBudgetChoice("");
+            }}
+            className="field w-[6.5rem] shrink-0"
+          >
+            {site.contact.currencies.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.code}
+              </option>
+            ))}
+          </select>
+          <select
+            {...field("budget")}
+            required
+            value={budgetChoice}
+            onChange={(e) => {
+              setBudgetChoice(e.target.value);
+              onChange("budget")(e);
+            }}
+          >
+            <option value="" disabled>
+              Choose one
+            </option>
+            {currency.ranges.map((b) => (
+              <option key={b}>{b}</option>
+            ))}
+            <option>{site.contact.customBudget}</option>
+            <option>{site.contact.openBudget}</option>
+          </select>
+        </div>
+        {budgetChoice === site.contact.customBudget && (
+          <div className="relative mt-2">
+            <label htmlFor="budgetAmount" className="sr-only">
+              Your budget in {currency.code}
+            </label>
+            <span className="mono pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted" aria-hidden="true">
+              {currency.symbol}
+            </span>
+            <input
+              id="budgetAmount"
+              name="budgetAmount"
+              type="text"
+              inputMode="decimal"
+              autoComplete="off"
+              placeholder="2,500"
+              defaultValue={v.budgetAmount}
+              autoFocus={!v.budgetAmount}
+              aria-describedby="budgetAmount-help"
+              className="field"
+              style={{ paddingLeft: `${1.4 + currency.symbol.length * 0.6}rem` }}
+            />
+            <p id="budgetAmount-help" className="mt-1.5 text-[0.9rem] text-muted">
+              Total for the project, in {currency.code}. A rough number is fine.
+            </p>
+          </div>
+        )}
         <Err f="budget" />
       </div>
       <div className="sm:col-span-2">

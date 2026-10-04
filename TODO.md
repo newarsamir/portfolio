@@ -18,7 +18,7 @@ Everything is in `content/site.ts` unless noted. Search that file for `TODO`.
 ## Should do
 
 - [ ] **About story** (`about.story`): rewrite in your own words. I kept it to what the brief said and invented no biography.
-- [ ] **Budget ranges** (`contact.budgets`): they are in USD and are my guess at sensible brackets.
+- [ ] **Budget ranges** (`contact.currencies`): ranges per currency (USD, EUR, GBP, AUD, CAD, INR, NPR). The USD ones are my guess at sensible brackets and the rest are rough equivalents. Visitors can also type a custom amount.
 - [ ] **Process details** (`process.steps[].detail`): "two rounds on the design" also appears in the FAQ. Change both if your terms differ.
 - [ ] **FAQ timelines** (`faq.items`): "a few days" for a campaign and "one to two weeks" for a flow, and the "two working days" reply time on the contact page.
 - [ ] **Service sizes** (`services.items[].tag`): "3 to 5 emails" and so on.
