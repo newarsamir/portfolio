@@ -292,8 +292,7 @@ export const site = {
       "Email is the channel you own, and it should be your most profitable one. So I design every email around one job: the click that leads to the order. Welcome flows that sell the first product, cart emails that bring buyers back, post-purchase emails that earn the second order, and campaigns people actually open.",
       "I design mobile first, check dark mode and Outlook before you ask, and hand off files your developer can build without guessing. You work with me directly, from brief to send.",
     ],
-    // TODO: add /public/portrait.webp and set portrait to "/portrait.webp".
-    portrait: "" as string,
+    portrait: "/portrait.webp" as string,
     portraitAlt: "Portrait of Samir Shrestha",
     toolsHeading: "What I work in",
     tools: [

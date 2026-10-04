@@ -17,7 +17,6 @@ Everything is in `content/site.ts` unless noted. Search that file for `TODO`.
 
 ## Should do
 
-- [ ] **Portrait**: add `public/portrait.webp` (4:5) and set `about.portrait` to `"/portrait.webp"`.
 - [ ] **About story** (`about.story`): rewrite in your own words. I kept it to what the brief said and invented no biography.
 - [ ] **Budget ranges** (`contact.budgets`): they are in USD and are my guess at sensible brackets.
 - [ ] **Process details** (`process.steps[].detail`): "two rounds on the design" also appears in the FAQ. Change both if your terms differ.
