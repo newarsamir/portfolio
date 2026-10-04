@@ -11,7 +11,7 @@ export type ContactState = {
   status: "idle" | "success" | "error";
   message?: string;
   errors?: Partial<Record<ContactFields, string>>;
-  values?: Partial<Record<ContactFields, string>>;
+  values?: Partial<Record<ContactFields | "currency" | "budgetAmount", string>>;
 };
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -28,6 +28,8 @@ export async function submitContact(_prev: ContactState, form: FormData): Promis
     brand: get("brand"),
     projectType: get("projectType"),
     budget: get("budget"),
+    currency: get("currency"),
+    budgetAmount: get("budgetAmount"),
     message: get("message"),
   };
 
@@ -39,8 +41,21 @@ export async function submitContact(_prev: ContactState, form: FormData): Promis
   if (values.brand.length > 200) errors.brand = "Keep this under 200 characters.";
   if (!(site.contact.projectTypes as readonly string[]).includes(values.projectType))
     errors.projectType = "Pick the closest project type.";
-  if (!(site.contact.budgets as readonly string[]).includes(values.budget))
-    errors.budget = "Pick a budget range. A rough one is fine.";
+  // Budget: a range in the chosen currency, a typed amount, or "Let's talk".
+  const currency = site.contact.currencies.find((c) => c.code === values.currency);
+  let budget = "";
+  if (!currency) errors.budget = "Pick a currency.";
+  else if (values.budget === site.contact.openBudget) budget = `${site.contact.openBudget} (${currency.code})`;
+  else if (values.budget === site.contact.customBudget) {
+    const amount = Number(values.budgetAmount.replace(/[,\s]/g, ""));
+    if (!Number.isFinite(amount) || amount <= 0 || amount > 1_000_000_000) {
+      errors.budget = "Type the amount as a number, for example 2500.";
+    } else {
+      const gap = /[a-z]$/i.test(currency.symbol) ? " " : "";
+      budget = `${currency.code} · Custom: ${currency.symbol}${gap}${amount.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+    }
+  } else if ((currency.ranges as readonly string[]).includes(values.budget)) budget = `${currency.code} · ${values.budget}`;
+  else errors.budget = "Pick a budget range. A rough one is fine.";
   if (values.message.length < 20) errors.message = "Tell me a little more, at least 20 characters.";
   else if (values.message.length > 5000) errors.message = "Keep the message under 5,000 characters.";
 
@@ -71,7 +86,7 @@ export async function submitContact(_prev: ContactState, form: FormData): Promis
     email: values.email,
     brand: values.brand || null,
     project_type: values.projectType,
-    budget: values.budget,
+    budget,
     message: values.message,
     created_at: new Date().toISOString(),
   });
