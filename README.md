@@ -103,6 +103,7 @@ The section is hidden while `testimonials` in `content/site.ts` is empty. Add re
 
 - **Contacts:** newest first, search, read and unread, delete, CSV export.
 - **Showcase:** upload or link emails, automatic image size, edit, hide, reorder, delete, and the section heading.
+- **Gallery:** AI product and lifestyle shots for the two-row photography section: upload or link, product/lifestyle tag, caption, the prompt shown on hover, reorder, hide, delete. Labeled samples show until the first image is added. Re-run `supabase/schema.sql` to create `gallery_items`.
 - **Case studies:** full create, read, update and delete, with a live card preview, publish/draft, and up/down ordering.
 - Errors and confirmations appear as pop-ups in the corner (bottom on phones).
 - **Settings:** hero video URL with live preview, the "available for work" switch that drives the nav badge, and the counter values.

@@ -9,7 +9,7 @@ export type DbStatus = {
   checks: CheckResult[];
 };
 
-const TABLES = ["contacts", "settings", "showcase_items", "case_studies", "login_attempts"];
+const TABLES = ["contacts", "settings", "showcase_items", "gallery_items", "case_studies", "login_attempts"];
 
 export function supabaseHost(): string | null {
   try {

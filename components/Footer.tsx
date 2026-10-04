@@ -11,6 +11,7 @@ const LINKS = [
   { href: "/#work", label: "Selected emails" },
   { href: "/work", label: "Case studies" },
   { href: "/#process", label: "Process" },
+  { href: "/#photography", label: "AI photography" },
   { href: "/contact", label: "Start a project" },
 ];
 

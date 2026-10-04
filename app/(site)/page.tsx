@@ -4,6 +4,7 @@ import About from "@/components/About";
 import BrandStrip from "@/components/BrandStrip";
 import CaseStudies from "@/components/CaseStudies";
 import Counters from "@/components/Counters";
+import AiGallery from "@/components/AiGallery";
 import Faq from "@/components/Faq";
 import HireNudge from "@/components/HireNudge";
 import Hero from "@/components/Hero";
@@ -13,6 +14,7 @@ import Showcase from "@/components/Showcase";
 import Testimonials from "@/components/Testimonials";
 import { site } from "@/content/site";
 import { getCaseStudies } from "@/lib/case-studies";
+import { getGalleryItems } from "@/lib/gallery";
 import { getSettings } from "@/lib/settings";
 import { getShowcaseItems } from "@/lib/showcase";
 import { siteUrl } from "@/lib/url";
@@ -23,6 +25,7 @@ export default async function HomePage() {
   const settings = await getSettings();
   const cases = await getCaseStudies();
   const showcase = await getShowcaseItems();
+  const gallery = await getGalleryItems();
   const url = siteUrl();
 
   const jsonLd = {
@@ -57,6 +60,7 @@ export default async function HomePage() {
       <Services />
       <Testimonials />
       <Faq />
+      <AiGallery items={gallery} />
     </>
   );
 }
