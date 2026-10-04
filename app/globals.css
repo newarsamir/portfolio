@@ -1486,7 +1486,7 @@ select.field {
   inset: 0;
   z-index: 200;
   pointer-events: none;
-  animation: intro-gone 0s linear 1.95s forwards;
+  animation: intro-gone 0s linear 3.05s forwards;
 }
 .intro-skip .intro,
 .intro-done .intro {
@@ -1503,11 +1503,11 @@ select.field {
   place-items: center;
   background: #1c1b17;
   pointer-events: auto;
-  animation: intro-lift 0.55s cubic-bezier(0.76, 0, 0.24, 1) 1.4s forwards;
+  animation: intro-lift 0.7s cubic-bezier(0.76, 0, 0.24, 1) 2.25s forwards;
 }
 .intro-chase {
   background: #c6f432;
-  animation: intro-lift 0.55s cubic-bezier(0.76, 0, 0.24, 1) 1.5s forwards;
+  animation: intro-lift 0.7s cubic-bezier(0.76, 0, 0.24, 1) 2.36s forwards;
 }
 .intro-stage {
   position: relative;
@@ -1521,17 +1521,27 @@ select.field {
   place-items: center;
   opacity: 0;
   animation:
-    intro-word-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--n) * 0.47s) forwards,
-    intro-word-out 0.2s ease-in calc(var(--n) * 0.47s + 0.42s) forwards;
+    intro-word-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--n) * 0.75s) forwards,
+    intro-word-out 0.26s cubic-bezier(0.55, 0, 0.75, 0) calc(var(--n) * 0.75s + 0.6s) forwards;
 }
 /* The last word stays and lifts away with the panel. */
 .intro-word:last-child {
-  animation: intro-word-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) 0.94s forwards;
+  animation: intro-word-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) 1.5s forwards;
 }
 .intro-svg {
   width: 100%;
   height: 100%;
   overflow: visible;
+  /* A soft-edged wipe sweeps left to right, so each word is written on like a pen stroke. */
+  -webkit-mask-image: linear-gradient(90deg, #000 44%, transparent 56%);
+  mask-image: linear-gradient(90deg, #000 44%, transparent 56%);
+  -webkit-mask-size: 250% 100%;
+  mask-size: 250% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: 100% 0;
+  mask-position: 100% 0;
+  animation: intro-write 0.62s cubic-bezier(0.45, 0.05, 0.3, 1) calc(var(--n) * 0.75s) forwards;
 }
 .intro-svg text {
   fill: transparent;
@@ -1540,8 +1550,8 @@ select.field {
   stroke-dashoffset: 2600;
   paint-order: stroke;
   animation:
-    intro-draw 0.42s cubic-bezier(0.45, 0, 0.2, 1) calc(var(--n) * 0.47s) forwards,
-    intro-fill 0.22s ease-out calc(var(--n) * 0.47s + 0.2s) forwards;
+    intro-draw 0.66s cubic-bezier(0.45, 0.05, 0.3, 1) calc(var(--n) * 0.75s) forwards,
+    intro-fill 0.34s ease-out calc(var(--n) * 0.75s + 0.3s) forwards;
 }
 .intro-deva {
   font-family: "Ananda Akchyar", serif;
@@ -1571,26 +1581,6 @@ select.field {
   text-transform: uppercase;
   color: oklch(95% 0.02 95 / 0.55);
 }
-.intro-progress {
-  position: absolute;
-  left: 50%;
-  bottom: clamp(2rem, 8vh, 4rem);
-  width: min(14rem, 50vw);
-  height: 2px;
-  translate: -50% 0;
-  background: oklch(95% 0.02 95 / 0.15);
-  overflow: hidden;
-  border-radius: 2px;
-}
-.intro-progress::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: #c6f432;
-  transform-origin: 0 50%;
-  transform: scaleX(0);
-  animation: intro-progress 1.35s cubic-bezier(0.65, 0, 0.35, 1) forwards;
-}
 @keyframes intro-word-in {
   from {
     opacity: 0;
@@ -1610,6 +1600,12 @@ select.field {
     transform: scale(1.06) translateY(-16px);
   }
 }
+@keyframes intro-write {
+  to {
+    -webkit-mask-position: 0 0;
+    mask-position: 0 0;
+  }
+}
 @keyframes intro-draw {
   to {
     stroke-dashoffset: 0;
@@ -1619,11 +1615,6 @@ select.field {
   to {
     fill: var(--fill);
     stroke-opacity: 0;
-  }
-}
-@keyframes intro-progress {
-  to {
-    transform: scaleX(1);
   }
 }
 @keyframes intro-lift {
@@ -1640,13 +1631,13 @@ select.field {
 
 /* The hero's own entrance waits until the intro has lifted. */
 .intro-on .w > span {
-  animation-delay: calc(var(--i) * 70ms + 1.75s);
+  animation-delay: calc(var(--i) * 70ms + 2.6s);
 }
 .intro-on .load-fade {
-  animation-delay: calc(var(--d, 0.8s) + 1.6s);
+  animation-delay: calc(var(--d, 0.8s) + 2.45s);
 }
 .intro-on .load-opacity {
-  animation-delay: calc(var(--d, 1.2s) + 1.6s);
+  animation-delay: calc(var(--d, 1.2s) + 2.45s);
 }
 @media (prefers-reduced-motion: reduce) {
   .intro {

@@ -9,7 +9,7 @@
  */
 
 // Shown once per browser tab session.
-const SCRIPT = `(function(){var d=document.documentElement;try{if(matchMedia('(prefers-reduced-motion: reduce)').matches||sessionStorage.getItem('intro-seen')){d.classList.add('intro-skip');return}sessionStorage.setItem('intro-seen','1');d.classList.add('intro-on');setTimeout(function(){d.classList.add('intro-done')},2100)}catch(e){d.classList.add('intro-skip')}})();`;
+const SCRIPT = `(function(){var d=document.documentElement;try{if(matchMedia('(prefers-reduced-motion: reduce)').matches||sessionStorage.getItem('intro-seen')){d.classList.add('intro-skip');return}sessionStorage.setItem('intro-seen','1');d.classList.add('intro-on');setTimeout(function(){d.classList.add('intro-done')},3150)}catch(e){d.classList.add('intro-skip')}})();`;
 
 // Ananda Akchyar is a legacy Nepali font: these Latin keys draw नमस्ते.
 const NAMASTE_KEYS = "gd:t]";
@@ -41,7 +41,6 @@ export default function IntroGreeting() {
               </div>
             ))}
           </div>
-          <span className="intro-progress" />
         </div>
       </div>
     </>
