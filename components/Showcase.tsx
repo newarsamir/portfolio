@@ -118,7 +118,7 @@ export default function Showcase({
           {/* Labels stay in HTML, outside the canvas. */}
           <div className="wrap pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-6 pb-[clamp(5.5rem,11svh,7rem)]">
             {/* Keyed on the index so each change blurs the new label in. */}
-            <div aria-live="off" key={current} className="blur-swap">
+            <div aria-live="off">
               <p className="mono text-muted">
                 {String(current + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")}
               </p>

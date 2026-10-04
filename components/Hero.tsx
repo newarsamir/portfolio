@@ -52,7 +52,25 @@ export default function Hero({ videoUrl }: { videoUrl: string }) {
           return Math.min(top, maxTop) + small / 2 - h / 2;
         };
 
-        let playing = false;
+        // The film plays only while it is full size AND on screen. Scrolling on to
+        // another section, or switching tabs, pauses it; coming back resumes it.
+        let playing = false, full = false, visible = true;
+        const sync = () => {
+          const should = full && visible && !document.hidden;
+          if (should === playing) return;
+          playing = should;
+          if (should) video.current?.play();
+          else video.current?.pause();
+        };
+        const io = new IntersectionObserver(
+          ([entry]) => {
+            visible = entry.intersectionRatio >= 0.5;
+            sync();
+          },
+          { threshold: [0, 0.5, 1] },
+        );
+        io.observe(frameEl);
+        document.addEventListener("visibilitychange", sync);
         const tl = gsap.timeline({
           defaults: { ease: "none" },
           scrollTrigger: {
@@ -64,14 +82,8 @@ export default function Hero({ videoUrl }: { videoUrl: string }) {
             invalidateOnRefresh: true,
             refreshPriority: 3,
             onUpdate(self) {
-              const full = self.progress > 0.96;
-              if (full && !playing) {
-                playing = true;
-                video.current?.play();
-              } else if (!full && playing) {
-                playing = false;
-                video.current?.pause();
-              }
+              full = self.progress > 0.96;
+              sync();
             },
           },
         });
@@ -84,6 +96,8 @@ export default function Hero({ videoUrl }: { videoUrl: string }) {
         ).to(copyEl, { autoAlpha: 0, y: -90, duration: 0.45 }, 0);
 
         return () => {
+          io.disconnect();
+          document.removeEventListener("visibilitychange", sync);
           video.current?.pause();
         };
       });

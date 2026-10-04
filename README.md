@@ -1,4 +1,4 @@
-# Sthasamir, email designer: portfolio
+# sthasamir, email designer: portfolio
 
 Personal portfolio for a freelance email designer. Next.js (App Router), TypeScript, Tailwind CSS v4, GSAP + ScrollTrigger, Lenis, React Three Fiber and Supabase.
 
