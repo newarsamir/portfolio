@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { isEditFrame } from "./cms/SiteProvider";
 
 let lenis: Lenis | null = null;
 export const getLenis = () => lenis;
@@ -13,7 +14,8 @@ export default function SmoothScroll() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // The admin preview scrolls natively so it can jump to a section.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || isEditFrame()) return;
 
     const instance = new Lenis({ lerp: 0.11, anchors: true, autoRaf: false });
     lenis = instance;

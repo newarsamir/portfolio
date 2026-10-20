@@ -1,8 +1,8 @@
 import About from "@/components/About";
-// Hidden for now, kept for later. Re-enable here and in the JSX below.
-// import Anatomy from "@/components/Anatomy";
+import Anatomy from "@/components/Anatomy";
 import BrandStrip from "@/components/BrandStrip";
 import CaseStudies from "@/components/CaseStudies";
+import { SectionList } from "@/components/cms/SiteProvider";
 import Counters from "@/components/Counters";
 import AiGallery from "@/components/AiGallery";
 import Faq from "@/components/Faq";
@@ -12,8 +12,8 @@ import Process from "@/components/Process";
 import Services from "@/components/Services";
 import Showcase from "@/components/Showcase";
 import Testimonials from "@/components/Testimonials";
-import { site } from "@/content/site";
 import { getCaseStudies } from "@/lib/case-studies";
+import { getContent, getLayouts } from "@/lib/content";
 import { getGalleryItems } from "@/lib/gallery";
 import { getSettings } from "@/lib/settings";
 import { getShowcaseItems } from "@/lib/showcase";
@@ -23,10 +23,30 @@ export const revalidate = 60;
 
 export default async function HomePage() {
   const settings = await getSettings();
+  const site = await getContent();
   const cases = await getCaseStudies();
   const showcase = await getShowcaseItems();
   const gallery = await getGalleryItems();
+  const hidden = (await getLayouts()).home.hidden;
   const url = siteUrl();
+
+  const all = {
+    hero: <Hero videoUrl={settings.heroVideoUrl} />,
+    brands: <BrandStrip />,
+    counters: <Counters />,
+    showcase: <Showcase items={showcase} />,
+    cases: <CaseStudies items={cases.map(({ id: _id, sortOrder: _sortOrder, ...c }) => c)} />,
+    nudge: <HireNudge available={settings.availableForWork} />,
+    about: <About />,
+    anatomy: <Anatomy />,
+    process: <Process />,
+    services: <Services />,
+    testimonials: <Testimonials />,
+    faq: <Faq />,
+    gallery: <AiGallery items={gallery} />,
+  };
+  // Hidden sections aren't rendered at all, so their text never reaches the browser.
+  const sections = Object.fromEntries(Object.entries(all).filter(([id]) => !hidden.includes(id)));
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -47,20 +67,8 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
-      <Hero videoUrl={settings.heroVideoUrl} />
-      <BrandStrip items={settings.brands} />
-      <Counters items={settings.counters} placeholder={settings.countersArePlaceholder} />
-      <Showcase items={showcase} heading={settings.showcaseHeading} sub={settings.showcaseSub} />
-      <CaseStudies items={cases.map(({ id: _id, sortOrder: _sortOrder, ...c }) => c)} />
-      <HireNudge available={settings.availableForWork} />
-      <About />
-      {/* "Anatomy of an email" is hidden for now. Uncomment to bring it back. */}
-      {/* <Anatomy /> */}
-      <Process />
-      <Services />
-      <Testimonials />
-      <Faq />
-      <AiGallery items={gallery} />
+      {/* Order and visibility are set in /admin (Pages). "Anatomy" starts hidden. */}
+      <SectionList page="home" nodes={sections} />
     </>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { site } from "@/content/site";
+import { useSite } from "./cms/SiteProvider";
 import { ScrollTrigger, gsap, useGSAP } from "@/lib/gsap";
 import { Reveal, SplitHeading } from "./Reveal";
 import SectionRule from "./SectionRule";
@@ -11,6 +11,7 @@ import SectionRule from "./SectionRule";
  * and the part being described lights up. Hover and keyboard focus do the same.
  */
 export default function Anatomy() {
+  const site = useSite();
   const root = useRef<HTMLElement>(null);
   const parts = site.anatomy.parts;
   const [active, setActive] = useState(0);

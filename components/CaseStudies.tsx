@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useRef } from "react";
-import { site, type CaseStudy } from "@/content/site";
+import { type CaseStudy } from "@/content/site";
+import { useSite } from "./cms/SiteProvider";
+import { fill } from "@/lib/cms";
 import { gsap, useGSAP } from "@/lib/gsap";
 import EmailScroll from "./EmailScroll";
 import Parallax from "./Parallax";
@@ -17,6 +19,7 @@ const STACK = "(min-width: 900px) and (min-height: 700px) and (prefers-reduced-m
  * eases back a little as the next slides over it, without dimming.
  */
 export default function CaseStudies({ items }: { items: CaseStudy[] }) {
+  const site = useSite();
   const root = useRef<HTMLElement>(null);
 
   useGSAP(
@@ -44,7 +47,7 @@ export default function CaseStudies({ items }: { items: CaseStudy[] }) {
   return (
     <section ref={root} id="cases" className="section" aria-labelledby="cases-h">
       <div className="wrap">
-        <SectionRule label="Case studies" note={`${items.length} projects, start to send`} />
+        <SectionRule label={site.caseStudies.label} note={fill(site.caseStudies.note, items.length)} />
         <div className="grid gap-6 lg:grid-cols-12">
           <SplitHeading id="cases-h" className="display-lg lg:col-span-7">
             {site.caseStudies.heading}

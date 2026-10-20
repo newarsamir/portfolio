@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { site } from "@/content/site";
+import { useSite } from "./cms/SiteProvider";
 import { gsap, ScrollTrigger, useGSAP, MOTION_OK } from "@/lib/gsap";
 import AnchorLink from "./AnchorLink";
 import HeroStory from "./HeroStory";
@@ -12,14 +12,15 @@ import { ArrowSwap, RollText } from "./RollText";
 import { parseVideo } from "@/lib/video";
 
 /** File videos use the poster from site.ts. YouTube brings its own thumbnail. */
-function posterFor(url: string): string | undefined {
+function posterFor(url: string, filePoster: string): string | undefined {
   const v = parseVideo(url);
   if (v?.kind === "youtube") return `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`;
-  if (v?.kind === "file") return site.defaults.heroPoster;
+  if (v?.kind === "file") return filePoster;
   return undefined;
 }
 
 export default function Hero({ videoUrl }: { videoUrl: string }) {
+  const site = useSite();
   const root = useRef<HTMLElement>(null);
   const pin = useRef<HTMLDivElement>(null);
   const copy = useRef<HTMLDivElement>(null);
@@ -171,7 +172,7 @@ export default function Hero({ videoUrl }: { videoUrl: string }) {
               <HeroVideo
                 ref={video}
                 url={videoUrl}
-                poster={posterFor(videoUrl)}
+                poster={posterFor(videoUrl, site.defaults.heroPoster)}
                 title={`${site.name} showreel`}
                 controls={reduced}
               />

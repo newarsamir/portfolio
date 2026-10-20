@@ -1,5 +1,9 @@
+"use client";
+
 import Image from "next/image";
-import { site } from "@/content/site";
+import { useSite } from "./cms/SiteProvider";
+import { fill } from "@/lib/cms";
+import { isRemote } from "@/lib/images";
 import { Reveal, SplitHeading } from "./Reveal";
 import SectionRule from "./SectionRule";
 
@@ -8,11 +12,12 @@ import SectionRule from "./SectionRule";
  * and how many emails it usually is. On desktop a sample slides in on hover.
  */
 export default function Services() {
+  const site = useSite();
   const items = site.services.items;
   return (
     <section className="section" aria-labelledby="services-h">
       <div className="wrap">
-        <SectionRule label="Services" note={`${items.length} kinds of email`} />
+        <SectionRule label={site.services.label} note={fill(site.services.note, items.length)} />
         <div className="grid gap-6 lg:grid-cols-12">
           <SplitHeading id="services-h" className="display-lg lg:col-span-7">
             {site.services.heading}
@@ -50,7 +55,7 @@ export default function Services() {
                 className="pointer-events-none absolute right-[22%] top-1/2 z-10 hidden h-48 w-36 -translate-y-1/2 rotate-3 scale-90 overflow-clip rounded-lg border border-line opacity-0 shadow-[0_24px_48px_-20px_rgb(0_0_0/0.5)] transition-[opacity,transform] duration-300 ease-out group-hover:rotate-[-4deg] group-hover:scale-100 group-hover:opacity-100 lg:block"
                 aria-hidden="true"
               >
-                <Image src={s.image} alt="" width={288} height={384} sizes="144px" loading="lazy" className="h-full w-full object-cover object-top" />
+                <Image src={s.image} alt="" width={288} height={384} sizes="144px" loading="lazy" unoptimized={isRemote(s.image)} className="h-full w-full object-cover object-top" />
               </span>
             </li>
           ))}

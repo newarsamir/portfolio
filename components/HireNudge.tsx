@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef } from "react";
-import { site } from "@/content/site";
+import { useSite } from "./cms/SiteProvider";
 import { gsap, useGSAP, MOTION_OK } from "@/lib/gsap";
 import Magnetic from "./Magnetic";
 import { ArrowSwap, RollText } from "./RollText";
@@ -13,6 +13,7 @@ import { ArrowSwap, RollText } from "./RollText";
  * the copy rises a little slower than the card and the rings turn.
  */
 export default function HireNudge({ available }: { available: boolean }) {
+  const site = useSite();
   const { nudge } = site;
   const root = useRef<HTMLElement>(null);
 
@@ -62,7 +63,7 @@ export default function HireNudge({ available }: { available: boolean }) {
             <div data-nudge-copy className="relative">
               <p className="mono flex items-center gap-2">
                 <span className={`h-2 w-2 rounded-full bg-on-lime ${available ? "pulse-dot" : "opacity-40"}`} aria-hidden="true" />
-                {available ? `${nudge.eyebrow} · Taking new projects` : nudge.eyebrow}
+                {available ? `${nudge.eyebrow} · ${nudge.availableNote}` : nudge.eyebrow}
               </p>
               <h2 id="nudge-h" className="mt-4 max-w-[22ch] text-[clamp(1.75rem,3.4vw,3rem)]">
                 {nudge.headline}

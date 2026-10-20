@@ -9,6 +9,7 @@ import { getAllShowcaseItems } from "@/lib/showcase";
 import { checkDatabase } from "@/lib/db-status";
 import { getAllGalleryItems } from "@/lib/gallery";
 import { getSettings } from "@/lib/settings";
+import { getContent, getLayouts } from "@/lib/content";
 import { getSupabase } from "@/lib/supabase";
 
 export const metadata: Metadata = {
@@ -53,18 +54,22 @@ export default async function AdminPage() {
   const showcase = await getAllShowcaseItems();
   const dbStatus = await checkDatabase();
   const gallery = await getAllGalleryItems();
+  const content = await getContent();
+  const layouts = await getLayouts();
+  const caseSlug = cases.items.find((c) => c.published)?.slug ?? null;
 
   return (
     <AdminPanel
-      siteName={site.name}
+      siteName={content.name}
+      content={content}
+      layouts={layouts}
+      caseSlug={caseSlug}
       contacts={contacts}
       loadError={loadError}
       dbConnected={Boolean(db)}
       settings={{
         heroVideoUrl: settings.heroVideoUrl,
         availableForWork: settings.availableForWork,
-        counters: settings.counters.map((c) => ({ id: c.id, label: c.label, value: c.value })),
-        brands: settings.brands,
       }}
       poster={site.defaults.heroPoster}
       dbStatus={dbStatus}
@@ -87,8 +92,6 @@ export default async function AdminPage() {
         })),
         fromDb: showcase.fromDb,
         error: showcase.error,
-        heading: settings.showcaseHeading,
-        sub: settings.showcaseSub,
         placeholderSrcs: site.showcase.items.map((i) => i.src),
       }}
       caseStudies={{

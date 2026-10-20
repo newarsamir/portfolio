@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
-import { site } from "@/content/site";
+import { useHiddenAnchors, useSite } from "./cms/SiteProvider";
 import AnchorLink, { scrollToId } from "./AnchorLink";
 import LocalTime from "./LocalTime";
 import Magnetic from "./Magnetic";
@@ -26,9 +26,6 @@ const ICONS: Record<string, ReactNode> = {
   contact: <ContactIcon />,
 };
 
-// "Home" lives in the progress ring at the start of the dock.
-const DOCK_NAV = site.nav.filter((n) => n.id !== "home");
-const CITY = site.location.split(",")[0];
 
 const DOCK_AT = 120;
 const BASE = 44; // px, also the minimum touch target
@@ -44,6 +41,14 @@ function bounce(e: MouseEvent<HTMLElement>) {
 }
 
 export default function Nav({ available }: { available: boolean }) {
+  const site = useSite();
+  const hiddenAnchors = useHiddenAnchors();
+  const NAV = site.nav.filter((n) => !hiddenAnchors.includes(n.id));
+  // "Home" lives in the progress ring at the start of the dock.
+  const DOCK_NAV = NAV.filter((n) => n.id !== "home");
+  const CITY = site.location.split(",")[0];
+  const navRef = useRef(NAV);
+  navRef.current = NAV;
   const pathname = usePathname();
   const onHome = pathname === "/";
   const [docked, setDocked] = useState(false);
@@ -67,7 +72,7 @@ export default function Nav({ available }: { available: boolean }) {
       }
       const mid = window.innerHeight * 0.5;
       let current = "home";
-      for (const item of site.nav) {
+      for (const item of navRef.current) {
         const el = document.getElementById(item.id);
         if (el && el.getBoundingClientRect().top <= mid) current = item.id;
       }
@@ -214,13 +219,13 @@ export default function Nav({ available }: { available: boolean }) {
                 className={`h-2 w-2 rounded-full ${available ? "pulse-dot bg-lime ring-1 ring-ink/40" : "bg-muted"}`}
                 aria-hidden="true"
               />
-              {available ? "Available for work" : "Booked right now"}
+              {available ? site.navBar.available : site.navBar.booked}
             </span>
           </div>
 
           <nav aria-label="Main" className="hidden lg:block">
             <ul className="flex items-center gap-1">
-              {site.nav.map((item) => {
+              {NAV.map((item) => {
                 const current = active === item.id;
                 const link = "rounded-full px-3.5 py-2 text-[0.95rem] text-muted transition-colors hover:text-ink aria-[current=true]:text-ink";
                 return (
@@ -242,7 +247,7 @@ export default function Nav({ available }: { available: boolean }) {
 
           <Magnetic>
             <Link href="/contact" className="btn btn-lime btn-sm">
-              <RollText text="Hire me" />
+              <RollText text={site.navBar.hire} />
             </Link>
           </Magnetic>
         </div>
@@ -350,7 +355,7 @@ export default function Nav({ available }: { available: boolean }) {
             href="/contact"
             data-dock-item
             data-fixed="true"
-            aria-label="Hire me"
+            aria-label={site.navBar.hire}
             onClick={bounce}
             onAnimationEnd={(e) => (e.currentTarget.dataset.bounce = "false")}
             className="dock-item dock-hire relative flex h-11 min-w-11 origin-bottom items-center justify-center gap-2 rounded-[0.9rem] bg-lime px-0 font-medium text-on-lime sm:px-4"
@@ -359,7 +364,7 @@ export default function Nav({ available }: { available: boolean }) {
               <HireIcon width={20} height={20} />
             </span>
             <span className="dock-pop hidden text-[0.95rem] sm:inline" style={{ ["--i" as string]: DOCK_NAV.length + 2 }}>
-              Hire me
+              {site.navBar.hire}
             </span>
           </Link>
         </div>

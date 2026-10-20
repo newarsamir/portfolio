@@ -1,17 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { site } from "@/content/site";
+import { useSite } from "./cms/SiteProvider";
+import { fill } from "@/lib/cms";
 import { PlusIcon } from "./icons";
 import { Reveal, SplitHeading } from "./Reveal";
 import SectionRule from "./SectionRule";
 
 export default function Faq() {
+  const site = useSite();
   const [open, setOpen] = useState<number | null>(0);
   return (
     <section className="section" aria-labelledby="faq-h">
       <div className="wrap">
-        <SectionRule label="Questions" note={`${site.faq.items.length} answers`} />
+        <SectionRule label={site.faq.label} note={fill(site.faq.note, site.faq.items.length)} />
       </div>
       <div className="wrap grid gap-10 lg:grid-cols-12">
         <div className="lg:col-span-4">

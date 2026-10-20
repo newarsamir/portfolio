@@ -1645,3 +1645,122 @@ select.field {
   }
 }
 }
+
+/* -------------------------------------------------------------------
+   Page editor preview (the site inside /admin, loaded with ?cms=1)
+------------------------------------------------------------------- */
+@layer components {
+.cms-edit .cursor {
+  display: none;
+}
+.cms-edit,
+.cms-edit * {
+  cursor: pointer !important;
+}
+.cms-outline {
+  position: fixed;
+  z-index: 300;
+  pointer-events: none;
+  border-radius: 10px;
+  transition: opacity 0.15s;
+}
+.cms-hover {
+  outline: calc(2px / var(--cms-scale, 1)) dashed #9bc21c;
+  outline-offset: -2px;
+  background: rgb(198 244 50 / 0.06);
+}
+.cms-picked {
+  outline: calc(2.5px / var(--cms-scale, 1)) solid #c6f432;
+  outline-offset: calc(-2.5px / var(--cms-scale, 1));
+  box-shadow: inset 0 0 0 9999px rgb(198 244 50 / 0.05);
+}
+.cms-chip {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  transform: scale(calc(1 / var(--cms-scale, 1)));
+  transform-origin: 0 0;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  background: #1c1b17;
+  color: #c6f432;
+  font: 600 0.75rem/1.2 var(--font-mono);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  box-shadow: 0 6px 16px -6px rgb(0 0 0 / 0.5);
+}
+}
+
+/* -------------------------------------------------------------------
+   Admin: compact fields and buttons for the page editor and sidebar
+------------------------------------------------------------------- */
+@layer components {
+.cms-field {
+  display: block;
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.7rem;
+  border: 1.5px solid var(--line);
+  background: var(--raised);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.cms-field:hover {
+  border-color: var(--muted);
+}
+.cms-field:focus-visible {
+  outline: none;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px var(--lime);
+}
+.cms-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.25rem;
+  padding: 0 0.85rem;
+  border-radius: 0.7rem;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+.cms-btn:hover:not(:disabled) {
+  background: var(--surface);
+  border-color: var(--muted);
+}
+.cms-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.cms-btn:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.admin-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 2.6rem;
+  padding: 0 0.75rem;
+  border-radius: 0.8rem;
+  font-size: 0.95rem;
+  color: var(--muted);
+  transition: background-color 0.15s, color 0.15s;
+}
+.admin-nav-item:hover {
+  color: var(--ink);
+  background: color-mix(in oklch, var(--ink) 6%, transparent);
+}
+.admin-nav-item[aria-current="page"] {
+  background: var(--ink);
+  color: var(--bg);
+}
+}

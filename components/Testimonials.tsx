@@ -1,9 +1,12 @@
-import { site } from "@/content/site";
+"use client";
+
+import { useSite } from "./cms/SiteProvider";
 import { Reveal, SplitHeading } from "./Reveal";
 
 /** Renders nothing until real testimonials exist in /content/site.ts. */
 export default function Testimonials() {
-  const items = site.testimonials;
+  const site = useSite();
+  const items = site.testimonials.items.filter((t) => t.quote.trim() !== "");
   if (items.length === 0) return null;
   const [first, ...rest] = items;
 
@@ -11,7 +14,7 @@ export default function Testimonials() {
     <section className="section" aria-labelledby="testimonials-h">
       <div className="wrap">
         <SplitHeading id="testimonials-h" className="display-md">
-          What clients said, unprompted
+          {site.testimonials.heading}
         </SplitHeading>
         <Reveal as="figure" variant="slide" className="mt-12 border-l-4 border-lime pl-6 md:pl-10">
           <blockquote className="font-display text-[clamp(1.6rem,3.4vw,3rem)] font-medium leading-[1.12]">
