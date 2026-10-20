@@ -36,50 +36,55 @@ function defaults(): SiteSettings {
   };
 }
 
+/** Every row of the settings table, read once per request. */
+export const getSettingRows = cache(async (): Promise<{ key: string; value: unknown }[]> => {
+  const db = getSupabase();
+  if (!db) return [];
+  try {
+    const { data, error } = await db.from("settings").select("key, value");
+    if (error || !data) return [];
+    return data as { key: string; value: unknown }[];
+  } catch {
+    // Network or config trouble: fall back to the defaults.
+    return [];
+  }
+});
+
 /** Settings from Supabase merged over the defaults in /content/site.ts. */
 export const getSettings = cache(async (): Promise<SiteSettings> => {
   const out = defaults();
-  const db = getSupabase();
-  if (!db) return out;
-
-  try {
-    const { data, error } = await db.from("settings").select("key, value");
-    if (error || !data) return out;
-
-    for (const row of data as { key: string; value: unknown }[]) {
-      if (row.key === SETTING_KEYS.video && typeof row.value === "string" && row.value.trim()) {
-        // The old placeholder reel was never real content; keep the default hero film instead.
-        if (row.value.trim() !== "/hero/reel-placeholder.mp4") out.heroVideoUrl = row.value.trim();
-      }
-      if (row.key === SETTING_KEYS.showcaseHeading && typeof row.value === "string" && row.value.trim()) {
-        out.showcaseHeading = row.value.trim();
-      }
-      if (row.key === SETTING_KEYS.showcaseSub && typeof row.value === "string" && row.value.trim()) {
-        out.showcaseSub = row.value.trim();
-      }
-      if (row.key === SETTING_KEYS.brands && Array.isArray(row.value)) {
-        out.brands = row.value.filter((b): b is string => typeof b === "string" && b.trim() !== "");
-      }
-      if (row.key === SETTING_KEYS.available && typeof row.value === "boolean") {
-        out.availableForWork = row.value;
-      }
-      if (row.key === SETTING_KEYS.counters && row.value && typeof row.value === "object") {
-        const saved = row.value as Record<string, unknown>;
-        let touched = false;
-        out.counters = out.counters.map((c) => {
-          const v = saved[c.id];
-          if (typeof v === "number" && Number.isFinite(v) && v >= 0) {
-            touched = true;
-            return { ...c, value: Math.round(v) };
-          }
-          return c;
-        });
-        // Counters saved from /admin are real values, so drop the sample note.
-        if (touched) out.countersArePlaceholder = false;
-      }
+  const data = await getSettingRows();
+  for (const row of data) {
+    if (row.key === SETTING_KEYS.video && typeof row.value === "string" && row.value.trim()) {
+      // The old placeholder reel was never real content; keep the default hero film instead.
+      if (row.value.trim() !== "/hero/reel-placeholder.mp4") out.heroVideoUrl = row.value.trim();
     }
-  } catch {
-    // Network or config trouble: fall back to the defaults.
+    if (row.key === SETTING_KEYS.showcaseHeading && typeof row.value === "string" && row.value.trim()) {
+      out.showcaseHeading = row.value.trim();
+    }
+    if (row.key === SETTING_KEYS.showcaseSub && typeof row.value === "string" && row.value.trim()) {
+      out.showcaseSub = row.value.trim();
+    }
+    if (row.key === SETTING_KEYS.brands && Array.isArray(row.value)) {
+      out.brands = row.value.filter((b): b is string => typeof b === "string" && b.trim() !== "");
+    }
+    if (row.key === SETTING_KEYS.available && typeof row.value === "boolean") {
+      out.availableForWork = row.value;
+    }
+    if (row.key === SETTING_KEYS.counters && row.value && typeof row.value === "object") {
+      const saved = row.value as Record<string, unknown>;
+      let touched = false;
+      out.counters = out.counters.map((c) => {
+        const v = saved[c.id];
+        if (typeof v === "number" && Number.isFinite(v) && v >= 0) {
+          touched = true;
+          return { ...c, value: Math.round(v) };
+        }
+        return c;
+      });
+      // Counters saved from /admin are real values, so drop the sample note.
+      if (touched) out.countersArePlaceholder = false;
+    }
   }
   return out;
 });

@@ -1,15 +1,19 @@
+"use client";
+
 import Image from "next/image";
-import { site } from "@/content/site";
+import { useSite } from "./cms/SiteProvider";
+import { isRemote } from "@/lib/images";
 import { MaskReveal, Reveal, SplitHeading } from "./Reveal";
 import Parallax from "./Parallax";
 import SectionRule from "./SectionRule";
 
 export default function About() {
+  const site = useSite();
   const { about } = site;
   return (
     <section id="about" className="section" aria-labelledby="about-h">
       <div className="wrap">
-        <SectionRule label="About" note={site.location} />
+        <SectionRule label={site.about.label} note={site.location} />
       </div>
       <div className="wrap grid gap-12 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-5">
@@ -24,6 +28,7 @@ export default function About() {
                 width={960}
                 height={1200}
                 sizes="(min-width: 1024px) 40vw, 90vw"
+                unoptimized={isRemote(about.portrait)}
                 className="h-full w-full object-cover"
               />
             ) : (

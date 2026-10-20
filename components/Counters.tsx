@@ -1,12 +1,16 @@
 "use client";
 
 import { useRef } from "react";
-import { site, type Counter } from "@/content/site";
+import { type Counter } from "@/content/site";
+import { useSite } from "./cms/SiteProvider";
 import { gsap, useGSAP, MOTION_OK } from "@/lib/gsap";
 import { SplitHeading } from "./Reveal";
 import SectionRule from "./SectionRule";
 
-export default function Counters({ items, placeholder }: { items: Counter[]; placeholder: boolean }) {
+export default function Counters() {
+  const site = useSite();
+  const items: Counter[] = site.counters.items;
+  const placeholder = site.counters.placeholder;
   const root = useRef<HTMLElement>(null);
 
   useGSAP(
@@ -44,13 +48,13 @@ export default function Counters({ items, placeholder }: { items: Counter[]; pla
   return (
     <section ref={root} className="section" aria-labelledby="counters-h">
       <div className="wrap">
-        <SectionRule label="In numbers" />
+        <SectionRule label={site.counters.label} />
         <div className="flex flex-wrap items-end justify-between gap-4">
           <SplitHeading id="counters-h" className="display-md max-w-[18ch]">
             {site.counters.heading}
           </SplitHeading>
           {placeholder && (
-            <p className="mono text-muted">Sample numbers, edit in /admin</p>
+            <p className="mono text-muted">{site.counters.sampleNote}</p>
           )}
         </div>
 

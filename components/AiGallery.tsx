@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { site } from "@/content/site";
+import { useSite } from "./cms/SiteProvider";
+import { fill } from "@/lib/cms";
 import { gsap, ScrollTrigger, useGSAP, MOTION_OK } from "@/lib/gsap";
 import { Reveal, SplitHeading } from "./Reveal";
 import { ArrowSwap, RollText } from "./RollText";
@@ -96,6 +97,7 @@ function Placeholder({ look }: { look: string }) {
 type Shown = GalleryTile & { look?: string };
 
 export default function AiGallery({ items }: { items: GalleryTile[] }) {
+  const site = useSite();
   const g = site.gallery;
   const root = useRef<HTMLElement>(null);
   const [open, setOpen] = useState<number | null>(null);
@@ -270,7 +272,7 @@ export default function AiGallery({ items }: { items: GalleryTile[] }) {
   return (
     <section ref={root} id="photography" className="section overflow-x-clip" aria-labelledby="gallery-h">
       <div className="wrap">
-        <SectionRule label={g.label} note={placeholder ? "Samples shown until real images are added" : `${items.length} images`} />
+        <SectionRule label={g.label} note={placeholder ? g.sampleNote : fill(g.countNote, items.length)} />
         <div className="grid gap-8 lg:grid-cols-12">
           <SplitHeading id="gallery-h" className="display-lg lg:col-span-7">
             {g.heading}
@@ -304,7 +306,7 @@ export default function AiGallery({ items }: { items: GalleryTile[] }) {
           <RollText text={g.cta} />
           <ArrowSwap />
         </Link>
-        <p className="text-muted">Hover an image to see how it was made.</p>
+        <p className="text-muted">{g.hint}</p>
       </Reveal>
 
       <GalleryViewer list={list} index={open} onClose={() => setOpen(null)} onNavigate={setOpen} placeholder={placeholder} />

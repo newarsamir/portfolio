@@ -1,7 +1,11 @@
-import { site } from "@/content/site";
+"use client";
+
+import { useSite } from "./cms/SiteProvider";
 
 /** Slow marquee of client names. Pauses on hover; hidden while there are none. */
-export default function BrandStrip({ items }: { items: string[] }) {
+export default function BrandStrip() {
+  const site = useSite();
+  const items = site.brandStrip.items.filter((b) => b.trim() !== "");
   if (items.length === 0) return null;
   // Repeat enough to fill wide screens, then duplicate once for the loop.
   const row = Array.from({ length: Math.max(2, Math.ceil(12 / items.length)) }, () => items).flat();

@@ -70,6 +70,13 @@ export const site = {
     { label: "Instagram", href: "#" },
   ],
 
+  /** Text in the top bar and the dock. */
+  navBar: {
+    available: "Available for work",
+    booked: "Booked right now",
+    hire: "Hire me",
+  },
+
   nav: [
     { id: "home", label: "Home" },
     { id: "work", label: "Work" },
@@ -111,6 +118,8 @@ export const site = {
   },
 
   counters: {
+    label: "In numbers",
+    sampleNote: "Sample numbers, edit in /admin",
     heading: "The numbers behind the inbox.",
     /**
      * TODO: these are sample values. Replace them here or in /admin, then set
@@ -202,6 +211,9 @@ export const site = {
   },
 
   caseStudies: {
+    label: "Case studies",
+    /** {count} is replaced with the number of case studies. */
+    note: "{count} projects, start to send",
     heading: "Where the revenue was leaking, and how it got fixed.",
     sub: "Real problems from real inboxes: the brief, the design decisions, and what changed after the send.",
     /**
@@ -286,6 +298,7 @@ export const site = {
   },
 
   about: {
+    label: "About",
     heading: "An email designer who thinks in revenue, not just pixels.",
     // TODO: rewrite in your own words. Keep it first person.
     story: [
@@ -368,6 +381,8 @@ export const site = {
   },
 
   services: {
+    label: "Services",
+    note: "{count} kinds of email",
     heading: "Emails that pay for themselves",
     sub: "Each one fixes a leak in the customer journey. Pick the one that hurts most, or stack them into a full lifecycle.",
     items: [
@@ -421,13 +436,21 @@ export const site = {
     sub: "Studio product shots and lifestyle scenes, generated with AI tools like Higgsfield and ChatGPT and styled to your brand, so your emails never wait on a photoshoot.",
     tools: ["Higgsfield", "ChatGPT", "Other AI tools"],
     cta: "Ask about product shots",
+    sampleNote: "Samples shown until real images are added",
+    countNote: "{count} images",
+    hint: "Hover an image to see how it was made.",
   },
 
   // Real ones only. While this array is empty the section is not rendered.
   // TODO: add testimonials as { quote, name, role }.
-  testimonials: [] as Testimonial[],
+  testimonials: {
+    heading: "What clients said, unprompted",
+    items: [] as Testimonial[],
+  },
 
   faq: {
+    label: "Questions",
+    note: "{count} answers",
     heading: "Questions I get, answered honestly",
     items: [
       {
@@ -468,11 +491,13 @@ export const site = {
     body: "If your cart emails haven't changed since launch and every campaign is a sale, there's revenue sitting in your inbox. Send me your worst-performing email and I'll tell you what I'd change and why.",
     button: "Hire me",
     secondary: "Email me instead",
+    availableNote: "Taking new projects",
   },
 
   contact: {
     headline: "Tell me where your emails are leaking money.",
     sub: "Share the brand, the flows you have and what isn't working. I reply within two working days with honest next steps, and never with 'per my last email'.",
+    copyHint: "Prefer your own inbox? Click to copy.",
     projectTypes: [
       "Welcome flow",
       "Campaigns",
@@ -507,9 +532,73 @@ export const site = {
   footer: {
     /** IANA time zone for the live clock in the footer and the dock. */
     timeZone: "Asia/Kathmandu",
+    eyebrow: "Say hello",
     cta: "Let's turn your list into your best-performing channel.",
+    button: "Start a project",
+    sitemapLabel: "Sitemap",
+    links: [
+      { label: "Home", href: "/" },
+      { label: "Selected emails", href: "/#work" },
+      { label: "Case studies", href: "/work" },
+      { label: "Process", href: "/#process" },
+      { label: "AI photography", href: "/#photography" },
+      { label: "Start a project", href: "/contact" },
+    ],
+    socialsLabel: "Elsewhere",
+    noSocials: "Email is the best way to reach me. Fitting, really.",
+    timeLabel: "Local time",
     joke: "You scrolled all the way to the footer. I hope your subscribers are this loyal.",
   },
-} as const;
+
+  /** The /work page header. */
+  workPage: {
+    /** {count} is replaced with the number of case studies. */
+    note: "{count} projects, brief to send",
+    heading: "Case studies",
+    sub: "Real problems from real inboxes: the brief, the design decisions, and what changed after the send.",
+    empty: "Case studies are on their way. The work section on the home page has the emails in the meantime.",
+  },
+
+  /** Labels on every case study page (/work/...). */
+  casePage: {
+    hoverHint: "Hover to read it top to bottom",
+    challengeLabel: "The challenge",
+    approachLabel: "The approach",
+    outcomeLabel: "The outcome",
+    resultsLabel: "Results",
+    emailsLabel: "The emails",
+    emailsNote: "{count} designs, hover to scroll",
+    nextLabel: "Next case study",
+  },
+
+  /** The 404 page. */
+  notFound: {
+    eyebrow: "Error 404 · Unsubscribed from existence",
+    headline: "This page has a 0% conversion rate.",
+    quips: [
+      "Like a cart abandoned at checkout, this page left without saying goodbye.",
+      "Not in Primary. Not in Promotions. Not even in Spam. It's just gone.",
+      "Even a 'LAST CHANCE: 50% off' subject line couldn't bring this page back.",
+      "Somewhere a CFO is asking why this link has an ROI of exactly zero.",
+      "This URL has the retention of a welcome flow with no email two.",
+      "We A/B tested this page. Both versions were missing.",
+    ],
+    undeliverable: "Undeliverable",
+    primary: "Back to the home page",
+    secondary: "See the work",
+    blame: "Blame the intern",
+    blameTitle: "Blame received",
+    blameBody: "The intern has been notified. The intern is also me, and I've added it to the backlog.",
+  },
+
+  /** The greeting that plays on the first page of a visit. नमस्ते is fixed (it uses a 5-letter font subset). */
+  intro: {
+    nepaliLabel: "Nepali",
+    second: "Jojolapa",
+    secondLabel: "Nepal Bhasa",
+    third: "Hello",
+    thirdLabel: "English",
+  },
+};
 
 export type Site = typeof site;

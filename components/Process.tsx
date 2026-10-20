@@ -1,13 +1,14 @@
 "use client";
 
 import { useRef } from "react";
-import { site } from "@/content/site";
+import { useSite } from "./cms/SiteProvider";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { SplitHeading } from "./Reveal";
 
 const PINNED = "(min-width: 900px) and (prefers-reduced-motion: no-preference)";
 
 export default function Process() {
+  const site = useSite();
   const root = useRef<HTMLElement>(null);
   const steps = site.process.steps;
 

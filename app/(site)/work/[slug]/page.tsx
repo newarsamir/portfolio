@@ -5,9 +5,10 @@ import CountUp from "@/components/CountUp";
 import EmailScroll from "@/components/EmailScroll";
 import { MaskReveal, Reveal, SplitHeading } from "@/components/Reveal";
 import { ArrowSwap } from "@/components/RollText";
-import SectionRule from "@/components/SectionRule";
-import { site } from "@/content/site";
+import { Editable } from "@/components/cms/SiteProvider";
+import { SiteRule, SiteText } from "@/components/cms/SiteText";
 import { getCaseStudies, getCaseStudy } from "@/lib/case-studies";
+import { getContent } from "@/lib/content";
 import { siteUrl } from "@/lib/url";
 
 export const revalidate = 60;
@@ -48,9 +49,9 @@ export default async function CaseStudyPage({ params }: Props) {
 
   const story = (
     [
-      ["The challenge", c.challenge],
-      ["The approach", c.approach],
-      ["The outcome", c.outcome],
+      ["casePage.challengeLabel", c.challenge],
+      ["casePage.approachLabel", c.approach],
+      ["casePage.outcomeLabel", c.outcome],
     ] as const
   ).filter(([, body]) => body.trim());
 
@@ -60,12 +61,12 @@ export default async function CaseStudyPage({ params }: Props) {
     name: c.title,
     description: c.summary,
     url: `${siteUrl()}/work/${c.slug}`,
-    creator: { "@type": "Person", name: site.name },
+    creator: { "@type": "Person", name: (await getContent()).name },
     dateCreated: c.year || undefined,
   };
 
   return (
-    <>
+    <Editable id="casePage">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
@@ -122,7 +123,7 @@ export default async function CaseStudyPage({ params }: Props) {
                   duration="9s"
                   className="w-[min(20rem,72vw)]"
                 />
-                <p className="mono mt-5 text-center text-muted">Hover to read it top to bottom</p>
+                <p className="mono mt-5 text-center text-muted"><SiteText path="casePage.hoverHint" /></p>
               </div>
             </div>
           </MaskReveal>
@@ -130,7 +131,7 @@ export default async function CaseStudyPage({ params }: Props) {
 
         {c.metrics.length > 0 && (
           <section className="wrap section pb-0" aria-label="Results">
-            <SectionRule label="Results" />
+            <SiteRule label="casePage.resultsLabel" />
             <Reveal as="ul" variant="stagger" className="grid gap-px overflow-clip rounded-[1.5rem] border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
               {c.metrics.map((m) => (
                 <li key={m.label} className="bg-bg p-8 md:p-10">
@@ -152,7 +153,7 @@ export default async function CaseStudyPage({ params }: Props) {
                   <div className="lg:col-span-4">
                     <div className="lg:sticky lg:top-28">
                       <p className="mono text-muted">{String(i + 1).padStart(2, "0")}</p>
-                      <SplitHeading className="display-md mt-2">{label}</SplitHeading>
+                      <SplitHeading className="display-md mt-2"><SiteText path={label} /></SplitHeading>
                     </div>
                   </div>
                   <Reveal variant="stagger" className="space-y-5 text-lg leading-relaxed text-muted md:text-xl lg:col-span-8 lg:col-start-5">
@@ -171,7 +172,7 @@ export default async function CaseStudyPage({ params }: Props) {
         {c.gallery.length > 0 && (
           <section className="section pt-0" aria-label="The emails">
             <div className="wrap">
-              <SectionRule label="The emails" note={`${c.gallery.length} designs, hover to scroll`} />
+              <SiteRule label="casePage.emailsLabel" note="casePage.emailsNote" count={c.gallery.length} />
             </div>
             <Reveal variant="stagger" className="wrap grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {c.gallery.map((src, i) => (
@@ -196,7 +197,7 @@ export default async function CaseStudyPage({ params }: Props) {
             <Link href={`/work/${next.slug}`} className="next-case group block py-[clamp(3rem,8vw,6rem)] transition-colors duration-500">
               <span className="wrap flex items-end justify-between gap-8">
                 <span>
-                  <span className="mono block opacity-70">Next case study</span>
+                  <span className="mono block opacity-70"><SiteText path="casePage.nextLabel" /></span>
                   <span className="mt-3 block max-w-[22ch] font-display text-[clamp(2rem,5vw,4.5rem)] font-semibold leading-[1.04] tracking-[-0.015em]">
                     {next.title}
                   </span>
@@ -209,6 +210,6 @@ export default async function CaseStudyPage({ params }: Props) {
           </nav>
         )}
       </article>
-    </>
+    </Editable>
   );
 }

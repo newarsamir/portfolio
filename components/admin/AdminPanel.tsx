@@ -1,14 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useDeferredValue, useEffect, useMemo, useState, useTransition } from "react";
+import { useActionState, useCallback, useDeferredValue, useEffect, useMemo, useState, useTransition } from "react";
 import { deleteContact, logout, saveSettings, setRead } from "@/app/admin/actions";
+import type { Site } from "@/content/site";
+import type { AdminView, Layouts } from "@/lib/cms";
+import { sectionById } from "@/lib/cms";
 import { embedSrc, parseVideo } from "@/lib/video";
 import { toast } from "@/lib/toast";
 import CaseStudiesAdmin, { type AdminCaseStudy } from "./CaseStudiesAdmin";
+import Dashboard from "./Dashboard";
 import ShowcaseAdmin, { type AdminShowcaseItem } from "./ShowcaseAdmin";
 import DbStatus, { type DbStatusData } from "./DbStatus";
 import GalleryAdmin, { type AdminGalleryItem } from "./GalleryAdmin";
+import PageEditor from "./PageEditor";
 
 export type ContactRow = {
   id: string;
@@ -25,8 +30,6 @@ export type ContactRow = {
 type Settings = {
   heroVideoUrl: string;
   availableForWork: boolean;
-  counters: { id: string; label: string; value: number }[];
-  brands: string[];
 };
 
 const fmt = new Intl.DateTimeFormat("en-GB", {
@@ -36,6 +39,17 @@ const fmt = new Intl.DateTimeFormat("en-GB", {
   hour: "2-digit",
   minute: "2-digit",
 });
+
+const VIEWS: { id: AdminView; label: string; title: string; help: string }[] = [
+  { id: "dashboard", label: "Dashboard", title: "Dashboard", help: "" },
+  { id: "pages", label: "Pages", title: "Pages", help: "" },
+  { id: "inbox", label: "Inbox", title: "Inbox", help: "Inquiries from the contact form." },
+  { id: "showcase", label: "Showcase", title: "Selected emails", help: "The emails in the 3D carousel on the home page." },
+  { id: "cases", label: "Case studies", title: "Case studies", help: "Shown on the home page and at /work." },
+  { id: "gallery", label: "AI gallery", title: "AI photography", help: "The two-row gallery at the bottom of the home page." },
+  { id: "settings", label: "Settings", title: "Settings", help: "The hero video and whether you're taking projects." },
+  { id: "database", label: "Database", title: "Database", help: "Checks that every table and the storage bucket are set up." },
+];
 
 export default function AdminPanel({
   siteName,
@@ -48,6 +62,9 @@ export default function AdminPanel({
   showcase,
   dbStatus,
   gallery,
+  content,
+  layouts,
+  caseSlug,
 }: {
   dbStatus: DbStatusData;
   gallery: { items: AdminGalleryItem[]; fromDb: boolean; error: string | null };
@@ -62,118 +79,236 @@ export default function AdminPanel({
     items: AdminShowcaseItem[];
     fromDb: boolean;
     error: string | null;
-    heading: string;
-    sub: string;
     placeholderSrcs: string[];
   };
+  content: Site;
+  layouts: Layouts;
+  caseSlug: string | null;
 }) {
-  const [tab, setTab] = useState<"contacts" | "showcase" | "gallery" | "cases" | "settings">("contacts");
+  const [view, setView] = useState<AdminView>("dashboard");
+  const [menuOpen, setMenuOpen] = useState(false);
   const [rows, setRows] = useState(contacts);
+  const [editorOpened, setEditorOpened] = useState(false);
+  const [editorDirty, setEditorDirty] = useState(false);
+  const [editRequest, setEditRequest] = useState<{ id: string; n: number } | null>(null);
   const unread = rows.filter((r) => !r.is_read).length;
 
+  const go = useCallback((v: AdminView) => {
+    setView(v);
+    setMenuOpen(false);
+    if (v === "pages") setEditorOpened(true);
+    window.history.replaceState(null, "", v === "dashboard" ? window.location.pathname : `#${v}`);
+    window.scrollTo({ top: 0 });
+  }, []);
+
+  // Open the view named in the address (#pages, #inbox...).
+  useEffect(() => {
+    const fromHash = window.location.hash.slice(1) as AdminView;
+    if (VIEWS.some((v) => v.id === fromHash)) go(fromHash);
+  }, [go]);
+
+  const editSection = (id: string) => {
+    if (!sectionById(id)) return;
+    setEditRequest((r) => ({ id, n: (r?.n ?? 0) + 1 }));
+    go("pages");
+  };
+
+  const badge: Partial<Record<AdminView, string>> = {
+    inbox: unread ? String(unread) : "",
+    showcase: String(showcase.items.length),
+    cases: String(caseStudies.items.length),
+    gallery: String(gallery.items.length),
+    database: dbConnected && dbStatus.checks.every((c) => c.ok) ? "" : "!",
+    pages: editorDirty ? "•" : "",
+  };
+  const current = VIEWS.find((v) => v.id === view)!;
+
+  const sidebar = (
+    <div className="flex h-full flex-col">
+      <div className="flex items-center gap-3 px-5 pb-5 pt-6">
+        <span className="grid h-9 w-9 place-items-center rounded-xl bg-lime font-display text-lg font-bold text-on-lime">
+          {siteName.slice(0, 1).toUpperCase()}
+        </span>
+        <span className="min-w-0">
+          <span className="block truncate font-display text-lg font-semibold leading-tight">{siteName}</span>
+          <span className="mono block text-muted">Admin</span>
+        </span>
+      </div>
+      <nav aria-label="Admin" className="flex-1 overflow-y-auto px-3">
+        <ul className="space-y-0.5">
+          {VIEWS.map((v) => (
+            <li key={v.id}>
+              <button type="button" data-view={v.id} onClick={() => go(v.id)} aria-current={view === v.id ? "page" : undefined} className="admin-nav-item">
+                <NavIcon id={v.id} />
+                <span className="flex-1 text-left">{v.label}</span>
+                {badge[v.id] && (
+                  <span
+                    className={`mono rounded-full px-1.5 py-0.5 text-[0.68rem] ${
+                      v.id === "inbox" || v.id === "pages" ? "bg-lime text-on-lime" : v.id === "database" ? "bg-danger text-bg" : "opacity-60"
+                    }`}
+                  >
+                    {badge[v.id]}
+                  </span>
+                )}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <div className="space-y-1 border-t border-line p-3">
+        <Link href="/" target="_blank" className="admin-nav-item">
+          <NavIcon id="site" />
+          <span className="flex-1">View site ↗</span>
+        </Link>
+        <form action={logout}>
+          <button type="submit" className="admin-nav-item">
+            <NavIcon id="logout" />
+            <span className="flex-1 text-left">Sign out</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+
   return (
-    <main className="wrap min-h-svh py-8 md:py-12">
-      <header className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <p className="mono text-muted">{siteName}</p>
-          <h1 className="display-md mt-1">Admin</h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <Link href="/" className="btn btn-ghost btn-sm">
-            View site
-          </Link>
-          <form action={logout}>
-            <button type="submit" className="btn btn-ghost btn-sm">
-              Sign out
-            </button>
-          </form>
-        </div>
-      </header>
+    <div className="min-h-svh bg-bg lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)]">
+      {/* Sidebar: fixed on desktop, a drawer on small screens. */}
+      <aside className="sticky top-0 hidden h-svh border-r border-line bg-surface lg:block">{sidebar}</aside>
 
-      {!dbConnected && (
-        <p className="mt-6 rounded-xl border border-line bg-surface p-4">
-          Supabase isn&apos;t connected. Add <code className="mono">SUPABASE_URL</code> and{" "}
-          <code className="mono">SUPABASE_SERVICE_ROLE_KEY</code> in Vercel, run{" "}
-          <code className="mono">supabase/schema.sql</code>, then redeploy. Until then the site uses the defaults from{" "}
-          <code className="mono">content/site.ts</code>.
-        </p>
-      )}
-
-      {dbConnected && dbStatus.checks.some((c) => !c.ok) && (
-        <div role="alert" className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-danger/40 bg-surface p-4">
-          <p>
-            <strong className="font-semibold">Part of the database isn&apos;t set up</strong> in{" "}
-            <code className="mono">{dbStatus.host}</code>:{" "}
-            {dbStatus.checks
-              .filter((c) => !c.ok)
-              .map((c) => c.name)
-              .join(", ")}
-            .
-          </p>
-          <button type="button" className="btn btn-ghost btn-sm" onClick={() => setTab("settings")}>
-            See what to fix
-          </button>
+      <div className="sticky top-0 z-40 flex items-center justify-between border-b border-line bg-bg px-4 py-3 lg:hidden">
+        <span className="font-display text-lg font-semibold">{current.title}</span>
+        <button type="button" className="cms-btn" aria-expanded={menuOpen} aria-controls="admin-drawer" onClick={() => setMenuOpen(true)}>
+          Menu{unread ? ` · ${unread}` : ""}
+        </button>
+      </div>
+      {menuOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Admin menu">
+          <button type="button" aria-label="Close menu" className="absolute inset-0 bg-ink/40" onClick={() => setMenuOpen(false)} />
+          <aside id="admin-drawer" className="absolute inset-y-0 left-0 w-72 max-w-[85vw] border-r border-line bg-surface shadow-2xl">
+            {sidebar}
+          </aside>
         </div>
       )}
 
-      <div role="tablist" aria-label="Admin sections" className="mt-8 flex gap-1 overflow-x-auto border-b border-line">
-        {(
-          [
-            ["contacts", `Contacts${unread ? ` (${unread} unread)` : ""}`],
-            ["showcase", `Showcase (${showcase.items.length})`],
-            ["gallery", `Gallery (${gallery.items.length})`],
-            ["cases", `Case studies (${caseStudies.items.length})`],
-            ["settings", "Settings"],
-          ] as const
-        ).map(([id, label]) => (
-          <button
-            key={id}
-            role="tab"
-            id={`tab-${id}`}
-            aria-selected={tab === id}
-            aria-controls={`panel-${id}`}
-            onClick={() => setTab(id)}
-            className={`-mb-px shrink-0 border-b-2 px-4 py-3 font-medium ${
-              tab === id ? "border-ink text-ink" : "border-transparent text-muted hover:text-ink"
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      <div className="min-w-0">
+        {editorOpened && (
+          <div hidden={view !== "pages"} className="lg:h-svh">
+            <div className="flex flex-col lg:h-full">
+              <header className="hidden items-center justify-between gap-4 border-b border-line px-5 py-3 lg:flex">
+                <div>
+                  <h1 className="font-display text-xl font-semibold">Pages</h1>
+                  <p className="text-sm text-muted">Click a section in the preview to edit it. Changes show instantly; save to publish.</p>
+                </div>
+              </header>
+              <PageEditor
+                content={content}
+                layouts={layouts}
+                caseSlug={caseSlug}
+                dbConnected={dbConnected}
+                onNavigate={go}
+                onDirtyChange={setEditorDirty}
+                request={editRequest}
+              />
+            </div>
+          </div>
+        )}
 
-      <div role="tabpanel" id="panel-contacts" aria-labelledby="tab-contacts" hidden={tab !== "contacts"} className="pt-6">
-        <Contacts rows={rows} setRows={setRows} loadError={loadError} dbConnected={dbConnected} />
+        {view !== "pages" && (
+          <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
+            {view !== "dashboard" && (
+              <header className="mb-8">
+                <h1 className="font-display text-[clamp(1.75rem,3vw,2.5rem)] font-semibold leading-tight">{current.title}</h1>
+                {current.help && <p className="mt-1 text-muted">{current.help}</p>}
+              </header>
+            )}
+
+            {view === "dashboard" && (
+              <Dashboard
+                rows={rows}
+                counts={{ showcase: showcase.items.length, cases: caseStudies.items.length, gallery: gallery.items.length }}
+                layouts={layouts}
+                available={settings.availableForWork}
+                dbConnected={dbConnected}
+                dbStatus={dbStatus}
+                onNavigate={go}
+                onEditSection={editSection}
+              />
+            )}
+            <div hidden={view !== "inbox"} data-panel="inbox">
+              <Contacts rows={rows} setRows={setRows} loadError={loadError} dbConnected={dbConnected} />
+            </div>
+            <div hidden={view !== "showcase"} data-panel="showcase">
+              <ShowcaseAdmin
+                items={showcase.items}
+                fromDb={showcase.fromDb}
+                dbConnected={dbConnected}
+                loadError={showcase.error}
+                placeholderSrcs={showcase.placeholderSrcs}
+                onEditText={() => editSection("showcase")}
+              />
+            </div>
+            <div hidden={view !== "gallery"} data-panel="gallery">
+              <GalleryAdmin items={gallery.items} fromDb={gallery.fromDb} dbConnected={dbConnected} loadError={gallery.error} />
+              <EditTextHint onClick={() => editSection("gallery")} what="the gallery heading and intro" />
+            </div>
+            <div hidden={view !== "cases"} data-panel="cases">
+              <CaseStudiesAdmin
+                items={caseStudies.items}
+                fromDb={caseStudies.fromDb}
+                dbConnected={dbConnected}
+                loadError={caseStudies.error}
+              />
+              <EditTextHint onClick={() => editSection("cases")} what="the section heading and intro" />
+            </div>
+            <div hidden={view !== "settings"} data-panel="settings">
+              <SettingsForm settings={settings} poster={poster} disabled={!dbConnected} />
+            </div>
+            <div hidden={view !== "database"} data-panel="database">
+              {!dbConnected && (
+                <p className="mb-6 rounded-xl border border-line bg-surface p-4">
+                  Supabase isn&apos;t connected. Add <code className="mono">SUPABASE_URL</code> and{" "}
+                  <code className="mono">SUPABASE_SERVICE_ROLE_KEY</code> in Vercel, run{" "}
+                  <code className="mono">supabase/schema.sql</code>, then redeploy. Until then the site uses the defaults from{" "}
+                  <code className="mono">content/site.ts</code>.
+                </p>
+              )}
+              <DbStatus status={dbStatus} />
+            </div>
+          </main>
+        )}
       </div>
-      <div role="tabpanel" id="panel-showcase" aria-labelledby="tab-showcase" hidden={tab !== "showcase"} className="pt-6">
-        <ShowcaseAdmin
-          items={showcase.items}
-          fromDb={showcase.fromDb}
-          dbConnected={dbConnected}
-          loadError={showcase.error}
-          heading={showcase.heading}
-          sub={showcase.sub}
-          placeholderSrcs={showcase.placeholderSrcs}
-        />
-      </div>
-      <div role="tabpanel" id="panel-gallery" aria-labelledby="tab-gallery" hidden={tab !== "gallery"} className="pt-6">
-        <GalleryAdmin items={gallery.items} fromDb={gallery.fromDb} dbConnected={dbConnected} loadError={gallery.error} />
-      </div>
-      <div role="tabpanel" id="panel-cases" aria-labelledby="tab-cases" hidden={tab !== "cases"} className="pt-6">
-        <CaseStudiesAdmin
-          items={caseStudies.items}
-          fromDb={caseStudies.fromDb}
-          dbConnected={dbConnected}
-          loadError={caseStudies.error}
-        />
-      </div>
-      <div role="tabpanel" id="panel-settings" aria-labelledby="tab-settings" hidden={tab !== "settings"} className="pt-6">
-        <DbStatus status={dbStatus} />
-        <div className="mt-10">
-          <SettingsForm settings={settings} poster={poster} disabled={!dbConnected} />
-        </div>
-      </div>
-    </main>
+    </div>
+  );
+}
+
+function EditTextHint({ onClick, what }: { onClick: () => void; what: string }) {
+  return (
+    <p className="mt-10 flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-line p-4 text-muted">
+      Want to change {what}?
+      <button type="button" className="cms-btn" onClick={onClick}>
+        Edit in Pages →
+      </button>
+    </p>
+  );
+}
+
+function NavIcon({ id }: { id: AdminView | "site" | "logout" }) {
+  const paths: Record<string, React.ReactNode> = {
+    dashboard: <path d="M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z" />,
+    pages: <path d="M4 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM4 9h16M9 9v11" />,
+    inbox: <path d="M4 13l2.5-8h11L20 13v6H4zM4 13h5l1 2h4l1-2h5" />,
+    showcase: <path d="M7 4h10v16H7zM3 6v12M21 6v12" />,
+    cases: <path d="M4 7h16v12H4zM9 7V5h6v2M4 12h16" />,
+    gallery: <path d="M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9h.01" />,
+    settings: <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM19 12l2-1-1-3-2 .5-1.5-1.5.5-2-3-1-1 2h-2l-1-2-3 1 .5 2L6 8.5 4 8l-1 3 2 1v0l-2 1 1 3 2-.5L7.5 17l-.5 2 3 1 1-2h2l1 2 3-1-.5-2 1.5-1.5 2 .5 1-3z" />,
+    database: <path d="M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" />,
+    site: <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />,
+    logout: <path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M10 16l-4-4 4-4M6 12h10" />,
+  };
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
+      {paths[id]}
+    </svg>
   );
 }
 
@@ -475,49 +610,6 @@ function SettingsForm({ settings, poster, disabled }: { settings: Settings; post
               <span className="pointer-events-none absolute left-1 top-1 h-6 w-6 rounded-full bg-ink transition-transform peer-checked:translate-x-6 peer-checked:bg-on-lime" />
             </span>
           </label>
-        </fieldset>
-
-        <fieldset disabled={disabled}>
-          <legend className="font-display text-2xl font-semibold">Brands you&apos;ve worked with</legend>
-          <label htmlFor="brands" className="mb-2 mt-4 block font-medium">
-            One brand per line
-          </label>
-          <textarea
-            id="brands"
-            name="brands"
-            rows={5}
-            defaultValue={settings.brands.join("\n")}
-            placeholder={"Brand one\nBrand two"}
-            className="field"
-            aria-describedby="brands-help"
-          />
-          <p id="brands-help" className="mt-2 text-[0.95rem] text-muted">
-            Shown in the scrolling strip under the hero. Only list clients you&apos;re allowed to name. The strip is hidden
-            while this is empty.
-          </p>
-        </fieldset>
-
-        <fieldset disabled={disabled}>
-          <legend className="font-display text-2xl font-semibold">Counters</legend>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            {settings.counters.map((c) => (
-              <div key={c.id}>
-                <label htmlFor={`counter_${c.id}`} className="mb-2 block font-medium">
-                  {c.label}
-                </label>
-                <input
-                  id={`counter_${c.id}`}
-                  name={`counter_${c.id}`}
-                  type="number"
-                  min={0}
-                  step={1}
-                  required
-                  defaultValue={c.value}
-                  className="field"
-                />
-              </div>
-            ))}
-          </div>
         </fieldset>
 
         <div className="flex flex-wrap items-center gap-4">

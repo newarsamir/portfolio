@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import type { ShowcaseItem } from "@/content/site";
+import { useSite } from "./cms/SiteProvider";
 import { ScrollTrigger, useGSAP } from "@/lib/gsap";
 import Lightbox from "./Lightbox";
 import { Reveal, SplitHeading } from "./Reveal";
@@ -22,15 +23,8 @@ function supportsWebGL() {
   }
 }
 
-export default function Showcase({
-  items,
-  heading,
-  sub,
-}: {
-  items: ShowcaseItem[];
-  heading: string;
-  sub: string;
-}) {
+export default function Showcase({ items }: { items: ShowcaseItem[] }) {
+  const { heading, sub } = useSite().showcase;
   const root = useRef<HTMLElement>(null);
   const progress = useRef(0);
   // The carousel is also what the server renders, so the work is visible

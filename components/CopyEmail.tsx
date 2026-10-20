@@ -1,12 +1,13 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { site } from "@/content/site";
+import { useSite } from "./cms/SiteProvider";
 import { toast } from "@/lib/toast";
 import { CheckIcon, CopyIcon } from "./icons";
 
 /** The email address as a button. Click copies it. */
 export default function CopyEmail({ className = "" }: { className?: string }) {
+  const site = useSite();
   const [copied, setCopied] = useState(false);
   const timer = useRef<number>(0);
 

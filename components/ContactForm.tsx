@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { submitContact, type ContactFields, type ContactState } from "@/app/(site)/contact/actions";
-import { site } from "@/content/site";
+import { useSite } from "./cms/SiteProvider";
 import { toast } from "@/lib/toast";
 import { ArrowSwap, RollText } from "./RollText";
 
@@ -29,6 +29,7 @@ function check(field: ContactFields, value: string): string | undefined {
 }
 
 export default function ContactForm() {
+  const site = useSite();
   const [state, action, pending] = useActionState(submitContact, initial);
   const [local, setLocal] = useState<Partial<Record<ContactFields, string | undefined>>>({});
   const formRef = useRef<HTMLFormElement>(null);

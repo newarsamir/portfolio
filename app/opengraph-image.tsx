@@ -1,11 +1,13 @@
 import { ImageResponse } from "next/og";
-import { site } from "@/content/site";
+import { site as defaults } from "@/content/site";
+import { getContent } from "@/lib/content";
 
-export const alt = `${site.name}, ${site.title}`;
+export const alt = `${defaults.name}, ${defaults.title}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function OpengraphImage() {
+export default async function OpengraphImage() {
+  const site = await getContent();
   return new ImageResponse(
     (
       <div

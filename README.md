@@ -67,7 +67,7 @@ Everything you can read on the site is in **`content/site.ts`**: name, email, so
 
 ### Swap the emails
 
-**From `/admin` (recommended):** open **Showcase**, then **Add an email**. Drop in a tall WebP, PNG or JPEG export (up to 4 MB) or paste a link; the size is read automatically. You can edit, hide, reorder and delete emails, and change the section heading, without a redeploy. Uploads go to the public `showcase` bucket in Supabase Storage, which `supabase/schema.sql` creates. Until you add the first email the site shows the placeholders below.
+**From `/admin` (recommended):** open **Showcase**, then **Add an email**. Drop in a tall WebP, PNG or JPEG export (up to 4 MB) or paste a link; the size is read automatically. You can edit, hide, reorder and delete emails without a redeploy; the section heading is edited in **Pages**. Uploads go to the public `showcase` bucket in Supabase Storage, which `supabase/schema.sql` creates. Until you add the first email the site shows the placeholders below.
 
 **In code:**
 
@@ -101,14 +101,19 @@ The section is hidden while `testimonials` in `content/site.ts` is empty. Add re
 
 `/admin` is protected by `ADMIN_PASSWORD`. Signing in sets a signed, httpOnly cookie that lasts 7 days and is only sent to `/admin`. Five wrong passwords from one IP lock sign-in for 15 minutes.
 
-- **Contacts:** newest first, search, read and unread, delete, CSV export.
-- **Showcase:** upload or link emails, automatic image size, edit, hide, reorder, delete, and the section heading.
-- **Gallery:** AI product and lifestyle shots for the two-row photography section: upload or link, product/lifestyle tag, caption, the prompt shown on hover, reorder, hide, delete. Labeled samples show until the first image is added. Re-run `supabase/schema.sql` to create `gallery_items`.
-- **Case studies:** full create, read, update and delete, with a live card preview, publish/draft, and up/down ordering.
-- Errors and confirmations appear as pop-ups in the corner (bottom on phones).
-- **Settings:** hero video URL with live preview, the "available for work" switch that drives the nav badge, and the counter values.
+A sidebar leads to every part of the admin:
 
-Saving settings rebuilds the public pages straight away.
+- **Dashboard:** unread inquiries, counts, database status and quick links into the page editor.
+- **Pages:** a visual editor. Pick a page (Home, Case studies, a case study, Contact, 404), see it live in a preview (desktop, tablet or mobile), and click any section to edit it. Every text, list, link and image on the site is editable here: headlines, buttons, the FAQ, services, about story and portrait, footer links, socials, nav labels, SEO, the intro greeting and the 404 jokes. Edits show in the preview as you type; **Save and publish** puts them live. Home sections can be hidden (their text is then left out of the page entirely) and moved up or down. **Reset to original** brings back the text in `content/site.ts`. Saved edits live in the `settings` table as `content:<key>` and `layout:<page>` rows, so no new table is needed.
+- **Inbox:** contact form inquiries, newest first, search, read and unread, delete, CSV export.
+- **Showcase:** upload or link emails, automatic image size, edit, hide, reorder, delete.
+- **AI gallery:** AI product and lifestyle shots for the two-row photography section: upload or link, product/lifestyle tag, caption, the prompt shown on hover, reorder, hide, delete. Labeled samples show until the first image is added. Re-run `supabase/schema.sql` to create `gallery_items`.
+- **Case studies:** full create, read, update and delete, with a live card preview, publish/draft, and up/down ordering.
+- **Settings:** hero video URL with live preview, and the "available for work" switch that drives the nav badge.
+- **Database:** checks every table and the storage bucket, with the fix for anything missing.
+- Errors and confirmations appear as pop-ups in the corner (bottom on phones).
+
+Saving anything rebuilds the public pages straight away.
 
 ## Project structure
 

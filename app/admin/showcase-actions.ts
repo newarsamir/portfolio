@@ -5,7 +5,6 @@ import { revalidatePath } from "next/cache";
 import { site } from "@/content/site";
 import { requireAdmin } from "@/lib/auth";
 import { imageSourceOk } from "@/lib/images";
-import { SETTING_KEYS } from "@/lib/settings";
 import { SHOWCASE_BUCKET } from "@/lib/showcase";
 import { getSupabase } from "@/lib/supabase";
 import type { ActionResult } from "./actions";
@@ -190,24 +189,4 @@ export async function importDefaultShowcase(): Promise<ActionResult> {
     ok: true,
     message: `Added ${rows.length} placeholder${rows.length === 1 ? "" : "s"} after your emails. Edit or replace them one by one.`,
   };
-}
-
-export async function saveShowcaseText(_prev: ActionResult | null, form: FormData): Promise<ActionResult> {
-  await requireAdmin();
-  const db = getSupabase();
-  if (!db) return NO_DB;
-  const heading = String(form.get("heading") ?? "").trim().slice(0, 140);
-  const sub = String(form.get("sub") ?? "").trim().slice(0, 400);
-  if (!heading) return { ok: false, message: "The section needs a heading." };
-  const now = new Date().toISOString();
-  const { error } = await db.from("settings").upsert(
-    [
-      { key: SETTING_KEYS.showcaseHeading, value: heading, updated_at: now },
-      { key: SETTING_KEYS.showcaseSub, value: sub || site.showcase.sub, updated_at: now },
-    ],
-    { onConflict: "key" },
-  );
-  if (error) return { ok: false, message: "The heading wasn't saved. Try again." };
-  done();
-  return { ok: true, message: "Section text saved." };
 }

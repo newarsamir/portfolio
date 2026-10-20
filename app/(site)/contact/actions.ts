@@ -1,6 +1,6 @@
 "use server";
 
-import { site } from "@/content/site";
+import { getContent } from "@/lib/content";
 import { clientIp } from "@/lib/auth";
 import { memoryLimit } from "@/lib/rate-limit";
 import { getSupabase } from "@/lib/supabase";
@@ -17,6 +17,7 @@ export type ContactState = {
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 export async function submitContact(_prev: ContactState, form: FormData): Promise<ContactState> {
+  const site = await getContent();
   const get = (k: string) => String(form.get(k) ?? "").trim();
 
   // Honeypot: real people never see this field. Bots get a polite fake success.
@@ -39,7 +40,7 @@ export async function submitContact(_prev: ContactState, form: FormData): Promis
   if (!EMAIL.test(values.email) || values.email.length > 200)
     errors.email = "That doesn't look like an email address. Check for typos.";
   if (values.brand.length > 200) errors.brand = "Keep this under 200 characters.";
-  if (!(site.contact.projectTypes as readonly string[]).includes(values.projectType))
+  if (!site.contact.projectTypes.includes(values.projectType))
     errors.projectType = "Pick the closest project type.";
   // Budget: a range in the chosen currency, a typed amount, or "Let's talk".
   const currency = site.contact.currencies.find((c) => c.code === values.currency);

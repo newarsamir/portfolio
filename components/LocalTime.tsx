@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { site } from "@/content/site";
+import { useSite } from "./cms/SiteProvider";
 
 /** Live clock in the designer's time zone. Empty until mounted, so no hydration mismatch. */
 export default function LocalTime({ withSeconds = false, className }: { withSeconds?: boolean; className?: string }) {
+  const site = useSite();
   const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {

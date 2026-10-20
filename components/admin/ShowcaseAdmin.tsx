@@ -7,7 +7,6 @@ import {
   importDefaultShowcase,
   reorderShowcase,
   saveShowcaseItem,
-  saveShowcaseText,
   setShowcasePublished,
 } from "@/app/admin/showcase-actions";
 import { toast } from "@/lib/toast";
@@ -32,17 +31,15 @@ export default function ShowcaseAdmin({
   fromDb,
   dbConnected,
   loadError,
-  heading,
-  sub,
   placeholderSrcs,
+  onEditText,
 }: {
   placeholderSrcs: string[];
   items: AdminShowcaseItem[];
   fromDb: boolean;
   dbConnected: boolean;
   loadError: string | null;
-  heading: string;
-  sub: string;
+  onEditText: () => void;
 }) {
   const router = useRouter();
   const [rows, setRows] = useState(items);
@@ -72,7 +69,12 @@ export default function ShowcaseAdmin({
 
   return (
     <div className="space-y-10">
-      {canEdit && <SectionText heading={heading} sub={sub} />}
+      <p className="flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-line p-4 text-muted">
+        The section heading and intro are edited in the page editor.
+        <button type="button" className="cms-btn" onClick={onEditText}>
+          Edit in Pages →
+        </button>
+      </p>
 
       <div>
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -209,35 +211,6 @@ export default function ShowcaseAdmin({
         />
       )}
     </div>
-  );
-}
-
-/* --------------------------- Section heading --------------------------- */
-
-function SectionText({ heading, sub }: { heading: string; sub: string }) {
-  const [state, action, pending] = useActionState(saveShowcaseText, null);
-  useEffect(() => {
-    if (state) toast.result(state);
-  }, [state]);
-
-  return (
-    <form action={action} className="grid gap-4 rounded-2xl border border-line p-5 md:grid-cols-[1fr_1.4fr_auto] md:items-end">
-      <div>
-        <label htmlFor="sc-heading" className="mb-2 block font-medium">
-          Section heading
-        </label>
-        <input id="sc-heading" name="heading" required maxLength={140} defaultValue={heading} className="field" />
-      </div>
-      <div>
-        <label htmlFor="sc-sub" className="mb-2 block font-medium">
-          Line under it
-        </label>
-        <input id="sc-sub" name="sub" maxLength={400} defaultValue={sub} className="field" />
-      </div>
-      <button type="submit" className="btn btn-ghost" disabled={pending}>
-        {pending ? "Saving" : "Save text"}
-      </button>
-    </form>
   );
 }
 
