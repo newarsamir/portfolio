@@ -14,6 +14,12 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: site.seo.title, template: `%s | ${site.name}` },
     description: site.seo.description,
     applicationName: site.name,
+    // The tab icon is set in /admin (Pages > Name, email and SEO).
+    icons: {
+      icon: site.favicon || "/icon.svg",
+      // iOS home-screen icons must be bitmaps, so an SVG favicon isn't reused there.
+      ...(site.favicon && !site.favicon.endsWith(".svg") ? { apple: site.favicon } : {}),
+    },
     authors: [{ name: site.name }],
     creator: site.name,
     alternates: { canonical: "/" },

@@ -55,6 +55,8 @@ export const site = {
   email: "design@sthasamir.com.np",
   // TODO: confirm your location.
   location: "Kathmandu, Nepal",
+  /** The browser tab icon. A square PNG (512 x 512 is best) or the default /icon.svg. */
+  favicon: "/icon.svg",
 
   seo: {
     title: "sthasamir, email designer for revenue-focused ecommerce and DTC brands",

@@ -16,7 +16,7 @@ export type SectionResult = ActionResult & { values?: Partial<Site> };
 
 const NO_DB: ActionResult = { ok: false, message: "Supabase isn't connected, so changes can't be saved yet." };
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const IMAGE_KEYS = /^(image|portrait|cover|poster|src)$/i;
+const IMAGE_KEYS = /^(image|portrait|cover|poster|src|favicon)$/i;
 
 /** Older single settings that a section's content replaces. */
 const LEGACY: Partial<Record<ContentKey, string[]>> = {
@@ -133,6 +133,8 @@ const TYPES: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/gif": "gif",
   "image/avif": "avif",
+  "image/x-icon": "ico",
+  "image/vnd.microsoft.icon": "ico",
 };
 
 /** Uploads an image for a page section and returns its public link. */
@@ -143,7 +145,7 @@ export async function uploadContentImage(form: FormData): Promise<ActionResult &
   const file = form.get("file");
   if (!(file instanceof File) || file.size === 0) return { ok: false, message: "Pick an image to upload." };
   const ext = TYPES[file.type];
-  if (!ext) return { ok: false, message: "Upload a WebP, PNG, JPEG, GIF or AVIF image." };
+  if (!ext) return { ok: false, message: "Upload a WebP, PNG, JPEG, GIF, AVIF or ICO image." };
   if (file.size > MAX_UPLOAD) return { ok: false, message: "That image is over 4 MB. Export it as WebP to shrink it." };
 
   const path = `content/${randomUUID()}.${ext}`;
