@@ -70,6 +70,7 @@ export default async function AdminPage() {
       settings={{
         heroVideoUrl: settings.heroVideoUrl,
         availableForWork: settings.availableForWork,
+        variant: settings.variant,
       }}
       poster={site.defaults.heroPoster}
       dbStatus={dbStatus}

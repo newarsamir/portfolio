@@ -3,6 +3,7 @@
 import { fill } from "@/lib/cms";
 import CopyEmail from "./CopyEmail";
 import { useSite } from "./cms/SiteProvider";
+import { useVariant } from "./VariantShell";
 
 /** A headline whose words rise in one after another (the .w animation). */
 function Words({ text }: { text: string }) {
@@ -48,11 +49,51 @@ export function WorkEmpty() {
 }
 
 /** Left column of the /contact page. */
+/** The contact form inside a "new message" window. */
+export function ComposeWindow({ children }: { children: React.ReactNode }) {
+  const site = useSite();
+  // Only the Revenue Inbox design puts the form in a compose window.
+  if (useVariant() !== "inbox") return <>{children}</>;
+  const c = site.contact;
+  return (
+    <div className="cw">
+      <div className="cw-bar">
+        <span className="vx-lights" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </span>
+        <span className="mono">{c.composeTitle}</span>
+        <span />
+      </div>
+      <dl className="cw-rows">
+        <div className="cw-row">
+          <dt className="mono">{c.toLabel}</dt>
+          <dd>
+            <span className="cw-chip">
+              <span className="cw-chip-avatar" aria-hidden="true">
+                {site.name.slice(0, 1).toUpperCase()}
+              </span>
+              {site.email}
+            </span>
+          </dd>
+        </div>
+        <div className="cw-row">
+          <dt className="mono">{c.fromLabel}</dt>
+          <dd className="text-muted">{c.fromValue}</dd>
+        </div>
+      </dl>
+      <div className="cw-body">{children}</div>
+    </div>
+  );
+}
+
 export function ContactIntro() {
+  const variant = useVariant();
   const contact = useSite().contact;
   return (
     <>
-      <h1 id="contact-h" className="display-lg" aria-label={contact.headline}>
+      <h1 id="contact-h" className={variant === "inbox" ? "x-display cw-h1" : "display-lg"} aria-label={contact.headline}>
         <Words text={contact.headline} />
       </h1>
       <p className="load-fade mt-6 max-w-[42ch] text-lg text-muted md:text-xl" style={{ ["--d" as string]: "0.7s" }}>

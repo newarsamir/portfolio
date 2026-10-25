@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Editable } from "@/components/cms/SiteProvider";
 import ContactForm from "@/components/ContactForm";
-import { ContactIntro } from "@/components/PageIntro";
+import { ComposeWindow, ContactIntro } from "@/components/PageIntro";
 import { getContent } from "@/lib/content";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -22,7 +22,9 @@ export default function ContactPage() {
             <ContactIntro />
           </div>
           <div className="load-fade lg:col-span-7" style={{ ["--d" as string]: "0.5s" }}>
-            <ContactForm />
+            <ComposeWindow>
+              <ContactForm />
+            </ComposeWindow>
           </div>
         </div>
       </section>

@@ -17,6 +17,7 @@ export default function Dashboard({
   counts,
   layouts,
   available,
+  design,
   dbConnected,
   dbStatus,
   onNavigate,
@@ -26,6 +27,7 @@ export default function Dashboard({
   counts: { showcase: number; cases: number; gallery: number };
   layouts: Layouts;
   available: boolean;
+  design: string;
   dbConnected: boolean;
   dbStatus: DbStatusData;
   onNavigate: (v: AdminView) => void;
@@ -127,6 +129,10 @@ export default function Dashboard({
                   <span className={`h-2 w-2 rounded-full ${available ? "bg-lime ring-1 ring-ink/40" : "bg-muted"}`} aria-hidden="true" />
                   {available ? "Taking projects" : "Booked"}
                 </dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-muted">Design</dt>
+                <dd>{design}</dd>
               </div>
               <div className="flex justify-between gap-3">
                 <dt className="text-muted">Hidden sections</dt>

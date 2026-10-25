@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
+import { isHomePath } from "@/lib/variants";
 import { useHiddenAnchors, useSite } from "./cms/SiteProvider";
 import AnchorLink, { scrollToId } from "./AnchorLink";
 import LocalTime from "./LocalTime";
@@ -50,7 +51,7 @@ export default function Nav({ available }: { available: boolean }) {
   const navRef = useRef(NAV);
   navRef.current = NAV;
   const pathname = usePathname();
-  const onHome = pathname === "/";
+  const onHome = isHomePath(pathname);
   const [docked, setDocked] = useState(false);
   const [active, setActive] = useState<string>(onHome ? "home" : "");
   const dockRef = useRef<HTMLDivElement>(null);

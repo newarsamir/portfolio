@@ -14,6 +14,7 @@ import { loginAllowed, recordFailedLogin } from "@/lib/rate-limit";
 import { SETTING_KEYS } from "@/lib/settings";
 import { getSupabase } from "@/lib/supabase";
 import { parseVideo } from "@/lib/video";
+import { isVariant, VARIANTS } from "@/lib/variants";
 import { imageSourceOk as imageOk } from "@/lib/images";
 
 export type ActionResult = { ok: boolean; message: string };
@@ -243,4 +244,19 @@ export async function importSampleCaseStudies(): Promise<ActionResult> {
   if (error) return caseError(error);
   revalidatePath("/", "layout");
   return { ok: true, message: `Imported ${rows.length} samples as drafts. Edit them, then publish.` };
+}
+
+/** Picks the design the whole site uses. */
+export async function saveVariant(variant: string): Promise<ActionResult> {
+  await requireAdmin();
+  const db = getSupabase();
+  if (!db) return { ok: false, message: "Supabase isn't connected, so the design can't be changed yet." };
+  if (!isVariant(variant)) return { ok: false, message: "That design doesn't exist." };
+  const { error } = await db
+    .from("settings")
+    .upsert({ key: SETTING_KEYS.variant, value: variant, updated_at: new Date().toISOString() }, { onConflict: "key" });
+  if (error) return { ok: false, message: "The design wasn't changed because the database didn't respond. Try again." };
+  revalidatePath("/", "layout");
+  const label = VARIANTS.find((v) => v.id === variant)?.label ?? variant;
+  return { ok: true, message: `The site now uses the ${label} design.` };
 }
