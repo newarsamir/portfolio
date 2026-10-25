@@ -105,6 +105,10 @@ export const site = {
     sub: "Your list is the one audience you own. I design the welcome, cart, post-purchase and campaign emails that get it buying, in Figma, ready to build in Klaviyo or Mailchimp.",
     primary: "See the work",
     secondary: "Hire me",
+    /** Opens the narrated film in a pop-up. */
+    watch: "Watch the 45-second story",
+    /** How many words at the end of the headline get the lime marker. */
+    markWords: 2,
   },
 
   /**
@@ -135,6 +139,7 @@ export const site = {
   },
 
   showcase: {
+    dragHint: "Drag, or scroll sideways",
     heading: "Emails built to be clicked. Scroll to spin them.",
     sub: "Every one has a single job: the click that leads to the order. Open any email to read it top to bottom, along with the reason behind it.",
     /**
@@ -214,6 +219,7 @@ export const site = {
     label: "Case studies",
     /** {count} is replaced with the number of case studies. */
     note: "{count} projects, start to send",
+    cta: "Read the case study",
     heading: "Where the revenue was leaking, and how it got fixed.",
     sub: "Real problems from real inboxes: the brief, the design decisions, and what changed after the send.",
     /**
@@ -308,6 +314,7 @@ export const site = {
     ],
     portrait: "/portrait.webp" as string,
     portraitAlt: "Portrait of sthasamir",
+    caption: "Hi, that's me.",
     toolsHeading: "What I work in",
     tools: [
       { name: "Figma", use: "Where every email is designed" },
@@ -360,6 +367,7 @@ export const site = {
   },
 
   process: {
+    label: "How it works",
     heading: "From brief to send-ready",
     steps: [
       {
@@ -383,6 +391,7 @@ export const site = {
   services: {
     label: "Services",
     note: "{count} kinds of email",
+    openHint: "Hover to open",
     heading: "Emails that pay for themselves",
     sub: "Each one fixes a leak in the customer journey. Pick the one that hurts most, or stack them into a full lifecycle.",
     items: [

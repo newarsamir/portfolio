@@ -1,16 +1,16 @@
-import About from "@/components/About";
+import About from "@/components/v3/AboutPolaroid";
 import Anatomy from "@/components/Anatomy";
 import BrandStrip from "@/components/BrandStrip";
-import CaseStudies from "@/components/CaseStudies";
+import CaseStudies from "@/components/v3/CaseList";
 import { SectionList } from "@/components/cms/SiteProvider";
-import Counters from "@/components/Counters";
+import Counters from "@/components/v3/StatLine";
 import AiGallery from "@/components/AiGallery";
-import Faq from "@/components/Faq";
-import HireNudge from "@/components/HireNudge";
-import Hero from "@/components/Hero";
-import Process from "@/components/Process";
-import Services from "@/components/Services";
-import Showcase from "@/components/Showcase";
+import Faq from "@/components/v3/FaqLight";
+import HireNudge from "@/components/v3/NoteNudge";
+import Hero from "@/components/v3/HeroCard";
+import Process from "@/components/v3/ProcessRoute";
+import Services from "@/components/v3/ServiceEnvelopes";
+import Showcase from "@/components/v3/PostcardDeck";
 import Testimonials from "@/components/Testimonials";
 import { getCaseStudies } from "@/lib/case-studies";
 import { getContent, getLayouts } from "@/lib/content";
@@ -31,7 +31,7 @@ export default async function HomePage() {
   const url = siteUrl();
 
   const all = {
-    hero: <Hero videoUrl={settings.heroVideoUrl} />,
+    hero: <Hero videoUrl={settings.heroVideoUrl} available={settings.availableForWork} cards={showcase.map((s) => s.src)} />,
     brands: <BrandStrip />,
     counters: <Counters />,
     showcase: <Showcase items={showcase} />,
