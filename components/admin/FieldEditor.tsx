@@ -39,6 +39,7 @@ const LABELS: Record<string, string> = {
   portrait: "Portrait (4:5)",
   portraitAlt: "Portrait description (for screen readers)",
   image: "Image",
+  favicon: "Favicon (browser tab icon, square PNG 512 x 512)",
   items: "Items",
   steps: "Steps",
   detail: "Detail",
@@ -119,7 +120,7 @@ const LABELS: Record<string, string> = {
 };
 
 const LONG = new Set(["sub", "body", "a", "note", "quote", "story", "summary", "description", "joke", "noSocials", "blameBody", "empty", "detail"]);
-const IMAGE = /^(image|portrait|cover|poster|src)$/i;
+const IMAGE = /^(image|portrait|cover|poster|src|favicon)$/i;
 const HIDDEN = new Set(["id"]);
 
 export const humanize = (key: string) =>
@@ -316,7 +317,7 @@ function ImageField({ value, onChange, name, canUpload }: Props & { value: strin
           <input
             ref={file}
             type="file"
-            accept="image/webp,image/png,image/jpeg,image/gif,image/avif"
+            accept={name === "favicon" ? "image/png,image/x-icon,image/vnd.microsoft.icon,image/webp" : "image/webp,image/png,image/jpeg,image/gif,image/avif"}
             className="hidden"
             onChange={(e) => {
               const f = e.target.files?.[0];

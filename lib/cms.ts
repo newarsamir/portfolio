@@ -95,7 +95,7 @@ export const SECTIONS: SectionDef[] = [
   // On every page.
   { id: "nav", page: "global", label: "Navigation", help: "Top bar and dock labels", keys: ["navBar", "nav"], fixed: ["nav"] },
   { id: "footer", page: "global", label: "Footer", help: "Links, socials and the sign-off", keys: ["footer", "socials"] },
-  { id: "identity", page: "global", label: "Name, email and SEO", help: "Used across the whole site", keys: ["name", "title", "email", "location", "seo"] },
+  { id: "identity", page: "global", label: "Name, email and SEO", help: "Used across the whole site", keys: ["name", "title", "email", "location", "favicon", "seo"] },
   { id: "intro", page: "global", label: "Intro greeting", help: "नमस्ते, Jojolapa, Hello on the first visit", keys: ["intro"], hideable: true },
 ];
 
