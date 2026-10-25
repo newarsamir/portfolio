@@ -105,6 +105,24 @@ export const site = {
     sub: "Your list is the one audience you own. I design the welcome, cart, post-purchase and campaign emails that get it buying, in Figma, ready to build in Klaviyo or Mailchimp.",
     primary: "See the work",
     secondary: "Hire me",
+    /** The inbox around the headline. The other emails are the competition. */
+    inboxLabel: "Inbox",
+    unreadNote: "1 unread, and it's the one that sells",
+    search: "Search: emails that actually make money",
+    attachment: "the-45-second-story.mp4",
+    openHint: "Scroll to open",
+    noise: [
+      { from: "Generic Brand Co.", subject: "Re: Re: FWD: Newsletter #47", time: "Mon" },
+      { from: "Another DTC Store", subject: "LAST CHANCE (for real this time)", time: "Sun" },
+      { from: "Big Box Retail", subject: "We miss you! Here's 10% off. Again.", time: "Sat" },
+      { from: "Startup Weekly", subject: "Your weekly digest of things nobody reads", time: "Fri" },
+    ],
+  },
+
+  /** The progress rail on the home page: an email's journey from send to repeat order. */
+  funnel: {
+    stages: ["Sent", "Opened", "Clicked", "Ordered", "Repeat"],
+    revenueLabel: "Revenue while you scrolled",
   },
 
   /**
@@ -135,7 +153,9 @@ export const site = {
   },
 
   showcase: {
-    heading: "Emails built to be clicked. Scroll to spin them.",
+    scrollHint: "Keep scrolling →",
+    endHeading: "Want yours in this row?",
+    heading: "Emails built to be clicked. Keep scrolling to read them.",
     sub: "Every one has a single job: the click that leads to the order. Open any email to read it top to bottom, along with the reason behind it.",
     /**
      * TODO: export each email from Figma as a tall WebP (600 to 1200px wide)
@@ -214,6 +234,9 @@ export const site = {
     label: "Case studies",
     /** {count} is replaced with the number of case studies. */
     note: "{count} projects, start to send",
+    lineItem: "Delivered",
+    thanks: "Thanks for your order",
+    cta: "Read the case study",
     heading: "Where the revenue was leaking, and how it got fixed.",
     sub: "Real problems from real inboxes: the brief, the design decisions, and what changed after the send.",
     /**
@@ -308,6 +331,9 @@ export const site = {
     ],
     portrait: "/portrait.webp" as string,
     portraitAlt: "Portrait of sthasamir",
+    signOff: "Talk soon,",
+    basedIn: "Based in",
+    emailLabel: "Email",
     toolsHeading: "What I work in",
     tools: [
       { name: "Figma", use: "Where every email is designed" },
@@ -360,6 +386,11 @@ export const site = {
   },
 
   process: {
+    label: "Your flow",
+    trigger: "Trigger: you send the brief",
+    stepsLabel: "steps",
+    nodeKind: "Step",
+    done: "Live, and selling",
     heading: "From brief to send-ready",
     steps: [
       {
@@ -445,10 +476,13 @@ export const site = {
   // TODO: add testimonials as { quote, name, role }.
   testimonials: {
     heading: "What clients said, unprompted",
+    subjectPrefix: "Re: working with",
     items: [] as Testimonial[],
   },
 
   faq: {
+    asker: "You",
+    replyNote: "1 reply",
     label: "Questions",
     note: "{count} answers",
     heading: "Questions I get, answered honestly",
@@ -498,6 +532,10 @@ export const site = {
     headline: "Tell me where your emails are leaking money.",
     sub: "Share the brand, the flows you have and what isn't working. I reply within two working days with honest next steps, and never with 'per my last email'.",
     copyHint: "Prefer your own inbox? Click to copy.",
+    composeTitle: "New message",
+    toLabel: "To",
+    fromLabel: "From",
+    fromValue: "you@yourbrand.com",
     projectTypes: [
       "Welcome flow",
       "Campaigns",
@@ -548,6 +586,7 @@ export const site = {
     noSocials: "Email is the best way to reach me. Fitting, really.",
     timeLabel: "Local time",
     joke: "You scrolled all the way to the footer. I hope your subscribers are this loyal.",
+    unsubscribe: "Unsubscribe (takes you back to the top)",
   },
 
   /** The /work page header. */

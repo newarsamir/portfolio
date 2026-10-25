@@ -1,7 +1,8 @@
+import "./redesign.css";
 import Cursor from "@/components/Cursor";
 import EditBridge from "@/components/cms/EditBridge";
 import { Editable, SiteProvider } from "@/components/cms/SiteProvider";
-import Footer from "@/components/Footer";
+import Footer from "@/components/x/FooterX";
 import IntroGreeting from "@/components/IntroGreeting";
 import Nav from "@/components/Nav";
 import SmoothScroll from "@/components/SmoothScroll";

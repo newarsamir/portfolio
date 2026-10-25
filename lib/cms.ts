@@ -39,7 +39,7 @@ export const PAGES: { id: PageId; label: string; path: string }[] = [
 
 export const SECTIONS: SectionDef[] = [
   // Home, in their default order.
-  { id: "hero", page: "home", label: "Hero", help: "Headline, intro and buttons at the top", keys: ["hero"] },
+  { id: "hero", page: "home", label: "Hero", help: "The inbox at the top, the headline and the progress rail", keys: ["hero", "funnel"] },
   {
     id: "brands",
     page: "home",

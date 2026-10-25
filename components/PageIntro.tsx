@@ -48,11 +48,48 @@ export function WorkEmpty() {
 }
 
 /** Left column of the /contact page. */
+/** The contact form inside a "new message" window. */
+export function ComposeWindow({ children }: { children: React.ReactNode }) {
+  const site = useSite();
+  const c = site.contact;
+  return (
+    <div className="cw">
+      <div className="cw-bar">
+        <span className="vx-lights" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </span>
+        <span className="mono">{c.composeTitle}</span>
+        <span />
+      </div>
+      <dl className="cw-rows">
+        <div className="cw-row">
+          <dt className="mono">{c.toLabel}</dt>
+          <dd>
+            <span className="cw-chip">
+              <span className="cw-chip-avatar" aria-hidden="true">
+                {site.name.slice(0, 1).toUpperCase()}
+              </span>
+              {site.email}
+            </span>
+          </dd>
+        </div>
+        <div className="cw-row">
+          <dt className="mono">{c.fromLabel}</dt>
+          <dd className="text-muted">{c.fromValue}</dd>
+        </div>
+      </dl>
+      <div className="cw-body">{children}</div>
+    </div>
+  );
+}
+
 export function ContactIntro() {
   const contact = useSite().contact;
   return (
     <>
-      <h1 id="contact-h" className="display-lg" aria-label={contact.headline}>
+      <h1 id="contact-h" className="x-display cw-h1" aria-label={contact.headline}>
         <Words text={contact.headline} />
       </h1>
       <p className="load-fade mt-6 max-w-[42ch] text-lg text-muted md:text-xl" style={{ ["--d" as string]: "0.7s" }}>

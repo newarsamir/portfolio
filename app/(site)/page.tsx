@@ -1,17 +1,18 @@
-import About from "@/components/About";
+import About from "@/components/x/AboutX";
 import Anatomy from "@/components/Anatomy";
 import BrandStrip from "@/components/BrandStrip";
-import CaseStudies from "@/components/CaseStudies";
+import CaseStudies from "@/components/x/CaseReceipts";
 import { SectionList } from "@/components/cms/SiteProvider";
-import Counters from "@/components/Counters";
+import Counters from "@/components/x/CountersX";
 import AiGallery from "@/components/AiGallery";
-import Faq from "@/components/Faq";
-import HireNudge from "@/components/HireNudge";
-import Hero from "@/components/Hero";
-import Process from "@/components/Process";
-import Services from "@/components/Services";
-import Showcase from "@/components/Showcase";
-import Testimonials from "@/components/Testimonials";
+import Faq from "@/components/x/FaqThread";
+import HireNudge from "@/components/x/NudgeX";
+import FunnelRail from "@/components/x/FunnelRail";
+import InboxHero from "@/components/x/InboxHero";
+import Process from "@/components/x/ProcessFlow";
+import Services from "@/components/x/ServicesClient";
+import Showcase from "@/components/x/ShowcaseX";
+import Testimonials from "@/components/x/RepliesX";
 import { getCaseStudies } from "@/lib/case-studies";
 import { getContent, getLayouts } from "@/lib/content";
 import { getGalleryItems } from "@/lib/gallery";
@@ -31,7 +32,7 @@ export default async function HomePage() {
   const url = siteUrl();
 
   const all = {
-    hero: <Hero videoUrl={settings.heroVideoUrl} />,
+    hero: <InboxHero videoUrl={settings.heroVideoUrl} />,
     brands: <BrandStrip />,
     counters: <Counters />,
     showcase: <Showcase items={showcase} />,
@@ -69,6 +70,7 @@ export default async function HomePage() {
       />
       {/* Order and visibility are set in /admin (Pages). "Anatomy" starts hidden. */}
       <SectionList page="home" nodes={sections} />
+      <FunnelRail />
     </>
   );
 }
