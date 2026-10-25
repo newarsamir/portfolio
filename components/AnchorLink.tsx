@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ComponentProps, MouseEvent } from "react";
+import { isHomePath } from "@/lib/variants";
 import { getLenis } from "./SmoothScroll";
 
 export function scrollToId(id: string) {
@@ -26,12 +27,14 @@ export default function AnchorLink({
   onClick,
   ...rest
 }: { to: string } & Omit<ComponentProps<typeof Link>, "href">) {
-  const pathname = usePathname();
-  const href = to === "home" ? "/" : `/#${to}`;
+  const pathname = usePathname() ?? "/";
+  // On a design preview (/v1...), stay on it; everywhere else, go to the home page.
+  const home = isHomePath(pathname) ? pathname : "/";
+  const href = to === "home" ? home : `${home}#${to}`;
 
   const handle = (e: MouseEvent<HTMLAnchorElement>) => {
     onClick?.(e);
-    if (pathname !== "/" || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    if (!isHomePath(pathname) || e.metaKey || e.ctrlKey || e.shiftKey) return;
     e.preventDefault();
     scrollToId(to);
   };

@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { site, type Counter } from "@/content/site";
 import { getSupabase } from "./supabase";
+import { isVariant, type VariantId } from "./variants";
 
 export type SiteSettings = {
   heroVideoUrl: string;
@@ -13,6 +14,8 @@ export type SiteSettings = {
   showcaseSub: string;
   /** Client names for the brand strip. */
   brands: string[];
+  /** Which design the home page and the rest of the site use. */
+  variant: VariantId;
 };
 
 export const SETTING_KEYS = {
@@ -22,6 +25,7 @@ export const SETTING_KEYS = {
   showcaseHeading: "showcase_heading",
   showcaseSub: "showcase_sub",
   brands: "brands",
+  variant: "design_variant",
 } as const;
 
 function defaults(): SiteSettings {
@@ -33,6 +37,7 @@ function defaults(): SiteSettings {
     showcaseHeading: site.showcase.heading,
     showcaseSub: site.showcase.sub,
     brands: [...site.brandStrip.items],
+    variant: "classic",
   };
 }
 
@@ -67,6 +72,9 @@ export const getSettings = cache(async (): Promise<SiteSettings> => {
     }
     if (row.key === SETTING_KEYS.brands && Array.isArray(row.value)) {
       out.brands = row.value.filter((b): b is string => typeof b === "string" && b.trim() !== "");
+    }
+    if (row.key === SETTING_KEYS.variant && isVariant(row.value)) {
+      out.variant = row.value;
     }
     if (row.key === SETTING_KEYS.available && typeof row.value === "boolean") {
       out.availableForWork = row.value;

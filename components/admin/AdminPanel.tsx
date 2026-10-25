@@ -14,6 +14,8 @@ import ShowcaseAdmin, { type AdminShowcaseItem } from "./ShowcaseAdmin";
 import DbStatus, { type DbStatusData } from "./DbStatus";
 import GalleryAdmin, { type AdminGalleryItem } from "./GalleryAdmin";
 import PageEditor from "./PageEditor";
+import DesignPicker from "./DesignPicker";
+import { VARIANTS, type VariantId } from "@/lib/variants";
 
 export type ContactRow = {
   id: string;
@@ -30,6 +32,7 @@ export type ContactRow = {
 type Settings = {
   heroVideoUrl: string;
   availableForWork: boolean;
+  variant: VariantId;
 };
 
 const fmt = new Intl.DateTimeFormat("en-GB", {
@@ -47,7 +50,7 @@ const VIEWS: { id: AdminView; label: string; title: string; help: string }[] = [
   { id: "showcase", label: "Showcase", title: "Selected emails", help: "The emails in the 3D carousel on the home page." },
   { id: "cases", label: "Case studies", title: "Case studies", help: "Shown on the home page and at /work." },
   { id: "gallery", label: "AI gallery", title: "AI photography", help: "The two-row gallery at the bottom of the home page." },
-  { id: "settings", label: "Settings", title: "Settings", help: "The hero video and whether you're taking projects." },
+  { id: "settings", label: "Settings", title: "Settings", help: "The site's design, the hero video and whether you're taking projects." },
   { id: "database", label: "Database", title: "Database", help: "Checks that every table and the storage bucket are set up." },
 ];
 
@@ -228,6 +231,7 @@ export default function AdminPanel({
                 counts={{ showcase: showcase.items.length, cases: caseStudies.items.length, gallery: gallery.items.length }}
                 layouts={layouts}
                 available={settings.availableForWork}
+                design={VARIANTS.find((v) => v.id === settings.variant)?.label ?? "Classic"}
                 dbConnected={dbConnected}
                 dbStatus={dbStatus}
                 onNavigate={go}
@@ -261,6 +265,7 @@ export default function AdminPanel({
               <EditTextHint onClick={() => editSection("cases")} what="the section heading and intro" />
             </div>
             <div hidden={view !== "settings"} data-panel="settings">
+              <DesignPicker current={settings.variant} disabled={!dbConnected} />
               <SettingsForm settings={settings} poster={poster} disabled={!dbConnected} />
             </div>
             <div hidden={view !== "database"} data-panel="database">

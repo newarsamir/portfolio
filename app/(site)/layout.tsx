@@ -1,11 +1,11 @@
+import "./redesign.css";
 import "./postcard.css";
-import Cursor from "@/components/Cursor";
+import "./apple.css";
 import EditBridge from "@/components/cms/EditBridge";
-import { Editable, SiteProvider } from "@/components/cms/SiteProvider";
-import Footer from "@/components/v3/FooterLight";
+import { SiteProvider } from "@/components/cms/SiteProvider";
 import IntroGreeting from "@/components/IntroGreeting";
-import Nav from "@/components/Nav";
 import SmoothScroll from "@/components/SmoothScroll";
+import VariantShell from "@/components/VariantShell";
 import { contentForClient, getContent, getLayouts } from "@/lib/content";
 import { getSettings } from "@/lib/settings";
 
@@ -22,14 +22,9 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       {!layouts.global.hidden.includes("intro") && <IntroGreeting copy={content.intro} />}
       <SmoothScroll />
       <div className="scroll-progress" aria-hidden="true" />
-      <Editable id="nav">
-        <Nav available={settings.availableForWork} />
-      </Editable>
-      <main id="main">{children}</main>
-      <Editable id="footer">
-        <Footer />
-      </Editable>
-      <Cursor />
+      <VariantShell chosen={settings.variant} available={settings.availableForWork}>
+        {children}
+      </VariantShell>
       <EditBridge />
     </SiteProvider>
   );

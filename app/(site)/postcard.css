@@ -21,10 +21,11 @@
 }
 
 /* Clean paper: no page grid, lighter headings in a softer ink. */
-body {
-  background-image: none;
+[data-variant="postcard"] {
+  min-height: 100svh;
+  background: var(--bg);
 }
-:is(h1, h2, h3) {
+[data-variant="postcard"] :is(h1, h2, h3) {
   font-weight: 450;
   color: var(--ink-soft);
   letter-spacing: -0.022em;
