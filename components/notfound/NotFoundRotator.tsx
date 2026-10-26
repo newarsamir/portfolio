@@ -4,17 +4,11 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { NOT_FOUND_VARIANTS, enabledNotFoundVariants, isNotFoundVariant, type NotFoundVariant } from "@/lib/notfound";
 import { useEditing, useSite } from "../cms/SiteProvider";
 import NotFoundScene from "../NotFoundScene";
-import Bounce404 from "./Bounce404";
-import PenTool404 from "./PenTool404";
-import Prefs404 from "./Prefs404";
-import Report404 from "./Report404";
+import Vector404 from "./Vector404";
 
 const VIEWS: Record<NotFoundVariant, () => React.ReactNode> = {
   zero: () => <NotFoundScene />,
-  bounce: () => <Bounce404 />,
-  pen: () => <PenTool404 />,
-  prefs: () => <Prefs404 />,
-  report: () => <Report404 />,
+  pen: () => <Vector404 />,
 };
 
 /**
@@ -23,8 +17,8 @@ const VIEWS: Record<NotFoundVariant, () => React.ReactNode> = {
  * one before the first paint, the server HTML holds every design in the
  * rotation, and CSS shows only the chosen one until React drops the rest.
  *
- * `?nf=pen` forces a design, the button in the corner steps through the rest,
- * and the page editor gets a switcher so every design's copy can be edited.
+ * `?nf=pen` forces a design, and the page editor gets a switcher so each
+ * design's copy can be edited.
  */
 export default function NotFoundRotator() {
   const copy = useSite().notFound;
@@ -46,7 +40,6 @@ export default function NotFoundRotator() {
     if (view) document.documentElement.dataset.nf = view;
   }, [view]);
 
-  const next = () => setView((v) => enabled[(enabled.indexOf(v ?? enabled[0]) + 1) % enabled.length]);
   const shown = view ? [view] : enabled;
 
   return (
@@ -56,7 +49,7 @@ export default function NotFoundRotator() {
           {VIEWS[id]()}
         </div>
       ))}
-      {editing ? (
+      {editing && (
         <div className="nf-switch" role="group" aria-label="404 design" data-cms-ui>
           {NOT_FOUND_VARIANTS.map((v) => (
             <button
@@ -71,30 +64,6 @@ export default function NotFoundRotator() {
             </button>
           ))}
         </div>
-      ) : (
-        view &&
-        enabled.length > 1 &&
-        copy.shuffle.trim() !== "" && (
-          <button type="button" className="nf-shuffle" onClick={next}>
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5" />
-            </svg>
-            {copy.shuffle}
-            <span className="nf-shuffle-count mono">
-              {enabled.indexOf(view) + 1 || 1}/{enabled.length}
-            </span>
-          </button>
-        )
       )}
     </div>
   );

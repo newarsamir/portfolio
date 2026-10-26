@@ -1,10 +1,7 @@
 /** The 404 designs. Each visit to a missing page gets one of the enabled ones at random. */
 export const NOT_FOUND_VARIANTS = [
   { id: "zero", label: "Zero conversions" },
-  { id: "bounce", label: "Bounce-back email" },
-  { id: "pen", label: "Pen tool" },
-  { id: "prefs", label: "Preference center" },
-  { id: "report", label: "Campaign report" },
+  { id: "pen", label: "Editable vector" },
 ] as const;
 
 export type NotFoundVariant = (typeof NOT_FOUND_VARIANTS)[number]["id"];
