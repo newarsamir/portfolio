@@ -383,16 +383,7 @@
   border-radius: 0.7rem;
   background: var(--surface);
 }
-.pd-mail {
-  width: 100%;
-  height: auto;
-  transition: transform 1.6s var(--ease-in-out);
-}
-@media (hover: hover) and (pointer: fine) {
-  .pd-card:hover .pd-mail {
-    transform: translateY(-18%);
-  }
-}
+
 .pd-cap {
   display: grid;
   gap: 0.15rem;

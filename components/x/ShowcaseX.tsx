@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import type { ShowcaseItem } from "@/content/site";
 import { gsap, MOTION_OK, useGSAP } from "@/lib/gsap";
 import { isRemote } from "@/lib/images";
+import { isVideoSrc } from "@/lib/media";
 import { useSite } from "../cms/SiteProvider";
 import Lightbox from "../Lightbox";
 import { ArrowSwap, RollText } from "../RollText";
@@ -100,6 +101,9 @@ export default function ShowcaseX({ items }: { items: ShowcaseItem[] }) {
                   </span>
                 </span>
                 <span data-screen className="sx-screen">
+                  {isVideoSrc(item.src) ? (
+                    <video data-mail src={item.src} muted loop playsInline autoPlay preload="metadata" className="sx-mail sx-video" aria-hidden="true" />
+                  ) : (
                   <Image
                     data-mail
                     src={item.src}
@@ -110,6 +114,7 @@ export default function ShowcaseX({ items }: { items: ShowcaseItem[] }) {
                     unoptimized={isRemote(item.src)}
                     className="sx-mail"
                   />
+                  )}
                 </span>
               </button>
               <div className="sx-caption">

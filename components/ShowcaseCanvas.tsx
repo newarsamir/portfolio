@@ -1,10 +1,11 @@
 "use client";
 
 import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
-import { useTexture } from "@react-three/drei";
+import { useTexture, useVideoTexture } from "@react-three/drei";
 import { Component, Suspense, useEffect, useMemo, useRef, type ReactNode, type RefObject } from "react";
 import * as THREE from "three";
 import type { ShowcaseItem } from "@/content/site";
+import { isVideoSrc } from "@/lib/media";
 import { setCursor } from "./Cursor";
 
 const CARD_W = 2;
@@ -57,20 +58,24 @@ function useCardGeometry() {
   }, []);
 }
 
-function Card({
-  item,
-  index,
-  geometry,
-  arc,
-  onOpen,
-}: {
+type CardProps = {
   item: ShowcaseItem;
   index: number;
   geometry: THREE.ShapeGeometry;
   arc: RefObject<THREE.Group | null>;
   onOpen: (i: number) => void;
-}) {
-  const source = useTexture(item.src);
+};
+
+function ImageCard(props: CardProps) {
+  return <Card {...props} source={useTexture(props.item.src)} />;
+}
+
+/** Video emails play muted on a loop right on the card. */
+function VideoCard(props: CardProps) {
+  return <Card {...props} source={useVideoTexture(props.item.src, { muted: true, loop: true, start: true, crossOrigin: "anonymous" })} />;
+}
+
+function Card({ item, index, geometry, arc, onOpen, source }: CardProps & { source: THREE.Texture }) {
   const inner = useRef<THREE.Group>(null);
   const material = useRef<THREE.MeshBasicMaterial>(null);
   const hover = useRef({ on: false, x: 0, y: 0 });
@@ -95,7 +100,8 @@ function Card({
   // Each card shows the top slice of its (tall) email.
   const { texture, topOffset } = useMemo(() => {
     const t = source.clone();
-    const img = source.image as { width: number; height: number };
+    // The saved size works for images and videos alike.
+    const img = { width: item.width, height: item.height };
     const repeatY = Math.min(1, img.width / img.height / (CARD_W / CARD_H));
     t.colorSpace = THREE.SRGBColorSpace;
     t.anisotropy = 8;
@@ -105,7 +111,7 @@ function Card({
     t.offset.set(0, 1 - repeatY);
     t.needsUpdate = true;
     return { texture: t, topOffset: 1 - repeatY };
-  }, [source]);
+  }, [source, item.width, item.height]);
 
   useEffect(() => () => texture.dispose(), [texture]);
 
@@ -123,8 +129,8 @@ function Card({
     const s = g.scale.x + ((h.on ? 1.05 : 1) - g.scale.x) * k;
     g.scale.setScalar(s);
 
-    // While hovered the email scrolls slowly inside its card.
-    const target = h.on ? Math.max(0, texture.offset.y - dt * 0.035) : topOffset;
+    // While hovered the email scrolls down inside its card, top to bottom in about six seconds.
+    const target = h.on ? Math.max(0, texture.offset.y - dt * Math.max(0.035, topOffset / 6)) : topOffset;
     texture.offset.y += (target - texture.offset.y) * (h.on ? 1 : k * 0.6);
 
     // As the arc turns, each email blurs and fades in from the right, is
@@ -225,7 +231,11 @@ function Arc({
         {items.map((item, i) => (
           <SkipOnError key={item.id ?? item.src} src={item.src}>
             <Suspense fallback={null}>
-              <Card item={item} index={i} geometry={geometry} arc={arc} onOpen={onOpen} />
+              {isVideoSrc(item.src) ? (
+                <VideoCard item={item} index={i} geometry={geometry} arc={arc} onOpen={onOpen} />
+              ) : (
+                <ImageCard item={item} index={i} geometry={geometry} arc={arc} onOpen={onOpen} />
+              )}
             </Suspense>
           </SkipOnError>
         ))}

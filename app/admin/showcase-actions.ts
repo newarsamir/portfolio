@@ -5,11 +5,40 @@ import { revalidatePath } from "next/cache";
 import { site } from "@/content/site";
 import { requireAdmin } from "@/lib/auth";
 import { imageSourceOk } from "@/lib/images";
+import { MAX_VIDEO, VIDEO_TYPES } from "@/lib/media";
 import { SHOWCASE_BUCKET } from "@/lib/showcase";
 import { getSupabase } from "@/lib/supabase";
 import type { ActionResult } from "./actions";
 
 export type ShowcaseActionResult = ActionResult & { id?: string; src?: string };
+
+const UPLOADED_VIDEO = /^emails\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(mp4|webm)$/;
+
+/**
+ * Videos are too big to pass through a server action (Vercel caps a request
+ * at about 4.5 MB), so the browser uploads them straight to storage with a
+ * one-time signed link made here.
+ */
+export async function createVideoUpload(
+  type: string,
+  size: number,
+): Promise<ActionResult & { path?: string; signedUrl?: string }> {
+  await requireAdmin();
+  const db = getSupabase();
+  if (!db) return NO_DB;
+  const ext = VIDEO_TYPES[type];
+  if (!ext) return { ok: false, message: "Upload an MP4 or WebM video." };
+  if (!Number.isFinite(size) || size <= 0 || size > MAX_VIDEO) {
+    return { ok: false, message: "That video is over 50 MB. Export it shorter or at a lower bitrate." };
+  }
+  const path = `emails/${randomUUID()}.${ext}`;
+  const { data, error } = await db.storage.from(SHOWCASE_BUCKET).createSignedUploadUrl(path);
+  if (error || !data) {
+    console.error("signed upload failed:", error?.message);
+    return { ok: false, message: "The upload couldn't start. Check that the 'showcase' storage bucket exists, then try again." };
+  }
+  return { ok: true, message: "Ready to upload.", path, signedUrl: data.signedUrl };
+}
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 /** Vercel caps a request body at about 4.5 MB, so stay under it. */
@@ -61,11 +90,19 @@ export async function saveShowcaseItem(
   };
   if (!record.brand) return { ok: false, message: "Give the email a brand or project name." };
 
-  // Either a new upload or a link.
+  // A video the browser already uploaded, a new image upload, or a link.
   let src = String(form.get("src") ?? "").trim().slice(0, 1000);
   let storagePath: string | null | undefined;
   const file = form.get("file");
-  if (file instanceof File && file.size > 0) {
+  const uploaded = String(form.get("uploaded") ?? "").trim();
+  if (uploaded) {
+    if (!UPLOADED_VIDEO.test(uploaded)) return { ok: false, message: "That video upload isn't valid. Upload it again." };
+    const name = uploaded.slice("emails/".length);
+    const { data: found } = await db.storage.from(SHOWCASE_BUCKET).list("emails", { search: name, limit: 1 });
+    if (!found?.some((f) => f.name === name)) return { ok: false, message: "The video didn't finish uploading. Upload it again." };
+    storagePath = uploaded;
+    src = db.storage.from(SHOWCASE_BUCKET).getPublicUrl(uploaded).data.publicUrl;
+  } else if (file instanceof File && file.size > 0) {
     const ext = TYPES[file.type];
     if (!ext) return { ok: false, message: "Upload a WebP, PNG, JPEG, GIF or AVIF image." };
     if (file.size > MAX_UPLOAD) return { ok: false, message: "That image is over 4 MB. Export it as WebP to shrink it." };

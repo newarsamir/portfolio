@@ -1764,3 +1764,34 @@ select.field {
   color: var(--bg);
 }
 }
+
+/* -------------------------------------------------------------------
+   Hover scroll: a tall email in a fixed frame reads top to bottom while
+   hovered, then returns quickly. The frame is a size container, so the
+   distance is exact whatever the frame's height.
+------------------------------------------------------------------- */
+.hover-scroll {
+  position: relative;
+  overflow: clip;
+  container-type: size;
+}
+.hover-scroll-media {
+  display: block;
+  width: 100%;
+  height: auto;
+  transform: translateY(0);
+  transition: transform 500ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .hover-scroll:hover .hover-scroll-media,
+  .group:hover .hover-scroll .hover-scroll-media {
+    transform: translateY(min(0px, calc(-100% + 100cqh)));
+    transition: transform var(--scroll-dur, 6s) cubic-bezier(0.45, 0, 0.55, 1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hover-scroll-media {
+    transition: none !important;
+    transform: none !important;
+  }
+}

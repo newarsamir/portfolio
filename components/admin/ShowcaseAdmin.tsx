@@ -3,12 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import {
+  createVideoUpload,
   deleteShowcaseItem,
   importDefaultShowcase,
   reorderShowcase,
   saveShowcaseItem,
   setShowcasePublished,
 } from "@/app/admin/showcase-actions";
+import { isVideoSrc, MAX_VIDEO, readMp4Size, VIDEO_TYPES } from "@/lib/media";
+import { pdfToImage } from "@/lib/pdf-to-image";
 import { toast } from "@/lib/toast";
 
 export type AdminShowcaseItem = {
@@ -24,7 +27,24 @@ export type AdminShowcaseItem = {
 };
 
 const MAX_UPLOAD = 4 * 1024 * 1024;
-const ACCEPT = "image/webp,image/png,image/jpeg,image/gif,image/avif";
+const ACCEPT = "image/webp,image/png,image/jpeg,image/gif,image/avif,application/pdf";
+const VIDEO_ACCEPT = Object.keys(VIDEO_TYPES).join(",");
+
+/** Sends a video straight to storage through a signed link, reporting progress. */
+function putToSignedUrl(url: string, file: File, onProgress: (pct: number) => void) {
+  return new Promise<void>((resolve, reject) => {
+    const body = new FormData();
+    body.append("cacheControl", "31536000");
+    body.append("", file);
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", url);
+    xhr.setRequestHeader("x-upsert", "false");
+    xhr.upload.onprogress = (e) => e.lengthComputable && onProgress(Math.round((e.loaded / e.total) * 100));
+    xhr.onload = () => (xhr.status >= 200 && xhr.status < 300 ? resolve() : reject(new Error(`Upload failed (${xhr.status})`)));
+    xhr.onerror = () => reject(new Error("Upload failed. Check your connection."));
+    xhr.send(body);
+  });
+}
 
 export default function ShowcaseAdmin({
   items,
@@ -128,7 +148,13 @@ export default function ShowcaseAdmin({
                 className={`group overflow-clip rounded-2xl border border-line bg-raised ${it.published ? "" : "opacity-60"}`}
               >
                 <div className="relative aspect-[3/4] overflow-clip bg-surface">
-                  <img src={it.src} alt="" loading="lazy" className="h-full w-full object-cover object-top" />
+                  {isVideoSrc(it.src) ? (
+                    <video src={it.src} muted loop playsInline autoPlay preload="metadata" className="h-full w-full object-cover object-top" />
+                  ) : (
+                    <span className="hover-scroll block h-full w-full">
+                      <img src={it.src} alt="" loading="lazy" className="hover-scroll-media" />
+                    </span>
+                  )}
                   <span className="mono absolute left-2 top-2 rounded-full bg-ink px-2 py-0.5 text-xs text-bg">
                     {String(i + 1).padStart(2, "0")}
                   </span>
@@ -230,6 +256,15 @@ function Editor({ initial, onClose }: { initial: AdminShowcaseItem | null; onClo
   const [dragging, setDragging] = useState(false);
   const [brand, setBrand] = useState(initial?.brand ?? "");
   const [type, setType] = useState(initial?.type ?? "");
+  const videoInput = useRef<HTMLInputElement>(null);
+  const [isVideo, setIsVideo] = useState(isVideoSrc(initial?.src ?? ""));
+  const [converting, setConverting] = useState(false);
+  // A video already sent to storage: its path, and the upload progress while it goes.
+  const [uploaded, setUploaded] = useState("");
+  const [progress, setProgress] = useState<number | null>(null);
+  // The size read from the file itself, for when the browser can't preview the codec.
+  const [fileSize, setFileSize] = useState<{ w: number; h: number } | null>(null);
+  const busyMedia = converting || progress !== null;
 
   useEffect(() => {
     dialog.current?.showModal();
@@ -248,6 +283,25 @@ function Editor({ initial, onClose }: { initial: AdminShowcaseItem | null; onClo
   useEffect(() => {
     if (!preview) return;
     let live = true;
+    if (isVideo) {
+      const v = document.createElement("video");
+      v.preload = "metadata";
+      v.muted = true;
+      v.onloadedmetadata = () => {
+        if (!live) return;
+        setSize({ w: v.videoWidth, h: v.videoHeight });
+        setLoadFailed(false);
+      };
+      v.onerror = () => {
+        if (!live) return;
+        setSize(fileSize);
+        setLoadFailed(!fileSize);
+      };
+      v.src = preview;
+      return () => {
+        live = false;
+      };
+    }
     const img = new Image();
     img.onload = () => {
       if (!live) return;
@@ -263,15 +317,29 @@ function Editor({ initial, onClose }: { initial: AdminShowcaseItem | null; onClo
     return () => {
       live = false;
     };
-  }, [preview]);
+  }, [preview, isVideo, fileSize]);
 
   // Revoke object URLs made for local files.
   useEffect(() => () => void (preview.startsWith("blob:") && URL.revokeObjectURL(preview)), [preview]);
 
-  const pick = (f: File | undefined | null) => {
+  const pick = async (f: File | undefined | null) => {
     if (!f) return;
+    if (VIDEO_TYPES[f.type]) return pickVideo(f);
+    if (f.type === "application/pdf") {
+      setConverting(true);
+      try {
+        const image = await pdfToImage(f);
+        toast.success("The PDF is now one tall image. Check it, then save.", "PDF converted");
+        f = image;
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "That PDF couldn't be read.", "PDF not converted");
+        return;
+      } finally {
+        setConverting(false);
+      }
+    }
     if (!ACCEPT.split(",").includes(f.type)) {
-      toast.error("Use a WebP, PNG, JPEG, GIF or AVIF image.", "That file won't work");
+      toast.error("Use a WebP, PNG, JPEG, GIF, AVIF or PDF file, or the video button for MP4 and WebM.", "That file won't work");
       return;
     }
     if (f.size > MAX_UPLOAD) {
@@ -285,14 +353,48 @@ function Editor({ initial, onClose }: { initial: AdminShowcaseItem | null; onClo
       fileInput.current.files = dt.files;
     }
     setFile(f);
+    setUploaded("");
+    setIsVideo(false);
     setSize(null);
     setPreview(URL.createObjectURL(f));
     if (!brand) setBrand(f.name.replace(/\.[a-z0-9]+$/i, "").replace(/[-_]+/g, " "));
   };
 
-  const clearFile = () => {
+  const pickVideo = async (f: File) => {
+    if (f.size > MAX_VIDEO) {
+      toast.error(`It's ${(f.size / 1024 / 1024).toFixed(1)} MB. Keep videos under 50 MB.`, "That video is too big");
+      return;
+    }
+    // A video replaces any image picked before it.
     setFile(null);
     if (fileInput.current) fileInput.current.value = "";
+    setIsVideo(true);
+    setSize(null);
+    setUploaded("");
+    setFileSize(f.type === "video/mp4" ? await readMp4Size(f).catch(() => null) : null);
+    setPreview(URL.createObjectURL(f));
+    if (!brand) setBrand(f.name.replace(/\.[a-z0-9]+$/i, "").replace(/[-_]+/g, " "));
+    setProgress(0);
+    try {
+      const start = await createVideoUpload(f.type, f.size);
+      if (!start.ok || !start.signedUrl || !start.path) throw new Error(start.message);
+      await putToSignedUrl(start.signedUrl, f, setProgress);
+      setUploaded(start.path);
+      toast.success("Video uploaded. Save to add it to the showcase.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "The video didn't upload.", "Upload failed");
+      setIsVideo(isVideoSrc(link));
+      setPreview(link);
+    } finally {
+      setProgress(null);
+    }
+  };
+
+  const clearFile = () => {
+    setFile(null);
+    setUploaded("");
+    if (fileInput.current) fileInput.current.value = "";
+    setIsVideo(isVideoSrc(link));
     setPreview(link);
   };
 
@@ -310,6 +412,7 @@ function Editor({ initial, onClose }: { initial: AdminShowcaseItem | null; onClo
         <input type="hidden" name="id" value={initial?.id ?? ""} />
         <input type="hidden" name="width" value={size?.w ?? ""} />
         <input type="hidden" name="height" value={size?.h ?? ""} />
+        <input type="hidden" name="uploaded" value={uploaded} />
 
         <div>
           <label
@@ -326,16 +429,22 @@ function Editor({ initial, onClose }: { initial: AdminShowcaseItem | null; onClo
             data-dragging={dragging || undefined}
             className="dropzone relative block aspect-[3/4] cursor-pointer overflow-clip rounded-2xl border-2 border-dashed border-line bg-surface"
           >
-            {preview && !loadFailed ? (
-              <img src={preview} alt="Preview" className="h-full w-full object-cover object-top" />
+            {converting ? (
+              <span className="grid h-full place-items-center p-6 text-center text-muted">Turning the PDF into one tall image…</span>
+            ) : preview && !loadFailed && isVideo ? (
+              <video src={preview} muted loop autoPlay playsInline className="h-full w-full object-cover object-top" />
+            ) : preview && !loadFailed ? (
+              <span className="hover-scroll block h-full w-full">
+                <img src={preview} alt="Preview" className="hover-scroll-media" />
+              </span>
             ) : (
               <span className="grid h-full place-items-center p-6 text-center text-muted">
                 <span>
                   <span className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-full bg-lime text-2xl text-on-lime">
                     ↑
                   </span>
-                  {loadFailed ? "That link didn't load as an image." : "Drop a tall email export here, or click to choose one."}
-                  <span className="mono mt-2 block text-xs">WebP, PNG or JPEG, up to 4 MB</span>
+                  {loadFailed ? "That link didn't load." : "Drop a tall email export or a PDF here, or click to choose one."}
+                  <span className="mono mt-2 block text-xs">WebP, PNG, JPEG or PDF, up to 4 MB</span>
                 </span>
               </span>
             )}
@@ -348,14 +457,48 @@ function Editor({ initial, onClose }: { initial: AdminShowcaseItem | null; onClo
               onChange={(e) => pick(e.target.files?.[0])}
             />
           </label>
+          {progress !== null && (
+            <div className="mt-2 h-1.5 overflow-clip rounded-full bg-line" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} aria-label="Video upload">
+              <div className="h-full origin-left bg-lime transition-transform" style={{ transform: `scaleX(${progress / 100})` }} />
+            </div>
+          )}
           <p className="mono mt-2 flex justify-between gap-2 text-xs text-muted" aria-live="polite">
-            <span>{size ? `${size.w} × ${size.h}px` : preview && !loadFailed ? "Reading size…" : "No image yet"}</span>
-            {file && (
+            <span>
+              {progress !== null
+                ? `Uploading video… ${progress}%`
+                : size
+                  ? `${isVideo ? "Video · " : ""}${size.w} × ${size.h}px`
+                  : preview && !loadFailed
+                    ? "Reading size…"
+                    : "Nothing picked yet"}
+            </span>
+            {(file || uploaded) && (
               <button type="button" onClick={clearFile} className="underline hover:text-ink">
                 Remove file
               </button>
             )}
           </p>
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm mt-3 w-full"
+            disabled={busyMedia}
+            onClick={() => videoInput.current?.click()}
+          >
+            Upload a video
+          </button>
+          <p className="mono mt-1.5 text-center text-xs text-muted">MP4 or WebM, up to 50 MB. Plays muted on a loop.</p>
+          <input
+            ref={videoInput}
+            type="file"
+            accept={VIDEO_ACCEPT}
+            className="sr-only"
+            tabIndex={-1}
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) pickVideo(f);
+              e.target.value = "";
+            }}
+          />
         </div>
 
         <div className="flex flex-col gap-5">
@@ -375,20 +518,24 @@ function Editor({ initial, onClose }: { initial: AdminShowcaseItem | null; onClo
 
           <div>
             <label htmlFor="sc-src" className="mb-2 block font-medium">
-              Or link to an image
+              Or link to an image or video
             </label>
             <input
               id="sc-src"
               name="src"
               value={link}
-              disabled={Boolean(file)}
+              disabled={Boolean(file) || Boolean(uploaded)}
               placeholder="/emails/email-01.webp or https://…"
               onChange={(e) => setLink(e.target.value)}
-              onBlur={() => !file && setPreview(link.trim())}
+              onBlur={() => {
+                if (file || uploaded) return;
+                setIsVideo(isVideoSrc(link.trim()));
+                setPreview(link.trim());
+              }}
               className="field disabled:opacity-50"
             />
             <p className="mt-1.5 text-[0.9rem] text-muted">
-              {file ? "Using the uploaded file. Remove it to use a link instead." : "A path in /public or an https link."}
+              {file || uploaded ? "Using the uploaded file. Remove it to use a link instead." : "A path in /public or an https link. Links ending in .mp4 or .webm play as video."}
             </p>
           </div>
 
@@ -437,13 +584,13 @@ function Editor({ initial, onClose }: { initial: AdminShowcaseItem | null; onClo
           </label>
 
           <div className="mt-auto flex flex-wrap items-center gap-3 border-t border-line pt-5">
-            <button type="submit" className="btn btn-lime" disabled={pending || !size}>
+            <button type="submit" className="btn btn-lime" disabled={pending || !size || busyMedia}>
               {pending ? (file ? "Uploading" : "Saving") : initial ? "Save changes" : "Add to showcase"}
             </button>
             <button type="button" className="btn btn-ghost" onClick={() => dialog.current?.close()}>
               Cancel
             </button>
-            {!size && preview && !loadFailed && <p className="text-[0.9rem] text-muted">Waiting for the image to load…</p>}
+            {!size && preview && !loadFailed && !busyMedia && <p className="text-[0.9rem] text-muted">Waiting for the file to load…</p>}
           </div>
         </div>
       </form>

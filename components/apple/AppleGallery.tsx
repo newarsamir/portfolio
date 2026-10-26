@@ -1,9 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import type { ShowcaseItem } from "@/content/site";
-import { isRemote } from "@/lib/images";
+import ShowcaseMedia from "../ShowcaseMedia";
 import { useSite } from "../cms/SiteProvider";
 import Lightbox from "../Lightbox";
 
@@ -60,9 +59,7 @@ export default function AppleGallery({ items }: { items: ShowcaseItem[] }) {
                   <span className="apl-tile-kicker">{item.type}</span>
                   <span className="apl-tile-title">{item.brand}</span>
                 </span>
-                <span className="apl-tile-media">
-                  <Image src={item.src} alt="" width={item.width} height={item.height} sizes="340px" unoptimized={isRemote(item.src)} className="apl-tile-img" />
-                </span>
+                <ShowcaseMedia item={item} sizes="340px" scroll className="apl-tile-media" />
               </button>
             </li>
           ))}

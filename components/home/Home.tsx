@@ -22,6 +22,7 @@ import { getGalleryItems } from "@/lib/gallery";
 import { getSettings } from "@/lib/settings";
 import { getShowcaseItems } from "@/lib/showcase";
 import { siteUrl } from "@/lib/url";
+import { isVideoSrc } from "@/lib/media";
 import type { VariantId } from "@/lib/variants";
 
 /** The home page in any of the designs. Same content, same section order and visibility. */
@@ -72,7 +73,7 @@ export default async function Home({ variant }: { variant: VariantId }) {
     },
     postcard: {
       ...shared,
-      hero: <Postcard.HeroCard videoUrl={video} available={available} cards={showcase.map((s) => s.src)} />,
+      hero: <Postcard.HeroCard videoUrl={video} available={available} cards={showcase.map((s) => s.src).filter((src) => !isVideoSrc(src))} />,
       counters: <Postcard.StatLine />,
       showcase: <Postcard.PostcardDeck items={showcase} />,
       cases: <Postcard.CaseList items={cases} />,
