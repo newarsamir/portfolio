@@ -1,0 +1,121 @@
+/* ------------------------------------------------------------------
+   404 rotation. Two designs; each visit gets one.
+------------------------------------------------------------------- */
+.nf-view {
+  animation: nf-enter 0.5s var(--ease-out) both;
+}
+@keyframes nf-enter {
+  from {
+    opacity: 0;
+  }
+}
+
+/* In the page editor: pick which design to edit. */
+.nf-switch {
+  position: fixed;
+  z-index: 60;
+  left: 50%;
+  bottom: 1rem;
+  translate: -50% 0;
+  display: flex;
+  gap: 2px;
+  max-width: calc(100% - 2rem);
+  overflow-x: auto;
+  padding: 3px;
+  border-radius: 999px;
+  background: oklch(21% 0.012 80);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.3);
+}
+.nf-switch button {
+  flex: none;
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  color: oklch(85% 0.02 95);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+.nf-switch button[aria-pressed="true"] {
+  background: var(--lime);
+  color: var(--on-lime);
+}
+.nf-switch button[data-off] {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nf-switch button:not([aria-pressed="true"]):hover {
+    background: oklch(30% 0.012 80);
+  }
+}
+
+/* ------------------------------------------------------------------
+   The editable vector 404: anchor points and bezier handles, as in a
+   vector app's Direct Selection tool.
+------------------------------------------------------------------- */
+.vec-404 {
+  --vec-sel: oklch(58% 0.2 262);
+  display: block;
+  width: min(100%, 34rem);
+  height: auto;
+  margin: 0 auto;
+  overflow: visible;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.vec-glyph {
+  fill: var(--ink);
+}
+.vec-glyph[data-glyph="1"] {
+  fill: var(--accent-fg);
+}
+/* The points arrive after the 404, like a selection being made. */
+.vec-points {
+  animation: load-opacity 0.6s var(--ease-out) both 0.7s;
+}
+.vec-anchor {
+  fill: var(--bg);
+  stroke: var(--vec-sel);
+  pointer-events: none;
+}
+.vec-anchor[data-selected] {
+  fill: var(--vec-sel);
+}
+.vec-handle {
+  fill: var(--vec-sel);
+  stroke: var(--bg);
+  pointer-events: none;
+}
+.vec-handle-line {
+  stroke: var(--vec-sel);
+  pointer-events: none;
+}
+/* Invisible, finger-sized targets over each point and handle. */
+.vec-hit {
+  fill: transparent;
+  cursor: move;
+}
+.vec-hit-handle {
+  cursor: crosshair;
+}
+.vec-reset:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+.vec-reset {
+  transition: opacity 0.3s var(--ease-out), color 0.2s var(--ease-out);
+}
+@media (prefers-color-scheme: dark) {
+  .vec-404 {
+    --vec-sel: oklch(72% 0.15 262);
+  }
+}
+
+/* Until React takes over, the server HTML holds both designs: show the one
+   the inline script picked, or just the first if scripts are off. */
+html:not([data-nf]) .nf-root[data-ssr] > .nf-view ~ .nf-view,
+html[data-nf="zero"] .nf-root[data-ssr] > .nf-view:not([data-v="zero"]),
+html[data-nf="pen"] .nf-root[data-ssr] > .nf-view:not([data-v="pen"]) {
+  display: none;
+}

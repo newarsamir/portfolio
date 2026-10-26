@@ -60,6 +60,8 @@ export default function EditBridge() {
       hoverId.current = null;
     };
     const onClick = (e: MouseEvent) => {
+      // Controls made for the preview itself (data-cms-ui) work as normal.
+      if (e.target instanceof Element && e.target.closest("[data-cms-ui]")) return;
       // Nothing navigates or submits in the preview; a click picks a section.
       e.preventDefault();
       e.stopPropagation();

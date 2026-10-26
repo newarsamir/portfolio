@@ -637,6 +637,12 @@ export const site = {
     blame: "Blame the intern",
     blameTitle: "Blame received",
     blameBody: "The intern has been notified. The intern is also me, and I've added it to the backlog.",
+    /** Which 404 designs are in the rotation. Each visit gets one at random. */
+    rotation: { zero: true, pen: true },
+    pen: {
+      hint: "This 404 is a real vector. Drag a point, pull a handle, double-click a point to curve it.",
+      reset: "Put it back",
+    },
   },
 
   /** The greeting that plays on the first page of a visit. नमस्ते is fixed (it uses a 5-letter font subset). */
