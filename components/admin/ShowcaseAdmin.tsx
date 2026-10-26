@@ -11,6 +11,7 @@ import {
   setShowcasePublished,
 } from "@/app/admin/showcase-actions";
 import { isVideoSrc, MAX_VIDEO, readMp4Size, VIDEO_TYPES } from "@/lib/media";
+import { putToSignedUrl } from "@/lib/admin-upload";
 import { pdfToImage } from "@/lib/pdf-to-image";
 import { toast } from "@/lib/toast";
 
@@ -29,22 +30,6 @@ export type AdminShowcaseItem = {
 const MAX_UPLOAD = 4 * 1024 * 1024;
 const ACCEPT = "image/webp,image/png,image/jpeg,image/gif,image/avif,application/pdf";
 const VIDEO_ACCEPT = Object.keys(VIDEO_TYPES).join(",");
-
-/** Sends a video straight to storage through a signed link, reporting progress. */
-function putToSignedUrl(url: string, file: File, onProgress: (pct: number) => void) {
-  return new Promise<void>((resolve, reject) => {
-    const body = new FormData();
-    body.append("cacheControl", "31536000");
-    body.append("", file);
-    const xhr = new XMLHttpRequest();
-    xhr.open("PUT", url);
-    xhr.setRequestHeader("x-upsert", "false");
-    xhr.upload.onprogress = (e) => e.lengthComputable && onProgress(Math.round((e.loaded / e.total) * 100));
-    xhr.onload = () => (xhr.status >= 200 && xhr.status < 300 ? resolve() : reject(new Error(`Upload failed (${xhr.status})`)));
-    xhr.onerror = () => reject(new Error("Upload failed. Check your connection."));
-    xhr.send(body);
-  });
-}
 
 export default function ShowcaseAdmin({
   items,

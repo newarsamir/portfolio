@@ -69,10 +69,11 @@ export default async function AdminPage() {
       dbConnected={Boolean(db)}
       settings={{
         heroVideoUrl: settings.heroVideoUrl,
+        heroPoster: settings.heroPoster,
+        storyPhoto: settings.storyPhoto,
         availableForWork: settings.availableForWork,
         variant: settings.variant,
       }}
-      poster={site.defaults.heroPoster}
       dbStatus={dbStatus}
       gallery={{
         items: gallery.items.map(({ storagePath, sortOrder: _sortOrder, ...g }) => ({ ...g, uploaded: Boolean(storagePath) })),

@@ -76,13 +76,21 @@ export async function saveSettings(_prev: ActionResult | null, form: FormData): 
   }
 
   const now = new Date().toISOString();
-  const { error } = await db.from("settings").upsert(
-    [
-      { key: SETTING_KEYS.video, value: videoUrl, updated_at: now },
-      { key: SETTING_KEYS.available, value: form.get("available") === "on", updated_at: now },
-    ],
-    { onConflict: "key" },
-  );
+  const rows: { key: string; value: unknown; updated_at: string }[] = [
+    { key: SETTING_KEYS.video, value: videoUrl, updated_at: now },
+    { key: SETTING_KEYS.available, value: form.get("available") === "on", updated_at: now },
+  ];
+  // Empty puts the built-in image back.
+  for (const [field, key, what] of [
+    ["heroPoster", SETTING_KEYS.heroPoster, "video poster"],
+    ["storyPhoto", SETTING_KEYS.storyPhoto, "story photo"],
+  ] as const) {
+    if (!form.has(field)) continue;
+    const src = text(form, field, 500);
+    if (src && !imageOk(src)) return { ok: false, message: `The ${what} must be uploaded, a site path or an https link.` };
+    rows.push({ key, value: src, updated_at: now });
+  }
+  const { error } = await db.from("settings").upsert(rows, { onConflict: "key" });
   if (error) {
     console.error("settings save failed:", error.message);
     return { ok: false, message: "Settings weren't saved because the database didn't respond. Try again." };

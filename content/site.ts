@@ -62,6 +62,8 @@ export const site = {
     title: "sthasamir, email designer for revenue-focused ecommerce and DTC brands",
     description:
       "Email design for ecommerce and DTC brands that want more revenue from the list they already have. Welcome flows, abandoned cart, post-purchase and campaigns, designed in Figma and ready to build.",
+    /** The banner shown when the site is shared (1200 × 630). Empty uses the generated one with the headline. */
+    shareImage: "" as string,
   },
 
   // TODO: replace each "#" with your real profile link. Empty or "#" links are hidden.
@@ -99,6 +101,8 @@ export const site = {
     // works, and all of these can be set from /admin too.
     heroVideoUrl: "/hero/hero-video.mp4",
     heroPoster: "/hero/hero-video-poster.webp",
+    /** The founder photo in the animated story (also cropped for its product shot). */
+    storyPhoto: "/hero/story/founder.webp",
   },
 
   hero: {

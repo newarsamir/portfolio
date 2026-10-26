@@ -22,7 +22,8 @@ const UPLOADED_VIDEO = /^emails\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}
 export async function createVideoUpload(
   type: string,
   size: number,
-): Promise<ActionResult & { path?: string; signedUrl?: string }> {
+  folder: "emails" | "hero" = "emails",
+): Promise<ActionResult & { path?: string; signedUrl?: string; publicUrl?: string }> {
   await requireAdmin();
   const db = getSupabase();
   if (!db) return NO_DB;
@@ -31,13 +32,14 @@ export async function createVideoUpload(
   if (!Number.isFinite(size) || size <= 0 || size > MAX_VIDEO) {
     return { ok: false, message: "That video is over 50 MB. Export it shorter or at a lower bitrate." };
   }
-  const path = `emails/${randomUUID()}.${ext}`;
+  const path = `${folder === "hero" ? "hero" : "emails"}/${randomUUID()}.${ext}`;
   const { data, error } = await db.storage.from(SHOWCASE_BUCKET).createSignedUploadUrl(path);
   if (error || !data) {
     console.error("signed upload failed:", error?.message);
     return { ok: false, message: "The upload couldn't start. Check that the 'showcase' storage bucket exists, then try again." };
   }
-  return { ok: true, message: "Ready to upload.", path, signedUrl: data.signedUrl };
+  const publicUrl = db.storage.from(SHOWCASE_BUCKET).getPublicUrl(path).data.publicUrl;
+  return { ok: true, message: "Ready to upload.", path, signedUrl: data.signedUrl, publicUrl };
 }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

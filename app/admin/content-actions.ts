@@ -16,7 +16,7 @@ export type SectionResult = ActionResult & { values?: Partial<Site> };
 
 const NO_DB: ActionResult = { ok: false, message: "Supabase isn't connected, so changes can't be saved yet." };
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const IMAGE_KEYS = /^(image|portrait|cover|poster|src|favicon)$/i;
+const IMAGE_KEYS = /^(image|portrait|cover|poster|src|favicon|shareImage)$/i;
 
 /** Older single settings that a section's content replaces. */
 const LEGACY: Partial<Record<ContentKey, string[]>> = {
@@ -137,7 +137,10 @@ const TYPES: Record<string, string> = {
   "image/vnd.microsoft.icon": "ico",
 };
 
-/** Uploads an image for a page section and returns its public link. */
+/** Storage folders an admin image upload may go to. */
+const FOLDERS = new Set(["content", "cases", "hero"]);
+
+/** Uploads an image (for a page section, a case study or the hero) and returns its public link. */
 export async function uploadContentImage(form: FormData): Promise<ActionResult & { src?: string }> {
   await requireAdmin();
   const db = getSupabase();
@@ -148,7 +151,8 @@ export async function uploadContentImage(form: FormData): Promise<ActionResult &
   if (!ext) return { ok: false, message: "Upload a WebP, PNG, JPEG, GIF, AVIF or ICO image." };
   if (file.size > MAX_UPLOAD) return { ok: false, message: "That image is over 4 MB. Export it as WebP to shrink it." };
 
-  const path = `content/${randomUUID()}.${ext}`;
+  const folder = String(form.get("folder") ?? "content");
+  const path = `${FOLDERS.has(folder) ? folder : "content"}/${randomUUID()}.${ext}`;
   const { error } = await db.storage
     .from(SHOWCASE_BUCKET)
     .upload(path, file, { contentType: file.type, cacheControl: "31536000", upsert: false });

@@ -3,6 +3,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState, type ReactNode } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { at, STORY_DURATION, STORY_LINES } from "@/lib/hero-story";
+import { useSite } from "./cms/SiteProvider";
 import type { HeroVideoHandle } from "./HeroVideo";
 
 /**
@@ -62,12 +63,15 @@ const Btn = ({ children, big = false, className = "" }: { children: ReactNode; b
   </span>
 );
 
-const Serum = ({ className = "" }: { className?: string }) => (
-  <span
-    className={`block rounded-[0.6cqw] bg-[#f3f0e2] ${className}`}
-    style={{ backgroundImage: "url(/hero/story/founder.webp)", backgroundSize: "430%", backgroundPosition: "71% 40%" }}
-  />
-);
+const Serum = ({ className = "" }: { className?: string }) => {
+  const photo = useSite().defaults.storyPhoto;
+  return (
+    <span
+      className={`block rounded-[0.6cqw] bg-[#f3f0e2] ${className}`}
+      style={{ backgroundImage: `url("${photo}")`, backgroundSize: "430%", backgroundPosition: "71% 40%" }}
+    />
+  );
+};
 
 function Emails() {
   const h = (s: number) => ({ fontSize: `${s}cqw` });
@@ -223,6 +227,7 @@ function MiniEmail({ label, tone }: { label: string; tone: "lime" | "ink" | "cre
 /* -------------------------------- Story -------------------------------- */
 
 const HeroStory = forwardRef<HeroVideoHandle, { reduced?: boolean }>(function HeroStory({ reduced = false }, ref) {
+  const storyPhoto = useSite().defaults.storyPhoto;
   const root = useRef<HTMLDivElement>(null);
   const audio = useRef<HTMLAudioElement>(null);
   const tl = useRef<gsap.core.Timeline | null>(null);
@@ -452,7 +457,7 @@ const HeroStory = forwardRef<HeroVideoHandle, { reduced?: boolean }>(function He
         {/* Founder */}
         <figure data-founder className="absolute origin-top-left" style={{ left: "7cqw", top: "6cqw", width: "21cqw" }}>
           <span className="block overflow-clip rounded-[1.4cqw] shadow-[0_3cqw_5cqw_-3cqw_rgba(28,27,23,0.45)]" style={{ aspectRatio: "4/5" }}>
-            <img src="/hero/story/founder.webp" alt="" className="h-full w-full object-cover" />
+            <img src={storyPhoto} alt="" className="h-full w-full object-cover" />
           </span>
           <figcaption className="mt-[0.8cqw] font-mono text-[#6b675c]" style={{ fontSize: "1cqw" }}>
             Founder, skincare brand

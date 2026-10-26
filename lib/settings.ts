@@ -6,6 +6,10 @@ import { isVariant, type VariantId } from "./variants";
 
 export type SiteSettings = {
   heroVideoUrl: string;
+  /** Still shown before the hero video plays. */
+  heroPoster: string;
+  /** The founder photo in the animated story. */
+  storyPhoto: string;
   availableForWork: boolean;
   counters: Counter[];
   /** True while the counters are still the sample values from site.ts. */
@@ -20,6 +24,8 @@ export type SiteSettings = {
 
 export const SETTING_KEYS = {
   video: "hero_video_url",
+  heroPoster: "hero_poster",
+  storyPhoto: "hero_story_photo",
   available: "available_for_work",
   counters: "counters",
   showcaseHeading: "showcase_heading",
@@ -31,6 +37,8 @@ export const SETTING_KEYS = {
 function defaults(): SiteSettings {
   return {
     heroVideoUrl: site.defaults.heroVideoUrl,
+    heroPoster: site.defaults.heroPoster,
+    storyPhoto: site.defaults.storyPhoto,
     availableForWork: site.defaults.availableForWork,
     counters: site.counters.items.map((c) => ({ ...c })),
     countersArePlaceholder: site.counters.placeholder,
@@ -64,6 +72,9 @@ export const getSettings = cache(async (): Promise<SiteSettings> => {
       // The old placeholder reel was never real content; keep the default hero film instead.
       if (row.value.trim() !== "/hero/reel-placeholder.mp4") out.heroVideoUrl = row.value.trim();
     }
+    // Empty means "use the default image".
+    if (row.key === SETTING_KEYS.heroPoster && typeof row.value === "string" && row.value.trim()) out.heroPoster = row.value.trim();
+    if (row.key === SETTING_KEYS.storyPhoto && typeof row.value === "string" && row.value.trim()) out.storyPhoto = row.value.trim();
     if (row.key === SETTING_KEYS.showcaseHeading && typeof row.value === "string" && row.value.trim()) {
       out.showcaseHeading = row.value.trim();
     }

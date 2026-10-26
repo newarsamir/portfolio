@@ -3,6 +3,7 @@
 import { useId, useRef, useState, useTransition } from "react";
 import { site as defaults } from "@/content/site";
 import { uploadContentImage } from "@/app/admin/content-actions";
+import { IMAGE_ACCEPT, isPdf, toShareImage, uploadImage } from "@/lib/admin-upload";
 import { isPlainObject, itemTemplate } from "@/lib/cms";
 import { toast } from "@/lib/toast";
 
@@ -24,6 +25,7 @@ const LABELS: Record<string, string> = {
   cta: "Call to action",
   sub: "Intro text",
   seo: "Search and sharing",
+  shareImage: "Share banner (1200 × 630)",
   eyebrow: "Small line above",
   headline: "Headline",
   heading: "Heading",
@@ -124,7 +126,7 @@ const LABELS: Record<string, string> = {
 };
 
 const LONG = new Set(["sub", "body", "a", "note", "quote", "story", "summary", "description", "joke", "noSocials", "blameBody", "empty", "detail"]);
-const IMAGE = /^(image|portrait|cover|poster|src|favicon)$/i;
+const IMAGE = /^(image|portrait|cover|poster|src|favicon|shareImage)$/i;
 const HIDDEN = new Set(["id"]);
 
 export const humanize = (key: string) =>
@@ -264,16 +266,28 @@ function ImageField({ value, onChange, name, canUpload }: Props & { value: strin
   const [busy, start] = useTransition();
   const [broken, setBroken] = useState(false);
 
+  const favicon = name === "favicon";
   const upload = (f: File) => {
-    const form = new FormData();
-    form.append("file", f);
     start(async () => {
-      const res = await uploadContentImage(form);
-      if (res.ok && res.src) {
+      // The tab icon keeps its own formats (ICO); every other image also takes a PDF.
+      if (favicon) {
+        const form = new FormData();
+        form.append("file", f);
+        const res = await uploadContentImage(form);
+        if (!res.ok || !res.src) return void toast.error(res.message);
         setBroken(false);
         onChange(res.src);
         toast.success("Image uploaded. Save the section to publish it.");
-      } else toast.error(res.message);
+        return;
+      }
+      try {
+        const src = await uploadImage(name === "shareImage" ? await toShareImage(f) : f);
+        setBroken(false);
+        onChange(src);
+        toast.success(isPdf(f) ? "The PDF is now an image. Save the section to publish it." : "Image uploaded. Save the section to publish it.");
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "That file didn't upload.");
+      }
     });
   };
 
@@ -310,7 +324,7 @@ function ImageField({ value, onChange, name, canUpload }: Props & { value: strin
               className="cms-btn"
               title={canUpload ? undefined : "Connect Supabase to upload images"}
             >
-              {busy ? "Uploading" : "Upload image"}
+              {busy ? "Uploading" : favicon ? "Upload image" : "Upload image or PDF"}
             </button>
             {value && (
               <button type="button" onClick={() => onChange("")} className="cms-btn">
@@ -321,7 +335,7 @@ function ImageField({ value, onChange, name, canUpload }: Props & { value: strin
           <input
             ref={file}
             type="file"
-            accept={name === "favicon" ? "image/png,image/x-icon,image/vnd.microsoft.icon,image/webp" : "image/webp,image/png,image/jpeg,image/gif,image/avif"}
+            accept={favicon ? "image/png,image/x-icon,image/vnd.microsoft.icon,image/webp" : IMAGE_ACCEPT}
             className="hidden"
             onChange={(e) => {
               const f = e.target.files?.[0];
