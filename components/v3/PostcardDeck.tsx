@@ -1,9 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import type { ShowcaseItem } from "@/content/site";
-import { isRemote } from "@/lib/images";
+import ShowcaseMedia from "../ShowcaseMedia";
 import { useSite } from "../cms/SiteProvider";
 import Lightbox from "../Lightbox";
 
@@ -127,18 +126,7 @@ export default function PostcardDeck({ items }: { items: ShowcaseItem[] }) {
                 <span className="pd-stamp mono" aria-hidden="true">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <span className="pd-img">
-                  <Image
-                    src={item.src}
-                    alt=""
-                    width={item.width}
-                    height={item.height}
-                    sizes="300px"
-                    draggable={false}
-                    unoptimized={isRemote(item.src)}
-                    className="pd-mail"
-                  />
-                </span>
+                <ShowcaseMedia item={item} sizes="300px" scroll className="pd-img" />
                 <span className="pd-cap">
                   <span className="pd-brand">{item.brand}</span>
                   <span className="pd-type">{item.type}</span>

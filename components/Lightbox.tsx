@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 import type { ShowcaseItem } from "@/content/site";
 import { isRemote } from "@/lib/images";
+import { isVideoSrc } from "@/lib/media";
 import { ChevronIcon, CloseIcon } from "./icons";
 import { getLenis } from "./SmoothScroll";
 
@@ -76,6 +77,9 @@ export default function Lightbox({
             aria-label="Full email, scrollable"
             className="pointer-events-auto order-2 min-h-0 flex-1 overflow-y-auto overscroll-contain rounded-2xl bg-surface md:order-1 md:max-w-[40rem]"
           >
+            {isVideoSrc(item.src) ? (
+              <video key={item.src} src={item.src} controls muted loop playsInline autoPlay className="h-auto w-full" aria-label={`${item.brand}: ${item.type}`} />
+            ) : (
             <Image
               key={item.src}
               src={item.src}
@@ -87,6 +91,7 @@ export default function Lightbox({
               className="h-auto w-full"
               priority
             />
+            )}
           </div>
 
           <div className="pointer-events-auto order-1 flex shrink-0 flex-col justify-between gap-4 rounded-2xl bg-bg p-5 md:order-2 md:w-[22rem] md:p-7">

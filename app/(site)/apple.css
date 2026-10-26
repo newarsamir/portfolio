@@ -433,16 +433,7 @@
   border-radius: 14px 14px 0 0;
   box-shadow: 0 10px 30px -12px rgb(0 0 0 / 0.18);
 }
-.apl-tile-img {
-  width: 100%;
-  height: auto;
-  transition: transform 1.4s var(--ease-in-out);
-}
-@media (hover: hover) and (pointer: fine) {
-  .apl-tile:hover .apl-tile-img {
-    transform: translateY(-14%);
-  }
-}
+
 .apl-rail-controls {
   display: flex;
   align-items: center;

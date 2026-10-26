@@ -1,10 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef } from "react";
 import type { ShowcaseItem } from "@/content/site";
 import { gsap } from "@/lib/gsap";
-import { isRemote } from "@/lib/images";
+import ShowcaseMedia from "./ShowcaseMedia";
 
 /**
  * Fallback for touch devices, small screens, reduced motion and browsers
@@ -78,18 +77,7 @@ export default function ShowcaseCarousel({
             className="block w-full text-left"
             aria-label={`Open ${item.brand}, ${item.type}`}
           >
-            <span className="block aspect-[3/5] overflow-clip rounded-2xl border border-line bg-surface">
-              <Image
-                src={item.src}
-                alt=""
-                width={item.width}
-                height={item.height}
-                sizes="280px"
-                unoptimized={isRemote(item.src)}
-                loading="lazy"
-                className="h-full w-full object-cover object-top"
-              />
-            </span>
+            <ShowcaseMedia item={item} sizes="280px" scroll className="aspect-[3/5] overflow-clip rounded-2xl border border-line bg-surface" />
             <span className="mt-3 block font-display text-xl font-semibold">{item.brand}</span>
             <span className="block text-[0.95rem] text-muted">{item.type}</span>
           </button>
