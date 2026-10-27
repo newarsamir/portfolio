@@ -21,6 +21,8 @@ export const getContent = cache(async (): Promise<Site> => {
   out.counters.items = settings.counters;
   out.counters.placeholder = settings.countersArePlaceholder;
   out.brandStrip.items = settings.brands;
+  out.defaults.heroPoster = settings.heroPoster;
+  out.defaults.storyPhoto = settings.storyPhoto;
 
   const rows = await getSettingRows();
   const writable = out as Record<string, unknown>;

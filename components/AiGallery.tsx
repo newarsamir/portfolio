@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react"
 import { useSite } from "./cms/SiteProvider";
 import { fill } from "@/lib/cms";
 import { gsap, ScrollTrigger, useGSAP, MOTION_OK } from "@/lib/gsap";
+import { resized, srcSet } from "@/lib/images";
 import { Reveal, SplitHeading } from "./Reveal";
 import { ArrowSwap, RollText } from "./RollText";
 import SectionRule from "./SectionRule";
@@ -243,7 +244,15 @@ export default function AiGallery({ items }: { items: GalleryTile[] }) {
         style={{ aspectRatio: `${it.width} / ${it.height}` } as CSSProperties}
       >
         {it.src ? (
-          <img src={it.src} alt={it.caption} loading="lazy" decoding="async" className="gallery-img absolute inset-0 h-full w-full object-cover" />
+          <img
+            src={resized(it.src, 640)}
+            srcSet={srcSet(it.src, [384, 640, 828, 1080])}
+            sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
+            alt={it.caption}
+            loading="lazy"
+            decoding="async"
+            className="gallery-img absolute inset-0 h-full w-full object-cover"
+          />
         ) : (
           <span className="gallery-img absolute inset-0">
             <Placeholder look={it.look ?? ""} />
@@ -361,7 +370,13 @@ function GalleryViewer({
             style={{ aspectRatio: `${item.width} / ${item.height}`, height: `min(78dvh, calc(92vw * ${(item.height / item.width).toFixed(4)}))` }}
           >
             {item.src ? (
-              <img src={item.src} alt={item.caption} className="h-full w-full object-contain" />
+              <img
+                src={resized(item.src, 1200)}
+                srcSet={srcSet(item.src, [640, 828, 1080, 1200, 1920])}
+                sizes="92vw"
+                alt={item.caption}
+                className="h-full w-full object-contain"
+              />
             ) : (
               <Placeholder look={item.look ?? ""} />
             )}

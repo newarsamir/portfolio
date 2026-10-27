@@ -1,10 +1,10 @@
 "use client";
 
-import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
-import { useTexture, useVideoTexture } from "@react-three/drei";
+import { Canvas, useFrame, useLoader, useThree, type ThreeEvent } from "@react-three/fiber";
 import { Component, Suspense, useEffect, useMemo, useRef, type ReactNode, type RefObject } from "react";
 import * as THREE from "three";
 import type { ShowcaseItem } from "@/content/site";
+import { resized } from "@/lib/images";
 import { isVideoSrc } from "@/lib/media";
 import { setCursor } from "./Cursor";
 
@@ -66,16 +66,55 @@ type CardProps = {
   onOpen: (i: number) => void;
 };
 
+/** Tallest texture every GPU takes (phones included); taller emails are loaded narrower. */
+const MAX_TEXTURE = 4096;
+
+/**
+ * The email as a texture, resized by the image optimizer: about 640px wide
+ * is plenty for a card, and a fraction of the original's decode, upload and
+ * GPU memory.
+ */
+function textureSrc(item: ShowcaseItem) {
+  const aspect = item.height / item.width || 1;
+  return resized(item.src, Math.min(640, MAX_TEXTURE / aspect));
+}
+
 function ImageCard(props: CardProps) {
-  return <Card {...props} source={useTexture(props.item.src)} />;
+  return <Card {...props} source={useLoader(THREE.TextureLoader, textureSrc(props.item))} />;
 }
 
 /** Video emails play muted on a loop right on the card. */
 function VideoCard(props: CardProps) {
-  return <Card {...props} source={useVideoTexture(props.item.src, { muted: true, loop: true, start: true, crossOrigin: "anonymous" })} />;
+  const texture = useMemo(() => {
+    const v = document.createElement("video");
+    v.crossOrigin = "anonymous";
+    v.muted = true;
+    v.loop = true;
+    v.playsInline = true;
+    v.preload = "auto";
+    v.src = props.item.src;
+    return new THREE.VideoTexture(v);
+  }, [props.item.src]);
+  useEffect(() => {
+    const v = texture.image as HTMLVideoElement;
+    v.play().catch(() => {});
+    return () => {
+      v.pause();
+      v.removeAttribute("src");
+      v.load();
+      texture.dispose();
+    };
+  }, [texture]);
+  return <Card {...props} source={texture} />;
 }
 
+/** Runs when the browser is idle (or soon, where it has no idle callback). */
+const idle = typeof window !== "undefined" && typeof window.requestIdleCallback === "function";
+const whenIdle = (fn: () => void): number => (idle ? window.requestIdleCallback(fn, { timeout: 800 }) : Number(setTimeout(fn, 60)));
+const cancelIdle = (id: number) => (idle ? window.cancelIdleCallback(id) : clearTimeout(id));
+
 function Card({ item, index, geometry, arc, onOpen, source }: CardProps & { source: THREE.Texture }) {
+  const { gl, scene, camera, invalidate } = useThree();
   const inner = useRef<THREE.Group>(null);
   const material = useRef<THREE.MeshBasicMaterial>(null);
   const hover = useRef({ on: false, x: 0, y: 0 });
@@ -115,10 +154,24 @@ function Card({ item, index, geometry, arc, onOpen, source }: CardProps & { sour
 
   useEffect(() => () => texture.dispose(), [texture]);
 
-  useFrame((_, dt) => {
+  // Send the texture to the GPU (and build the shader once) while the section
+  // is still below the fold, so scrolling into it doesn't stall on uploads.
+  useEffect(() => {
+    const id = whenIdle(() => {
+      gl.initTexture(texture);
+      gl.compile(scene, camera);
+      invalidate();
+    });
+    return () => cancelIdle(id);
+  }, [gl, scene, camera, texture, invalidate]);
+
+  const isVideo = source instanceof THREE.VideoTexture;
+
+  useFrame((state, dt) => {
     const g = inner.current;
     const m = material.current;
     if (!g || !m) return;
+    const before = g.rotation.y + g.rotation.x + g.position.z + g.scale.x + m.opacity + blur.value + texture.offset.y;
     const k = 1 - Math.exp(-dt * 9);
     const h = hover.current;
 
@@ -141,16 +194,23 @@ function Card({ item, index, geometry, arc, onOpen, source }: CardProps & { sour
     m.visible = m.opacity > 0.01;
     const soft = h.on ? 0 : THREE.MathUtils.clamp((dist - 0.45) * 1.7, 0, 5);
     blur.value += (soft - blur.value) * k;
+
+    // Frames are drawn on demand: ask for another while anything is still
+    // easing, the email is scrolling under the pointer, or a video is playing.
+    const after = g.rotation.y + g.rotation.x + g.position.z + g.scale.x + m.opacity + blur.value + texture.offset.y;
+    if (Math.abs(after - before) > 1e-5 || (isVideo && m.visible)) state.invalidate();
   });
 
   const over = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
     hover.current.on = true;
+    invalidate();
     setCursor("view");
     document.body.style.cursor = "pointer";
   };
   const out = () => {
     hover.current.on = false;
+    invalidate();
     setCursor(null);
     document.body.style.cursor = "";
   };
@@ -158,6 +218,7 @@ function Card({ item, index, geometry, arc, onOpen, source }: CardProps & { sour
     if (!e.uv) return;
     hover.current.x = e.uv.x - 0.5;
     hover.current.y = e.uv.y - 0.5;
+    invalidate();
   };
 
   return (
@@ -219,10 +280,12 @@ function Arc({
     [],
   );
 
-  useFrame((_, dt) => {
+  useFrame((state, dt) => {
     if (!arc.current) return;
     const target = -progress.current * (items.length - 1) * STEP;
-    arc.current.rotation.y += (target - arc.current.rotation.y) * (1 - Math.exp(-dt * 7));
+    const gap = target - arc.current.rotation.y;
+    arc.current.rotation.y += gap * (1 - Math.exp(-dt * 7));
+    if (Math.abs(gap) > 1e-4) state.invalidate();
   });
 
   return (
@@ -244,26 +307,49 @@ function Arc({
   );
 }
 
+/** Hands the page a way to ask for a frame (scrolling), and draws one whenever the canvas comes back on screen. */
+function Wake({ kick, active }: { kick: RefObject<(() => void) | null>; active: boolean }) {
+  const invalidate = useThree((s) => s.invalidate);
+  useEffect(() => {
+    kick.current = invalidate;
+    return () => {
+      kick.current = null;
+    };
+  }, [kick, invalidate]);
+  useEffect(() => {
+    if (active) invalidate();
+  }, [active, invalidate]);
+  return null;
+}
+
 export default function ShowcaseCanvas({
   items,
   progress,
+  kick,
   active,
   onOpen,
 }: {
   items: readonly ShowcaseItem[];
   progress: RefObject<number>;
+  /** Set to a function that requests a frame; the page calls it as it scrolls. */
+  kick: RefObject<(() => void) | null>;
   active: boolean;
   onOpen: (i: number) => void;
 }) {
   return (
     <Canvas
       flat
-      dpr={[1, 2]}
-      frameloop={active ? "always" : "never"}
+      // 1.5x is as sharp as the 640px textures get; 2x only costs fill rate.
+      dpr={[1, 1.5]}
+      // Nothing is drawn while the arc is still; scrolling, hovering and easing ask for frames.
+      frameloop={active ? "demand" : "never"}
       camera={{ position: [0, 0, CAMERA_Z], fov: 32, near: 0.1, far: 50 }}
-      gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+      // "default" keeps laptops on the integrated GPU instead of waking the discrete one.
+      // Retina screens hide jagged edges by themselves, so multisampling is only paid for at 1x.
+      gl={{ antialias: typeof window === "undefined" || window.devicePixelRatio < 1.5, alpha: true, powerPreference: "default" }}
       aria-hidden="true"
     >
+      <Wake kick={kick} active={active} />
       <Suspense fallback={null}>
         <Arc items={items} progress={progress} onOpen={onOpen} />
       </Suspense>

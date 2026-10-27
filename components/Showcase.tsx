@@ -27,9 +27,13 @@ export default function Showcase({ items }: { items: ShowcaseItem[] }) {
   const { heading, sub } = useSite().showcase;
   const root = useRef<HTMLElement>(null);
   const progress = useRef(0);
+  // The canvas draws on demand; scrolling asks it for a frame through this.
+  const kick = useRef<(() => void) | null>(null);
   // The carousel is also what the server renders, so the work is visible
   // without scripts. Desktop browsers with WebGL upgrade to 3D after mount.
   const [mode, setMode] = useState<Mode>("carousel");
+  // Until this is known, desktops skip the carousel's images (the 3D arc usually replaces it).
+  const [decided, setDecided] = useState(false);
   const [near, setNear] = useState(false);
   const [inView, setInView] = useState(false);
   const [current, setCurrent] = useState(0);
@@ -41,9 +45,22 @@ export default function Showcase({ items }: { items: ShowcaseItem[] }) {
     );
     const decide = () => setMode(mq.matches && supportsWebGL() ? "3d" : "carousel");
     decide();
+    setDecided(true);
     mq.addEventListener("change", decide);
     return () => mq.removeEventListener("change", decide);
   }, []);
+
+  // Fetch the 3D code once the page is idle, so it's ready before the section is reached.
+  useEffect(() => {
+    if (mode !== "3d") return;
+    const load = () => void import("./ShowcaseCanvas");
+    if (typeof window.requestIdleCallback === "function") {
+      const id = window.requestIdleCallback(load, { timeout: 4000 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = window.setTimeout(load, 2000);
+    return () => window.clearTimeout(id);
+  }, [mode]);
 
   useEffect(() => {
     const el = root.current;
@@ -78,6 +95,7 @@ export default function Showcase({ items }: { items: ShowcaseItem[] }) {
         refreshPriority: 2,
         onUpdate(self) {
           progress.current = self.progress;
+          kick.current?.();
           setCurrent(Math.round(self.progress * (items.length - 1)));
         },
       });
@@ -105,7 +123,7 @@ export default function Showcase({ items }: { items: ShowcaseItem[] }) {
 
           <div className="absolute inset-0">
             {near && (
-              <ShowcaseCanvas items={items} progress={progress} active={inView && open === null} onOpen={setOpen} />
+              <ShowcaseCanvas items={items} progress={progress} kick={kick} active={inView && open === null} onOpen={setOpen} />
             )}
           </div>
 
@@ -147,7 +165,7 @@ export default function Showcase({ items }: { items: ShowcaseItem[] }) {
             </Reveal>
           </div>
           <div className="mt-6">
-            <ShowcaseCarousel items={items} onOpen={setOpen} />
+            <ShowcaseCarousel items={items} onOpen={setOpen} pending={!decided} />
           </div>
         </div>
       )}

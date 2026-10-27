@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { deleteGalleryItem, reorderGallery, saveGalleryItem, setGalleryPublished } from "@/app/admin/gallery-actions";
+import { isPdf } from "@/lib/admin-upload";
+import { pdfToImage } from "@/lib/pdf-to-image";
 import { toast } from "@/lib/toast";
 
 export type AdminGalleryItem = {
@@ -18,7 +20,8 @@ export type AdminGalleryItem = {
 };
 
 const MAX_UPLOAD = 4 * 1024 * 1024;
-const ACCEPT = "image/webp,image/png,image/jpeg,image/avif";
+const IMAGE_TYPES = ["image/webp", "image/png", "image/jpeg", "image/avif"];
+const ACCEPT = [...IMAGE_TYPES, "application/pdf"].join(",");
 
 /** AI product and lifestyle shots for the photography gallery near the bottom of the home page. */
 export default function GalleryAdmin({
@@ -182,6 +185,7 @@ function Editor({ initial, onClose }: { initial: AdminGalleryItem | null; onClos
   const [state, action, pending] = useActionState(saveGalleryItem, null);
   const [link, setLink] = useState(initial?.src ?? "");
   const [file, setFile] = useState<File | null>(null);
+  const [converting, setConverting] = useState(false);
   const [preview, setPreview] = useState(initial?.src ?? "");
   const [size, setSize] = useState<{ w: number; h: number } | null>(initial ? { w: initial.width, h: initial.height } : null);
   const [loadFailed, setLoadFailed] = useState(false);
@@ -223,10 +227,22 @@ function Editor({ initial, onClose }: { initial: AdminGalleryItem | null; onClos
 
   useEffect(() => () => void (preview.startsWith("blob:") && URL.revokeObjectURL(preview)), [preview]);
 
-  const pick = (f: File | undefined | null) => {
+  const pick = async (f: File | undefined | null) => {
     if (!f) return;
-    if (!ACCEPT.split(",").includes(f.type)) {
-      toast.error("Use a WebP, PNG, JPEG or AVIF image.", "That file won't work");
+    if (isPdf(f)) {
+      setConverting(true);
+      try {
+        f = await pdfToImage(f);
+        toast.success("The PDF is now an image. Check it, then save.", "PDF converted");
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "That PDF couldn't be read.", "PDF not converted");
+        return;
+      } finally {
+        setConverting(false);
+      }
+    }
+    if (!IMAGE_TYPES.includes(f.type)) {
+      toast.error("Use a WebP, PNG, JPEG, AVIF or PDF file.", "That file won't work");
       return;
     }
     if (f.size > MAX_UPLOAD) {
@@ -285,8 +301,12 @@ function Editor({ initial, onClose }: { initial: AdminGalleryItem | null; onClos
               <span className="grid h-full place-items-center p-6 text-center text-muted">
                 <span>
                   <span className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-full bg-lime text-2xl text-on-lime">↑</span>
-                  {loadFailed ? "That link didn't load as an image." : "Drop a product or lifestyle shot here, or click to choose one."}
-                  <span className="mono mt-2 block text-xs">WebP, PNG or JPEG, up to 4 MB</span>
+                  {converting
+                    ? "Turning the PDF into an image…"
+                    : loadFailed
+                      ? "That link didn't load as an image."
+                      : "Drop a product or lifestyle shot here, or click to choose one."}
+                  <span className="mono mt-2 block text-xs">WebP, PNG, JPEG or PDF, up to 4 MB</span>
                 </span>
               </span>
             )}

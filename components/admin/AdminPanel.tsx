@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useCallback, useDeferredValue, useEffect, useMemo, useState, useTransition } from "react";
+import { startTransition, useActionState, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { deleteContact, logout, saveSettings, setRead } from "@/app/admin/actions";
+import { createVideoUpload } from "@/app/admin/showcase-actions";
+import { putToSignedUrl } from "@/lib/admin-upload";
+import { MAX_VIDEO, VIDEO_TYPES } from "@/lib/media";
 import type { Site } from "@/content/site";
 import type { AdminView, Layouts } from "@/lib/cms";
 import { sectionById } from "@/lib/cms";
@@ -13,6 +16,7 @@ import Dashboard from "./Dashboard";
 import ShowcaseAdmin, { type AdminShowcaseItem } from "./ShowcaseAdmin";
 import DbStatus, { type DbStatusData } from "./DbStatus";
 import GalleryAdmin, { type AdminGalleryItem } from "./GalleryAdmin";
+import ImageInput from "./ImageInput";
 import PageEditor from "./PageEditor";
 import DesignPicker from "./DesignPicker";
 import { VARIANTS, type VariantId } from "@/lib/variants";
@@ -31,6 +35,8 @@ export type ContactRow = {
 
 type Settings = {
   heroVideoUrl: string;
+  heroPoster: string;
+  storyPhoto: string;
   availableForWork: boolean;
   variant: VariantId;
 };
@@ -60,7 +66,6 @@ export default function AdminPanel({
   loadError,
   dbConnected,
   settings,
-  poster,
   caseStudies,
   showcase,
   dbStatus,
@@ -76,7 +81,6 @@ export default function AdminPanel({
   loadError: string | null;
   dbConnected: boolean;
   settings: Settings;
-  poster: string;
   caseStudies: { items: AdminCaseStudy[]; fromDb: boolean; error: string | null };
   showcase: {
     items: AdminShowcaseItem[];
@@ -266,7 +270,7 @@ export default function AdminPanel({
             </div>
             <div hidden={view !== "settings"} data-panel="settings">
               <DesignPicker current={settings.variant} disabled={!dbConnected} />
-              <SettingsForm settings={settings} poster={poster} disabled={!dbConnected} />
+              <SettingsForm settings={settings} disabled={!dbConnected} />
             </div>
             <div hidden={view !== "database"} data-panel="database">
               {!dbConnected && (
@@ -503,7 +507,7 @@ function FragmentRow({ children }: { children: React.ReactNode }) {
 
 /* ------------------------------ Settings ------------------------------ */
 
-function SettingsForm({ settings, poster, disabled }: { settings: Settings; poster: string; disabled: boolean }) {
+function SettingsForm({ settings, disabled }: { settings: Settings; disabled: boolean }) {
   const [state, action, pending] = useActionState(saveSettings, null);
   useEffect(() => {
     if (state) toast.result(state);
@@ -511,12 +515,44 @@ function SettingsForm({ settings, poster, disabled }: { settings: Settings; post
   const [mode, setMode] = useState<"story" | "video">(settings.heroVideoUrl === "story" ? "story" : "video");
   const [url, setUrl] = useState(settings.heroVideoUrl === "story" ? "" : settings.heroVideoUrl);
   const [available, setAvailable] = useState(settings.availableForWork);
+  const [poster, setPoster] = useState(settings.heroPoster);
+  const [storyPhoto, setStoryPhoto] = useState(settings.storyPhoto);
+  const videoFile = useRef<HTMLInputElement>(null);
+  const [progress, setProgress] = useState<number | null>(null);
+
+  // Videos go straight to storage through a signed link, so they can be up to 50 MB.
+  const uploadVideo = async (f: File | undefined) => {
+    if (!f) return;
+    if (!VIDEO_TYPES[f.type]) return void toast.error("Use an MP4 or WebM video.", "That file won't work");
+    if (f.size > MAX_VIDEO) return void toast.error(`It's ${(f.size / 1024 / 1024).toFixed(1)} MB. Keep videos under 50 MB.`, "That video is too big");
+    setProgress(0);
+    try {
+      const start = await createVideoUpload(f.type, f.size, "hero");
+      if (!start.ok || !start.signedUrl || !start.publicUrl) throw new Error(start.message);
+      await putToSignedUrl(start.signedUrl, f, setProgress);
+      setUrl(start.publicUrl);
+      toast.success("Video uploaded. Save settings to put it on the home page.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "The video didn't upload.", "Upload failed");
+    } finally {
+      setProgress(null);
+    }
+  };
   const preview = useDeferredValue(url);
   const parsed = useMemo(() => parseVideo(preview), [preview]);
   const embed = parsed ? embedSrc(parsed)?.replace("autoplay=1", "autoplay=0").replace("controls=0", "controls=1") : null;
 
   return (
-    <form action={action} className="grid gap-10 lg:grid-cols-2">
+    <form
+      // Submitted by hand: a form action would reset the fields after saving, putting radios and
+      // uncontrolled inputs back to their first values while the editor still shows the new ones.
+      onSubmit={(e) => {
+        e.preventDefault();
+        const data = new FormData(e.currentTarget);
+        startTransition(() => action(data));
+      }}
+      className="grid gap-10 lg:grid-cols-2"
+    >
       <fieldset className="space-y-4" disabled={disabled}>
         <legend className="font-display text-2xl font-semibold">Home page video</legend>
         <div className="grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="What plays in the hero">
@@ -545,11 +581,26 @@ function SettingsForm({ settings, poster, disabled }: { settings: Settings; post
             </label>
           ))}
         </div>
+        {/* Both images are always sent, so switching modes never clears the other one. */}
+        <input type="hidden" name="heroPoster" value={poster} />
+        <input type="hidden" name="storyPhoto" value={storyPhoto} />
         {mode === "story" ? (
-          <p className="rounded-xl border border-line bg-surface p-4 text-[0.95rem] text-muted">
-            The hero plays the narrated story about email design and revenue. Its words, timing and voice live in{" "}
-            <code className="mono">components/HeroStory.tsx</code> and <code className="mono">public/hero/story/</code>.
-          </p>
+          <div className="space-y-3">
+            <p className="rounded-xl border border-line bg-surface p-4 text-[0.95rem] text-muted">
+              The hero plays the narrated story about email design and revenue. Its words and voice are built in; its photo is yours to change.
+            </p>
+            <label htmlFor="storyPhoto" className="block font-medium">
+              Story photo
+            </label>
+            <ImageInput
+              id="storyPhoto"
+              value={storyPhoto}
+              onChange={setStoryPhoto}
+              folder="hero"
+              disabled={disabled}
+              help="The founder in the story, also cropped for the product shot. Portrait (4:5) works best. Remove it to use the built-in photo."
+            />
+          </div>
         ) : (
         <>
         <div>
@@ -567,8 +618,30 @@ function SettingsForm({ settings, poster, disabled }: { settings: Settings; post
             aria-describedby="video-help"
             aria-invalid={url && !parsed ? true : undefined}
           />
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <button type="button" className="btn btn-ghost btn-sm" disabled={disabled || progress !== null} onClick={() => videoFile.current?.click()}>
+              {progress === null ? "Upload a video" : `Uploading… ${progress}%`}
+            </button>
+            <span className="text-[0.9rem] text-muted">MP4 or WebM, up to 50 MB.</span>
+            <input
+              ref={videoFile}
+              type="file"
+              accept={Object.keys(VIDEO_TYPES).join(",")}
+              className="hidden"
+              tabIndex={-1}
+              onChange={(e) => {
+                uploadVideo(e.target.files?.[0]);
+                e.target.value = "";
+              }}
+            />
+          </div>
+          {progress !== null && (
+            <div className="mt-2 h-1.5 overflow-clip rounded-full bg-line" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} aria-label="Video upload">
+              <div className="h-full origin-left bg-lime-deep transition-transform" style={{ transform: `scaleX(${progress / 100})` }} />
+            </div>
+          )}
           <p id="video-help" className="mt-2 text-[0.95rem] text-muted">
-            A direct .mp4 link, a YouTube link or a Vimeo link.
+            Upload a video, or paste a direct .mp4 link, a YouTube link or a Vimeo link.
             {parsed && (
               <>
                 {" "}
@@ -587,6 +660,20 @@ function SettingsForm({ settings, poster, disabled }: { settings: Settings; post
               No preview. This link isn&apos;t a video file, YouTube or Vimeo link.
             </p>
           )}
+        </div>
+        <div>
+          <label htmlFor="heroPoster" className="mb-2 block font-medium">
+            Poster image
+          </label>
+          <ImageInput
+            id="heroPoster"
+            value={poster}
+            onChange={setPoster}
+            folder="hero"
+            aspect="aspect-video"
+            disabled={disabled}
+            help="The still shown before the video plays (YouTube links use YouTube's own thumbnail). Remove it to use the built-in one."
+          />
         </div>
         </>
         )}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useState, useTransition } from "react";
+import { startTransition, useActionState, useEffect, useState, useTransition } from "react";
 import {
   deleteCaseStudy,
   importSampleCaseStudies,
@@ -11,6 +11,7 @@ import {
 } from "@/app/admin/actions";
 import type { CaseMetric } from "@/content/site";
 import { toast } from "@/lib/toast";
+import ImageInput, { ImageListInput } from "./ImageInput";
 
 export type AdminCaseStudy = {
   id: string | null;
@@ -258,6 +259,7 @@ function Editor({ initial, onDone }: { initial: AdminCaseStudy; onDone: () => vo
   const [client, setClient] = useState(initial.client);
   const [summary, setSummary] = useState(initial.summary);
   const [cover, setCover] = useState(initial.cover);
+  const [gallery, setGallery] = useState(initial.gallery);
   const [services, setServices] = useState(initial.services.join(", "));
   const [metrics, setMetrics] = useState<CaseMetric[]>(
     initial.metrics.length ? initial.metrics : [{ value: "", label: "" }],
@@ -283,7 +285,16 @@ function Editor({ initial, onDone }: { initial: AdminCaseStudy; onDone: () => vo
         <p className="mono text-muted">{id ? "Editing" : "New case study"}</p>
       </div>
 
-      <form action={action} className="mt-6 grid gap-10 lg:grid-cols-[1fr_22rem]">
+      <form
+        // Submitted by hand: a form action would reset the fields after saving, putting radios and
+        // uncontrolled inputs back to their first values while the editor still shows the new ones.
+        onSubmit={(e) => {
+          e.preventDefault();
+          const data = new FormData(e.currentTarget);
+          startTransition(() => action(data));
+        }}
+        className="mt-6 grid gap-10 lg:grid-cols-[1fr_22rem]"
+      >
         <input type="hidden" name="id" value={id ?? ""} />
         <div className="space-y-8">
           <fieldset className="grid gap-5">
@@ -461,28 +472,24 @@ function Editor({ initial, onDone }: { initial: AdminCaseStudy; onDone: () => vo
               <label htmlFor="cs-cover" className={label}>
                 Cover image
               </label>
-              <input
+              <ImageInput
                 id="cs-cover"
                 name="cover"
                 value={cover}
-                onChange={(e) => setCover(e.target.value)}
-                placeholder="/emails/email-01.webp"
-                className={field}
+                onChange={setCover}
+                folder="cases"
+                help="Shown on the case study card and at the top of its page. Upload an image or a PDF export."
               />
-              <p className={help}>A path in /public, like /emails/email-01.webp, or an https link.</p>
             </div>
             <div>
-              <label htmlFor="cs-gallery" className={label}>
-                Gallery
-              </label>
-              <textarea
-                id="cs-gallery"
+              <p className={label}>Gallery</p>
+              <ImageListInput
                 name="gallery"
-                rows={4}
-                defaultValue={initial.gallery.join("\n")}
-                className={`${field} mono`}
+                value={gallery}
+                onChange={setGallery}
+                folder="cases"
+                help="Up to 12. Tall email exports look best; a PDF becomes one tall image."
               />
-              <p className={help}>One image per line, up to 12. Tall email exports look best.</p>
             </div>
           </fieldset>
         </div>

@@ -38,7 +38,7 @@ export default function About() {
                   <circle cx="100" cy="74" r="38" fill="currentColor" />
                   <path d="M24 200c6-52 38-78 76-78s70 26 76 78Z" fill="currentColor" />
                 </svg>
-                <span className="mono text-muted">Add /public/portrait.webp, 4:5</span>
+                <span className="mono text-muted">Upload one in /admin, Pages, About (4:5)</span>
               </div>
             )}
           </MaskReveal>

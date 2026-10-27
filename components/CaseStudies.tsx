@@ -122,6 +122,7 @@ export default function CaseStudies({ items }: { items: CaseStudy[] }) {
                     <EmailScroll
                       src={c.cover}
                       phone
+                      sizes="16rem"
                       height="clamp(20rem, 52svh, 30rem)"
                       className="-rotate-3 transition-transform duration-700 ease-[var(--ease-spring)] group-hover:rotate-0 group-hover:scale-[1.03]"
                     />
