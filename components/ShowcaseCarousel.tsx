@@ -14,9 +14,12 @@ import ShowcaseMedia from "./ShowcaseMedia";
 export default function ShowcaseCarousel({
   items,
   onOpen,
+  pending = false,
 }: {
   items: readonly ShowcaseItem[];
   onOpen: (i: number) => void;
+  /** Server-rendered, before the page knows whether the 3D arc takes over (see .snap-row[data-pending]). */
+  pending?: boolean;
 }) {
   const row = useRef<HTMLUListElement>(null);
 
@@ -66,23 +69,36 @@ export default function ShowcaseCarousel({
   }, []);
 
   return (
-    <ul ref={row} className="snap-row" data-lenis-prevent-touch aria-label="Email designs">
-      {items.map((item, i) => (
-        <li key={item.id ?? item.src} className="snap-card">
-          <button
-            type="button"
-            data-card
-            data-cursor="view"
-            onClick={() => onOpen(i)}
-            className="block w-full text-left"
-            aria-label={`Open ${item.brand}, ${item.type}`}
-          >
-            <ShowcaseMedia item={item} sizes="280px" scroll className="aspect-[3/5] overflow-clip rounded-2xl border border-line bg-surface" />
-            <span className="mt-3 block font-display text-xl font-semibold">{item.brand}</span>
-            <span className="block text-[0.95rem] text-muted">{item.type}</span>
-          </button>
-        </li>
-      ))}
-    </ul>
+    <>
+      {/* Without scripts nothing replaces the row, so its images must show. */}
+      {pending && (
+        <noscript>
+          <style>{".snap-row[data-pending] img{display:block!important}"}</style>
+        </noscript>
+      )}
+      <ul ref={row} className="snap-row" data-pending={pending || undefined} data-lenis-prevent-touch aria-label="Email designs">
+        {items.map((item, i) => (
+          <li key={item.id ?? item.src} className="snap-card">
+            <button
+              type="button"
+              data-card
+              data-cursor="view"
+              onClick={() => onOpen(i)}
+              className="block w-full text-left"
+              aria-label={`Open ${item.brand}, ${item.type}`}
+            >
+              <ShowcaseMedia
+                item={item}
+                sizes="280px"
+                scroll
+                className="aspect-[3/5] overflow-clip rounded-2xl border border-line bg-surface"
+              />
+              <span className="mt-3 block font-display text-xl font-semibold">{item.brand}</span>
+              <span className="block text-[0.95rem] text-muted">{item.type}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }

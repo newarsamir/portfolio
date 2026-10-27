@@ -1,6 +1,7 @@
 import "./redesign.css";
 import "./postcard.css";
 import "./apple.css";
+import { preload } from "react-dom";
 import EditBridge from "@/components/cms/EditBridge";
 import { SiteProvider } from "@/components/cms/SiteProvider";
 import IntroGreeting from "@/components/IntroGreeting";
@@ -15,6 +16,11 @@ export const revalidate = 60;
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSettings();
+  // The headline and body fonts, fetched alongside the CSS. The Apple design uses system fonts.
+  if (settings.variant !== "apple") {
+    preload("/fonts/bricolage-grotesque-latin.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
+    preload("/fonts/geist-latin.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
+  }
   const content = await getContent();
   const layouts = await getLayouts();
   return (

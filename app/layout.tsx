@@ -1,7 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource-variable/bricolage-grotesque/standard.css";
-import "@fontsource-variable/geist/wght.css";
-import "@fontsource-variable/geist-mono/wght.css";
 import "./globals.css";
 import { getContent } from "@/lib/content";
 import { siteUrl } from "@/lib/url";

@@ -1,6 +1,7 @@
 "use client";
 
 import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from "react";
+import { resized, srcSet } from "@/lib/images";
 import { embedSrc, parseVideo } from "@/lib/video";
 
 export type HeroVideoHandle = { play: () => void; pause: () => void };
@@ -100,7 +101,9 @@ const HeroVideo = forwardRef<
       {poster && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={poster}
+          src={resized(poster, 1920)}
+          srcSet={srcSet(poster, [640, 1080, 1920, 2048])}
+          sizes="100vw"
           alt=""
           width={1280}
           height={720}

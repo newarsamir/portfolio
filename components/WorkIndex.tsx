@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { CaseStudy } from "@/content/site";
 import { gsap } from "@/lib/gsap";
+import { resized, srcSet } from "@/lib/images";
 import EmailScroll from "./EmailScroll";
 import { ArrowSwap } from "./RollText";
 
@@ -84,7 +85,11 @@ export default function WorkIndex({ items }: { items: CaseStudy[] }) {
               {items.map((c, i) => (
                 <img
                   key={c.slug}
-                  src={c.cover}
+                  src={resized(c.cover, 640)}
+                  srcSet={srcSet(c.cover, [384, 640, 828])}
+                  sizes="22rem"
+                  loading="lazy"
+                  decoding="async"
                   alt=""
                   className="absolute inset-0 h-full w-full object-cover object-top transition-[opacity,scale] duration-500"
                   style={{ opacity: hovered === i ? 1 : 0, scale: hovered === i ? "1" : "1.15" }}

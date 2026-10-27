@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { isRemote } from "@/lib/images";
 import { parseVideo } from "@/lib/video";
 import AnchorLink from "../AnchorLink";
 import { useSite } from "../cms/SiteProvider";
@@ -114,7 +115,7 @@ export default function HeroCard({ videoUrl, available, cards }: { videoUrl: str
           <div className="hc-deck load-opacity" style={{ ["--d" as string]: "1.1s" }} aria-hidden="true">
             {deck.map((src, i) => (
               <span key={src} className="hc-card" style={{ ["--n" as string]: i - (deck.length - 1) / 2 }}>
-                <Image src={src} alt="" width={420} height={560} sizes="180px" unoptimized={/^https?:/.test(src)} className="hc-card-img" />
+                <Image src={src} alt="" width={420} height={560} sizes="180px" unoptimized={isRemote(src)} className="hc-card-img" />
               </span>
             ))}
           </div>

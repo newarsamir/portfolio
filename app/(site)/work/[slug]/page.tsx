@@ -119,6 +119,7 @@ export default async function CaseStudyPage({ params }: Props) {
                   src={c.cover}
                   alt={`${c.client}: ${c.title}`}
                   phone
+                  sizes="(min-width: 768px) 20rem, 72vw"
                   height="min(66svh, 38rem)"
                   duration="9s"
                   className="w-[min(20rem,72vw)]"
@@ -181,6 +182,7 @@ export default async function CaseStudyPage({ params }: Props) {
                     src={src}
                     alt={`${c.client}, email ${i + 1}`}
                     height="34rem"
+                    sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
                     className="overflow-clip rounded-[1.25rem] border border-line transition-transform duration-500 ease-out group-hover:-translate-y-2"
                   />
                   <figcaption className="mono mt-3 text-muted">

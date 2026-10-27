@@ -3,6 +3,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState, type ReactNode } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { at, STORY_DURATION, STORY_LINES } from "@/lib/hero-story";
+import { resized, srcSet } from "@/lib/images";
 import { useSite } from "./cms/SiteProvider";
 import type { HeroVideoHandle } from "./HeroVideo";
 
@@ -64,7 +65,7 @@ const Btn = ({ children, big = false, className = "" }: { children: ReactNode; b
 );
 
 const Serum = ({ className = "" }: { className?: string }) => {
-  const photo = useSite().defaults.storyPhoto;
+  const photo = resized(useSite().defaults.storyPhoto, 640);
   return (
     <span
       className={`block rounded-[0.6cqw] bg-[#f3f0e2] ${className}`}
@@ -457,7 +458,7 @@ const HeroStory = forwardRef<HeroVideoHandle, { reduced?: boolean }>(function He
         {/* Founder */}
         <figure data-founder className="absolute origin-top-left" style={{ left: "7cqw", top: "6cqw", width: "21cqw" }}>
           <span className="block overflow-clip rounded-[1.4cqw] shadow-[0_3cqw_5cqw_-3cqw_rgba(28,27,23,0.45)]" style={{ aspectRatio: "4/5" }}>
-            <img src={storyPhoto} alt="" className="h-full w-full object-cover" />
+            <img src={resized(storyPhoto, 640)} srcSet={srcSet(storyPhoto, [384, 640, 828])} sizes="22vw" alt="" className="h-full w-full object-cover" />
           </span>
           <figcaption className="mt-[0.8cqw] font-mono text-[#6b675c]" style={{ fontSize: "1cqw" }}>
             Founder, skincare brand

@@ -12,11 +12,7 @@
     "node": ">=20.9"
   },
   "dependencies": {
-    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
-    "@fontsource-variable/geist": "^5.3.0",
-    "@fontsource-variable/geist-mono": "^5.3.0",
     "@gsap/react": "^2.1.2",
-    "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.1",
     "@supabase/supabase-js": "^2.117.2",
     "gsap": "^3.15.0",

@@ -31,6 +31,12 @@ export default function VariantShell({ chosen, available, children }: { chosen: 
         <main id="main">{children}</main>
         <Editable id="footer">{footer}</Editable>
         {variant !== "apple" && <Cursor />}
+        {/* Content softens into the bottom edge of the screen as it scrolls past. */}
+        <div className="bottom-blur" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
       </div>
     </VariantContext.Provider>
   );
