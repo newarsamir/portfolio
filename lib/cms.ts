@@ -7,7 +7,7 @@ import { site, type Site } from "@/content/site";
 
 export type ContentKey = keyof Site;
 export type PageId = "home" | "work" | "case" | "contact" | "notFound";
-export type AdminView = "dashboard" | "pages" | "inbox" | "showcase" | "cases" | "gallery" | "settings" | "database";
+export type AdminView = "dashboard" | "pages" | "inbox" | "showcase" | "cases" | "gallery" | "files" | "settings" | "database";
 
 export type SectionDef = {
   id: string;

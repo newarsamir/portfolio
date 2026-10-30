@@ -9,7 +9,7 @@ export type DbStatus = {
   checks: CheckResult[];
 };
 
-const TABLES = ["contacts", "settings", "showcase_items", "gallery_items", "case_studies", "login_attempts"];
+const TABLES = ["contacts", "settings", "showcase_items", "gallery_items", "case_studies", "links", "login_attempts"];
 
 export function supabaseHost(): string | null {
   try {
@@ -71,6 +71,21 @@ export async function checkDatabase(): Promise<DbStatus> {
     );
   } catch (e) {
     checks.push({ name: "showcase bucket", ok: false, detail: explainDbError({ message: String(e) }, "storage") });
+  }
+
+  try {
+    const { data, error } = await db.storage.getBucket("files");
+    checks.push(
+      error || !data
+        ? {
+            name: "files bucket",
+            ok: false,
+            detail: `The 'files' storage bucket for Files & links is missing in ${host}. Run supabase/schema.sql there, or create a private bucket named files under Storage.`,
+          }
+        : { name: "files bucket", ok: true, detail: data.public ? "Public: turn Public off so links that are off stay off" : "Private" },
+    );
+  } catch (e) {
+    checks.push({ name: "files bucket", ok: false, detail: explainDbError({ message: String(e) }, "storage") });
   }
 
   return { configured: true, host, checks };
