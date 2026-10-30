@@ -16,6 +16,7 @@ import Dashboard from "./Dashboard";
 import ShowcaseAdmin, { type AdminShowcaseItem } from "./ShowcaseAdmin";
 import DbStatus, { type DbStatusData } from "./DbStatus";
 import GalleryAdmin, { type AdminGalleryItem } from "./GalleryAdmin";
+import LinksAdmin, { type AdminLink } from "./LinksAdmin";
 import ImageInput from "./ImageInput";
 import PageEditor from "./PageEditor";
 import DesignPicker from "./DesignPicker";
@@ -56,6 +57,7 @@ const VIEWS: { id: AdminView; label: string; title: string; help: string }[] = [
   { id: "showcase", label: "Showcase", title: "Selected emails", help: "The emails in the 3D carousel on the home page." },
   { id: "cases", label: "Case studies", title: "Case studies", help: "Shown on the home page and at /work." },
   { id: "gallery", label: "AI gallery", title: "AI photography", help: "The two-row gallery at the bottom of the home page." },
+  { id: "files", label: "Files & links", title: "Files & links", help: "Short links on your own address that open a file or send people to any URL." },
   { id: "settings", label: "Settings", title: "Settings", help: "The site's design, the hero video and whether you're taking projects." },
   { id: "database", label: "Database", title: "Database", help: "Checks that every table and the storage bucket are set up." },
 ];
@@ -73,7 +75,11 @@ export default function AdminPanel({
   content,
   layouts,
   caseSlug,
+  links,
+  siteUrl,
 }: {
+  links: { items: AdminLink[]; fromDb: boolean; error: string | null };
+  siteUrl: string;
   dbStatus: DbStatusData;
   gallery: { items: AdminGalleryItem[]; fromDb: boolean; error: string | null };
   siteName: string;
@@ -125,6 +131,7 @@ export default function AdminPanel({
     showcase: String(showcase.items.length),
     cases: String(caseStudies.items.length),
     gallery: String(gallery.items.length),
+    files: String(links.items.length),
     database: dbConnected && dbStatus.checks.every((c) => c.ok) ? "" : "!",
     pages: editorDirty ? "•" : "",
   };
@@ -259,6 +266,9 @@ export default function AdminPanel({
               <GalleryAdmin items={gallery.items} fromDb={gallery.fromDb} dbConnected={dbConnected} loadError={gallery.error} />
               <EditTextHint onClick={() => editSection("gallery")} what="the gallery heading and intro" />
             </div>
+            <div hidden={view !== "files"} data-panel="files">
+              <LinksAdmin items={links.items} fromDb={links.fromDb} dbConnected={dbConnected} loadError={links.error} siteUrl={siteUrl} />
+            </div>
             <div hidden={view !== "cases"} data-panel="cases">
               <CaseStudiesAdmin
                 items={caseStudies.items}
@@ -309,6 +319,7 @@ function NavIcon({ id }: { id: AdminView | "site" | "logout" }) {
     showcase: <path d="M7 4h10v16H7zM3 6v12M21 6v12" />,
     cases: <path d="M4 7h16v12H4zM9 7V5h6v2M4 12h16" />,
     gallery: <path d="M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9h.01" />,
+    files: <path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" />,
     settings: <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM19 12l2-1-1-3-2 .5-1.5-1.5.5-2-3-1-1 2h-2l-1-2-3 1 .5 2L6 8.5 4 8l-1 3 2 1v0l-2 1 1 3 2-.5L7.5 17l-.5 2 3 1 1-2h2l1 2 3-1-.5-2 1.5-1.5 2 .5 1-3z" />,
     database: <path d="M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" />,
     site: <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />,

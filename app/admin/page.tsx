@@ -11,6 +11,8 @@ import { getAllGalleryItems } from "@/lib/gallery";
 import { getSettings } from "@/lib/settings";
 import { getContent, getLayouts } from "@/lib/content";
 import { getSupabase } from "@/lib/supabase";
+import { getAllLinks } from "@/lib/links";
+import { siteUrl } from "@/lib/url";
 
 export const metadata: Metadata = {
   title: "Admin",
@@ -56,6 +58,7 @@ export default async function AdminPage() {
   const gallery = await getAllGalleryItems();
   const content = await getContent();
   const layouts = await getLayouts();
+  const links = await getAllLinks();
   const caseSlug = cases.items.find((c) => c.published)?.slug ?? null;
 
   return (
@@ -64,6 +67,12 @@ export default async function AdminPage() {
       content={content}
       layouts={layouts}
       caseSlug={caseSlug}
+      siteUrl={siteUrl()}
+      links={{
+        items: links.items.map(({ storagePath: _storagePath, ...l }) => l),
+        fromDb: links.fromDb,
+        error: links.error,
+      }}
       contacts={contacts}
       loadError={loadError}
       dbConnected={Boolean(db)}

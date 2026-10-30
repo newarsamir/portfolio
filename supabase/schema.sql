@@ -91,6 +91,28 @@ create table if not exists public.gallery_items (
 create index if not exists gallery_items_sort_idx
   on public.gallery_items (sort_order, created_at);
 
+-- Short links made in /admin: /go/<slug> opens an uploaded file or redirects to a URL (a Drive link, say)
+create table if not exists public.links (
+  id               uuid primary key default gen_random_uuid(),
+  created_at       timestamptz not null default now(),
+  updated_at       timestamptz not null default now(),
+  slug             text not null unique check (slug ~ '^[a-z0-9]([a-z0-9-]{0,62}[a-z0-9])?$'),
+  kind             text not null check (kind in ('file', 'url')),
+  title            text not null default '',
+  target           text,                         -- where a URL link goes
+  storage_path     text,                         -- a file link's object in the private 'files' bucket
+  file_name        text,
+  file_type        text,
+  file_size        bigint,
+  download         boolean not null default false, -- files: save instead of opening in the tab
+  enabled          boolean not null default true,
+  clicks           integer not null default 0,
+  last_clicked_at  timestamptz
+);
+
+create index if not exists links_created_at_idx
+  on public.links (created_at desc);
+
 -- Failed admin logins, used for rate limiting across serverless instances
 create table if not exists public.login_attempts (
   id          bigint generated always as identity primary key,
@@ -110,6 +132,7 @@ alter table public.login_attempts enable row level security;
 alter table public.case_studies   enable row level security;
 alter table public.showcase_items enable row level security;
 alter table public.gallery_items  enable row level security;
+alter table public.links          enable row level security;
 
 insert into public.settings (key, value) values
   ('available_for_work', 'true'::jsonb)
@@ -122,6 +145,10 @@ begin
   if to_regclass('storage.buckets') is not null then
     insert into storage.buckets (id, name, public)
     values ('showcase', 'showcase', true)
+    on conflict (id) do nothing;
+    -- Files behind /go/<slug> links. Private: only reachable through a link that's switched on.
+    insert into storage.buckets (id, name, public)
+    values ('files', 'files', false)
     on conflict (id) do nothing;
   end if;
 end $$;

@@ -40,7 +40,7 @@ The site runs without Supabase too. It then uses the defaults from `content/site
 ## Set up Supabase (5 minutes)
 
 1. Create a project at supabase.com.
-2. Open **SQL Editor**, paste the contents of `supabase/schema.sql`, run it. It creates `contacts`, `settings`, `showcase_items`, `case_studies` and `login_attempts` plus the `showcase` storage bucket, and turns on row level security with no public policies.
+2. Open **SQL Editor**, paste the contents of `supabase/schema.sql`, run it. It creates `contacts`, `settings`, `showcase_items`, `case_studies`, `gallery_items`, `links` and `login_attempts` plus the public `showcase` and private `files` storage buckets, and turns on row level security with no public policies.
 3. Open **Project Settings, API**. Copy the project URL into `SUPABASE_URL` and the secret key (`sb_secret_...`, or the legacy `service_role` key) into `SUPABASE_SERVICE_ROLE_KEY`.
 
 The secret key is only read in server code (`lib/supabase.ts` is marked `server-only`). It is never sent to the browser.
@@ -108,6 +108,7 @@ A sidebar leads to every part of the admin:
 - **Inbox:** contact form inquiries, newest first, search, read and unread, delete, CSV export.
 - **Showcase:** upload or link emails, automatic image size, edit, hide, reorder, delete.
 - **AI gallery:** AI product and lifestyle shots for the two-row photography section: upload or link, product/lifestyle tag, caption, the prompt shown on hover, reorder, hide, delete. Labeled samples show until the first image is added. Re-run `supabase/schema.sql` to create `gallery_items`.
+- **Files & links:** short links on your own address, `yoursite.com/go/<name>`. Upload any file (PDF, PNG, ZIP and so on, up to 50 MB, straight to storage) or paste any URL, like a Google Drive share. Opening the short link opens the file (PDFs, images, video and audio open in the tab unless you tick download; anything else downloads under its original name) or redirects to the URL. Drive share links can skip Drive's preview page. Change where a link goes without changing its address, turn it off (it then shows the 404 page), rename, delete, copy, and see how many times each was opened (link previews from Slack, WhatsApp and the like aren't counted). Files live in the private `files` bucket and are served through short-lived signed links, so a switched-off link really stops working. Re-run `supabase/schema.sql` to create `links` and the bucket.
 - **Case studies:** full create, read, update and delete, with a live card preview, publish/draft, and up/down ordering.
 - **Settings:** hero video URL with live preview, and the "available for work" switch that drives the nav badge.
 - **Database:** checks every table and the storage bucket, with the fix for anything missing.
